@@ -1,0 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Libertinus+Math&display=swap');
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: black;
+  color: white;
+  font-family: 'Poppins', sans-serif;
+}
+
+#root {
+  background-color: black;
+  min-height: 100vh;
+}

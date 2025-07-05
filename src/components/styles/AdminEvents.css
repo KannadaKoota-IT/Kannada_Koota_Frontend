@@ -1,0 +1,79 @@
+.admin-events {
+  padding: 2rem;
+  max-width: 800px;
+  margin: auto;
+}
+
+.event-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.event-form input,
+.event-form button {
+  padding: 0.6rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
+.event-form button {
+  background-color: #2e66ff;
+  color: white;
+  cursor: pointer;
+  border: none;
+}
+
+.event-form button:hover {
+  background-color: #1c4ee5;
+}
+
+.event-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.event-card {
+  background: #f9f9f9;
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.event-card h3 {
+  margin: 0 0 0.5rem;
+}
+
+.event-card img {
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-top: 0.5rem;
+}
+
+.actions {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.actions button {
+  padding: 0.4rem 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.actions button:first-child {
+  background-color: #ffc107;
+}
+
+.actions button:last-child {
+  background-color: #dc3545;
+  color: white;
+}

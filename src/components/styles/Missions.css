@@ -1,0 +1,131 @@
+.missions-container {
+  background: black;
+  padding: 5rem 8%;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
+  font-family: "Poppins", sans-serif;
+}
+
+.mission-vision-section {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: transform 0.3s ease;
+
+  /* Glowing border and shadow */
+  box-shadow: 0 0 24px rgba(29, 18, 183, 0.4), 0 0 12px rgba(255, 215, 0, 0.2);
+  border: 1px solid rgba(0, 149, 255, 0.4);
+}
+
+.mission-vision-section:hover {
+  transform: translateY(-5px);
+}
+
+.mission-vision-section h3 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: #ffd700;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.emoji {
+  font-size: 1.8rem;
+}
+
+.gradient-text {
+  background: linear-gradient(90deg, #ffcc00, #ff0080);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.mission-vision-section p {
+  margin: 0.6rem 0;
+  font-size: 1.15rem;
+  line-height: 1.6;
+  color: #ddd;
+}
+
+.mission-vision-section ul {
+  list-style: none;
+  padding-left: 0;
+  margin-top: 1rem;
+}
+
+.mission-vision-section li {
+  margin: 0.5rem 0;
+  font-size: 1.1rem;
+}
+
+/* ======================= Responsive ======================= */
+
+@media (max-width: 1024px) {
+  .missions-container {
+    padding: 4rem 6%;
+  }
+
+  .mission-vision-section {
+    padding: 2rem;
+  }
+
+  .mission-vision-section h3 {
+    font-size: 1.75rem;
+  }
+
+  .mission-vision-section p,
+  .mission-vision-section li {
+    font-size: 1.05rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .missions-container {
+    padding: 3rem 5%;
+    gap: 3rem;
+  }
+
+  .mission-vision-section {
+    padding: 1.8rem;
+  }
+
+  .mission-vision-section h3 {
+    font-size: 1.6rem;
+  }
+
+  .emoji {
+    font-size: 1.6rem;
+  }
+
+  .mission-vision-section p,
+  .mission-vision-section li {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .missions-container {
+    padding: 2.5rem 4%;
+    gap: 2.5rem;
+  }
+
+  .mission-vision-section {
+    padding: 1.5rem;
+  }
+
+  .mission-vision-section h3 {
+    font-size: 1.4rem;
+  }
+
+  .emoji {
+    font-size: 1.4rem;
+  }
+
+  .mission-vision-section p,
+  .mission-vision-section li {
+    font-size: 0.95rem;
+  }
+}
