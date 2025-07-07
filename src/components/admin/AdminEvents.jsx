@@ -10,13 +10,34 @@ export default function AdminEvents() {
   });
   const [imageFile, setImageFile] = useState(null);
   const [editingId, setEditingId] = useState(null);
-  const [status, setStatus] = useState(""); // ✅ NEW: for popup
+  const [status, setStatus] = useState("");
+
   const token = localStorage.getItem("adminToken");
 
-  const API = "http://localhost:5000/api/events";
+  // ✅ Use VITE_ env variable
+  const API_BASE = import.meta.env.VITE_BACKEND_URL;
+  const API = `${API_BASE}/api/events`;
 
   useEffect(() => {
-    fetchEvents();
+    if (!token) {
+      alert("Please log in first.");
+      window.location.href = "/admin-login";
+    } else {
+      try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        if (payload.exp * 1000 < Date.now()) {
+          localStorage.removeItem("adminToken");
+          alert("Session expired. Please log in again.");
+          window.location.href = "/admin-login";
+          return;
+        }
+        fetchEvents();
+      } catch (err) {
+        localStorage.removeItem("adminToken");
+        alert("Invalid token. Please log in again.");
+        window.location.href = "/admin-login";
+      }
+    }
   }, []);
 
   const fetchEvents = async () => {
@@ -58,16 +79,11 @@ export default function AdminEvents() {
 
     if (res.ok) {
       fetchEvents();
-      setForm({
-        title: "",
-        description: "",
-        date: "",
-        location: "",
-      });
+      setForm({ title: "", description: "", date: "", location: "" });
       setImageFile(null);
       setEditingId(null);
-      setStatus(editingId ? "✅ Event updated!" : "✅ Event added!"); // ✅ show success
-      setTimeout(() => setStatus(""), 3000); // hide after 3s
+      setStatus(editingId ? "✅ Event updated!" : "✅ Event added!");
+      setTimeout(() => setStatus(""), 3000);
     } else {
       const err = await res.json();
       setStatus("❌ " + (err.error || "Failed to save event"));
@@ -96,6 +112,7 @@ export default function AdminEvents() {
         Authorization: `Bearer ${token}`,
       },
     });
+
     fetchEvents();
     setStatus("🗑️ Event deleted");
     setTimeout(() => setStatus(""), 3000);
@@ -104,8 +121,6 @@ export default function AdminEvents() {
   return (
     <div className="admin-events">
       <h2>Manage Events</h2>
-
-      {/* ✅ Status popup */}
       {status && (
         <div
           style={{
@@ -124,36 +139,10 @@ export default function AdminEvents() {
       )}
 
       <form onSubmit={handleSubmit} className="event-form" encType="multipart/form-data">
-        <input
-          type="text"
-          name="title"
-          placeholder="Title"
-          value={form.title}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="text"
-          name="description"
-          placeholder="Description"
-          value={form.description}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="date"
-          name="date"
-          value={form.date}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="text"
-          name="location"
-          placeholder="Location"
-          value={form.location}
-          onChange={handleChange}
-        />
+        <input type="text" name="title" placeholder="Title" value={form.title} onChange={handleChange} required />
+        <input type="text" name="description" placeholder="Description" value={form.description} onChange={handleChange} required />
+        <input type="date" name="date" value={form.date} onChange={handleChange} required />
+        <input type="text" name="location" placeholder="Location" value={form.location} onChange={handleChange} />
         <input type="file" name="image" onChange={handleImageChange} accept="image/*" />
         <button type="submit">{editingId ? "Update" : "Add"} Event</button>
       </form>
@@ -167,8 +156,9 @@ export default function AdminEvents() {
             {event.location && <p>📍 {event.location}</p>}
             {event.imageUrl && (
               <img
-                src={`http://localhost:5000${event.imageUrl}`}
+                src={`${API_BASE}${event.imageUrl}`}
                 alt={event.title}
+                style={{ maxWidth: "100%", marginTop: "10px" }}
               />
             )}
             <div className="actions">

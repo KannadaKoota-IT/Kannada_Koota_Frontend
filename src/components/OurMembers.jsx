@@ -9,10 +9,12 @@ export default function OurMembers() {
   const [members, setMembers] = useState([]);
   const cardsRef = useRef([]);
 
+  const API_BASE = import.meta.env.VITE_BACKEND_URL;
+
   useEffect(() => {
     const fetchMembers = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/team");
+        const res = await fetch(`${API_BASE}/api/team`);
         const data = await res.json();
         setMembers(data);
       } catch (err) {
@@ -21,7 +23,7 @@ export default function OurMembers() {
     };
 
     fetchMembers();
-  }, []);
+  }, [API_BASE]);
 
   useEffect(() => {
     if (!members.length) return;
@@ -46,10 +48,14 @@ export default function OurMembers() {
       <h2 className="title">Our Members</h2>
       <div className="grid">
         {members.map((member, i) => (
-          <div className="card" key={member._id} ref={(el) => (cardsRef.current[i] = el)}>
+          <div
+            className="card"
+            key={member._id}
+            ref={(el) => (cardsRef.current[i] = el)}
+          >
             <div className="card2">
               <div className="avatar">
-                <img src={`http://localhost:5000${member.photoUrl}`} alt={member.name} />
+                <img src={`${API_BASE}${member.photoUrl}`} alt={member.name} />
               </div>
               <div className="member-info">
                 <h3>{member.name}</h3>
@@ -62,6 +68,7 @@ export default function OurMembers() {
     </Wrapper>
   );
 }
+
 
 const Wrapper = styled.section`
   padding: 5rem 8%;

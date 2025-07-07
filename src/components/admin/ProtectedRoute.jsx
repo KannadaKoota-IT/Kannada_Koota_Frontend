@@ -8,5 +8,16 @@ export default function ProtectedRoute({ children }) {
     return <Navigate to="/admin-login" replace />;
   }
 
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    if (payload.exp * 1000 < Date.now()) {
+      localStorage.removeItem("adminToken"); // Clean up expired token
+      return <Navigate to="/admin-login" replace />;
+    }
+  } catch (err) {
+    localStorage.removeItem("adminToken"); // Handle malformed tokens
+    return <Navigate to="/admin-login" replace />;
+  }
+
   return children;
 }

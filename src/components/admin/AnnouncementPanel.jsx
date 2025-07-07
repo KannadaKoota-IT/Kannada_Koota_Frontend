@@ -6,11 +6,17 @@ export default function AnnouncementPanel() {
   const [form, setForm] = useState({ title: "", message: "" });
   const [editingId, setEditingId] = useState(null);
 
+  const API_BASE = import.meta.env.VITE_BACKEND_URL;
+
   const fetchAnnouncements = async () => {
-    const res = await fetch("http://localhost:5000/api/announcements");
-    const data = await res.json();
-    if (data.success) {
-      setAnnouncements(data.announcements);
+    try {
+      const res = await fetch(`${API_BASE}/api/announcements`);
+      const data = await res.json();
+      if (data.success) {
+        setAnnouncements(data.announcements);
+      }
+    } catch (err) {
+      console.error("Failed to fetch announcements:", err);
     }
   };
 
@@ -26,21 +32,25 @@ export default function AnnouncementPanel() {
     e.preventDefault();
 
     const url = editingId
-      ? `http://localhost:5000/api/announcements/${editingId}`
-      : `http://localhost:5000/api/announcements`;
+      ? `${API_BASE}/api/announcements/${editingId}`
+      : `${API_BASE}/api/announcements`;
     const method = editingId ? "PUT" : "POST";
 
-    const res = await fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
+    try {
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
 
-    const data = await res.json();
-    if (data.success) {
-      fetchAnnouncements();
-      setForm({ title: "", message: "" });
-      setEditingId(null);
+      const data = await res.json();
+      if (data.success) {
+        fetchAnnouncements();
+        setForm({ title: "", message: "" });
+        setEditingId(null);
+      }
+    } catch (err) {
+      console.error("Failed to submit announcement:", err);
     }
   };
 
@@ -51,10 +61,14 @@ export default function AnnouncementPanel() {
 
   const handleDelete = async (id) => {
     if (window.confirm("Delete this announcement?")) {
-      await fetch(`http://localhost:5000/api/announcements/${id}`, {
-        method: "DELETE",
-      });
-      fetchAnnouncements();
+      try {
+        await fetch(`${API_BASE}/api/announcements/${id}`, {
+          method: "DELETE",
+        });
+        fetchAnnouncements();
+      } catch (err) {
+        console.error("Failed to delete announcement:", err);
+      }
     }
   };
 

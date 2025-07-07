@@ -7,11 +7,14 @@ export default function AdminGallery() {
   const [title, setTitle] = useState("");
   const [status, setStatus] = useState("");
 
+  // ✅ Use Vite env variable
+  const API_BASE = import.meta.env.VITE_BACKEND_URL;
+
   const fetchMedia = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/gallery");
+      const res = await fetch(`${API_BASE}/api/gallery`);
       const data = await res.json();
-      setMediaList(data); // backend returns an array, not { success: true, media: [...] }
+      setMediaList(data);
     } catch (err) {
       console.error(err);
       setStatus("❌ Server error while fetching media.");
@@ -34,7 +37,7 @@ export default function AdminGallery() {
     formData.append("media", file);
 
     try {
-      const res = await fetch("http://localhost:5000/api/gallery", {
+      const res = await fetch(`${API_BASE}/api/gallery`, {
         method: "POST",
         body: formData,
       });
@@ -58,7 +61,7 @@ export default function AdminGallery() {
     if (!window.confirm("Are you sure you want to delete this media?")) return;
 
     try {
-      const res = await fetch(`http://localhost:5000/api/gallery/${id}`, {
+      const res = await fetch(`${API_BASE}/api/gallery/${id}`, {
         method: "DELETE",
       });
 
@@ -106,7 +109,7 @@ export default function AdminGallery() {
               {item.mediaType === "video" ? (
                 <video
                   controls
-                  src={`http://localhost:5000${item.mediaUrl}`}
+                  src={`${API_BASE}${item.mediaUrl}`}
                   style={{
                     width: "100%",
                     maxHeight: "180px",
@@ -116,7 +119,7 @@ export default function AdminGallery() {
                 />
               ) : (
                 <img
-                  src={`http://localhost:5000${item.mediaUrl}`}
+                  src={`${API_BASE}${item.mediaUrl}`}
                   alt={item.title}
                   style={{ height: "180px", objectFit: "cover", borderRadius: "10px" }}
                 />

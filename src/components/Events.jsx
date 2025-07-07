@@ -12,6 +12,8 @@ const Events = () => {
   const [events, setEvents] = useState([]);
   const [announcements, setAnnouncements] = useState([]);
 
+  const API_BASE = import.meta.env.VITE_BACKEND_URL;
+
   // Fetch events and announcements on mount
   useEffect(() => {
     fetchEvents();
@@ -20,14 +22,14 @@ const Events = () => {
 
   const fetchEvents = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/events");
+      const res = await fetch(`${API_BASE}/api/events`);
       const data = await res.json();
       const formatted = data.map((event) => ({
         title: event.title,
         date: new Date(event.date).toLocaleDateString(),
         description: event.description,
         location: event.location || "TBA",
-        image: `http://localhost:5000${event.imageUrl}`,
+        image: `${API_BASE}${event.imageUrl}`,
       }));
       setEvents(formatted);
     } catch (err) {
@@ -37,7 +39,7 @@ const Events = () => {
 
   const fetchAnnouncements = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/announcements");
+      const res = await fetch(`${API_BASE}/api/announcements`);
       const data = await res.json();
       if (data.success) {
         const formatted = data.announcements.map((item, index) => ({

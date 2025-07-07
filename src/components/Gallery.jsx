@@ -10,10 +10,12 @@ export default function Gallery() {
   const galleryRef = useRef();
   const containerRef = useRef();
 
+  const API_BASE = import.meta.env.VITE_BACKEND_URL;
+
   useEffect(() => {
     const fetchMedia = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/gallery");
+        const res = await fetch(`${API_BASE}/api/gallery`);
         const data = await res.json();
         if (Array.isArray(data)) {
           setMediaItems(data);
@@ -26,7 +28,7 @@ export default function Gallery() {
     };
 
     fetchMedia();
-  }, []);
+  }, [API_BASE]);
 
   useEffect(() => {
     if (mediaItems.length === 0) return;
@@ -67,9 +69,9 @@ export default function Gallery() {
       }
     );
 
-    // Wait for images/videos to load before calculating scroll
     const images = galleryEl.querySelectorAll("img, video");
     let loadedCount = 0;
+
     const checkAllLoaded = () => {
       loadedCount++;
       if (loadedCount === images.length) {
@@ -121,7 +123,7 @@ export default function Gallery() {
           <div className="gallery-card" key={i}>
             {item.mediaType === "video" ? (
               <video
-                src={`http://localhost:5000${item.mediaUrl}`}
+                src={`${API_BASE}${item.mediaUrl}`}
                 controls
                 autoPlay
                 muted
@@ -131,17 +133,13 @@ export default function Gallery() {
               />
             ) : (
               <img
-                src={`http://localhost:5000${item.mediaUrl}`}
+                src={`${API_BASE}${item.mediaUrl}`}
                 alt={item.title || `Gallery ${i}`}
               />
             )}
           </div>
         ))}
       </div>
-
-      {/* <button className="move-forward-btn" disabled>
-        Scroll Down ⬇
-      </button> */}
     </section>
   );
 }

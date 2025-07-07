@@ -6,6 +6,8 @@ export default function ContactUs() {
   const [submitted, setSubmitted] = useState(null); // null | "success" | "error"
   const [loading, setLoading] = useState(false);
 
+  const API_BASE = import.meta.env.VITE_BACKEND_URL;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const name = e.target[0].value;
@@ -16,7 +18,7 @@ export default function ContactUs() {
     setSubmitted(null);
 
     try {
-      const res = await fetch("http://localhost:5000/api/contact", {
+      const res = await fetch(`${API_BASE}/api/contact`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, message }),
