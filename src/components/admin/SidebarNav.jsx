@@ -5,7 +5,7 @@ export default function SidebarNav({ active, onChange }) {
   const handleLogout = () => {
     if (window.confirm("Are you sure you want to logout?")) {
       localStorage.removeItem("adminToken");
-      window.location.href = "/admin-login"; // or use navigate() if using `react-router`
+      window.location.href = "/admin-login"; 
     }
   };
 
