@@ -10,7 +10,6 @@ import Missions from "./components/Missions";
 import Events from "./components/Events";
 import Teams from "./components/Teams";
 import OurMembers from "./components/OurMembers";
-import OurMemories from "./components/OurMemories";
 import Gallery from "./components/Gallery";
 import ContactUs from "./components/ContactUs";
 import ScrollToTop from "./components/ScrollToTop";
@@ -20,14 +19,21 @@ import Footer from "./components/Footer";
 import AdminLogin from "./components/admin/AdminLogin";
 import MainAdminDashboard from "./components/admin/MainAdminDashboard";
 import ProtectedRoute from "./components/admin/ProtectedRoute";
+import AnnouncementPanel from "./components/admin/AnnouncementPanel";
+import AdminEvents from "./components/admin/AdminEvents";
+import TeamsPanel from "./components/admin/TeamsPanel";
+import AdminGallery from "./components/admin/AdminGallery";
+import TeamDetails from "./components/admin/TeamDetails"
 
 const App = () => {
   return (
     <Router>
       <SplashCursor />
       <Routes>
-        {/* Admin login and dashboard */}
+        {/* Admin login */}
         <Route path="/admin-login" element={<AdminLogin />} />
+
+        {/* Protected admin dashboard with nested routes */}
         <Route
           path="/admin"
           element={
@@ -35,7 +41,15 @@ const App = () => {
               <MainAdminDashboard />
             </ProtectedRoute>
           }
-        />
+        >
+          <Route path="announcement" element={<AnnouncementPanel />} />
+          <Route path="events" element={<AdminEvents />} />
+          <Route path="teams" element={<TeamsPanel />} />
+          <Route path="teamDetails/:teamId" element={<TeamDetails />} />
+          <Route path="gallery" element={<AdminGallery />} />
+          {/* Default */}
+          <Route index element={<AnnouncementPanel />} />
+        </Route>
 
         {/* Public home page */}
         <Route
@@ -45,8 +59,8 @@ const App = () => {
               <main id="full">
                 <Navbar />
                 <HeroSection />
-                <Events />
                 <About />
+                <Events />
                 <Missions />
                 <Teams />
                 <OurMembers />

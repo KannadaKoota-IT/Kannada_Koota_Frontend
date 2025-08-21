@@ -11,6 +11,7 @@ export default function AdminEvents() {
   const [imageFile, setImageFile] = useState(null);
   const [editingId, setEditingId] = useState(null);
   const [status, setStatus] = useState("");
+  const [preview, setPreview] = useState(null);
 
   const token = localStorage.getItem("adminToken");
 
@@ -43,6 +44,7 @@ export default function AdminEvents() {
   const fetchEvents = async () => {
     const res = await fetch(API);
     const data = await res.json();
+    console.log("events: ", data)
     setEvents(data);
   };
 
@@ -51,8 +53,12 @@ export default function AdminEvents() {
   };
 
   const handleImageChange = (e) => {
-    setImageFile(e.target.files[0]);
-  };
+      const file = e.target.files[0];
+      if (file) {
+        setImageFile(file);
+        setPreview(URL.createObjectURL(file));
+      }
+ };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -82,6 +88,7 @@ export default function AdminEvents() {
       setForm({ title: "", description: "", date: "", location: "" });
       setImageFile(null);
       setEditingId(null);
+      setPreview(null);
       setStatus(editingId ? "✅ Event updated!" : "✅ Event added!");
       setTimeout(() => setStatus(""), 3000);
     } else {
@@ -144,6 +151,7 @@ export default function AdminEvents() {
         <input type="date" name="date" value={form.date} onChange={handleChange} required />
         <input type="text" name="location" placeholder="Location" value={form.location} onChange={handleChange} />
         <input type="file" name="image" onChange={handleImageChange} accept="image/*" />
+        {preview && <img src={preview} alt="preview" width="200" />}
         <button type="submit">{editingId ? "Update" : "Add"} Event</button>
       </form>
 
@@ -156,7 +164,7 @@ export default function AdminEvents() {
             {event.location && <p>📍 {event.location}</p>}
             {event.imageUrl && (
               <img
-                src={`${API_BASE}${event.imageUrl}`}
+                src={`${event.imageUrl}`}
                 alt={event.title}
                 style={{ maxWidth: "100%", marginTop: "10px" }}
               />

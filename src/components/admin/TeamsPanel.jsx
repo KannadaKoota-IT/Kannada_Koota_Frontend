@@ -1,62 +1,52 @@
 import React, { useEffect, useState } from "react";
-import "./styles/AdminDashboard.css";
+import { useNavigate } from "react-router-dom";
+import "./styles/TeamPanel.css"
 
 export default function TeamsPanel() {
-  const [members, setMembers] = useState([]);
-  const [formData, setFormData] = useState({ name: "", role: "" });
-  const [photo, setPhoto] = useState(null);
-  const [editingId, setEditingId] = useState(null);
+  const [teams, setTeams] = useState([]);
+  const [formData, setFormData] = useState({ team_name: "" });
+  const [teamPhoto, setTeamPhoto] = useState(null);
   const [status, setStatus] = useState("");
 
   const API_BASE = import.meta.env.VITE_BACKEND_URL;
   const token = localStorage.getItem("adminToken");
+  const navigate = useNavigate();
 
-  const fetchMembers = async () => {
+  const fetchTeams = async () => {
     try {
-      const res = await fetch(`${API_BASE}/api/team`);
+      const res = await fetch(`${API_BASE}/api/teams`);
       const data = await res.json();
-      setMembers(data);
+      setTeams(data.teams || []);
     } catch (err) {
       console.error(err);
-      setStatus("❌ Failed to load members");
+      setStatus("❌ Failed to load teams");
     }
   };
 
   useEffect(() => {
-    fetchMembers();
+    fetchTeams();
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const form = new FormData();
-    form.append("name", formData.name);
-    form.append("role", formData.role);
-    if (photo) form.append("photo", photo);
+    form.append("team_name", formData.team_name);
+    if (teamPhoto) form.append("photo", teamPhoto);
 
     try {
-      const url = editingId
-        ? `${API_BASE}/api/team/${editingId}`
-        : `${API_BASE}/api/team`;
-      const method = editingId ? "PUT" : "POST";
-
-      const res = await fetch(url, {
-        method,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      const res = await fetch(`${API_BASE}/api/teams`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
         body: form,
       });
-
       const data = await res.json();
-
-      if (data?.member) {
-        setStatus(editingId ? "✅ Member updated" : "✅ Member added");
-        setFormData({ name: "", role: "" });
-        setPhoto(null);
-        setEditingId(null);
-        fetchMembers();
+      if (data?.team) {
+        setStatus("✅ Team added");
+        setFormData({ team_name: "" });
+        setTeamPhoto(null);
+        fetchTeams();
       } else {
-        setStatus(data?.error || "❌ Failed to save member");
+        setStatus(data?.message || "❌ Failed to add team");
       }
     } catch (err) {
       console.error(err);
@@ -64,88 +54,45 @@ export default function TeamsPanel() {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this member?")) return;
-
-    try {
-      await fetch(`${API_BASE}/api/team/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setStatus("🗑️ Member deleted");
-      fetchMembers();
-    } catch (err) {
-      console.error(err);
-      setStatus("❌ Delete failed");
-    }
-  };
-
-  const handleEdit = (member) => {
-    setEditingId(member._id);
-    setFormData({
-      name: member.name,
-      role: member.role,
-    });
-    setPhoto(null); // require reupload
-    setStatus("✏️ Editing member...");
-  };
-
   return (
-    <div className="admin-dashboard">
-      <h2>Team Members Panel</h2>
-      {status && <p className="status-message">{status}</p>}
+    <div className="teams-container">
+      <h2 className="teams-title">Teams Panel</h2>
+      {status && <p className="status">{status}</p>}
 
-      <form
-        className="team-form"
-        onSubmit={handleSubmit}
-        encType="multipart/form-data"
-      >
+      {/* Add Team Form */}
+      <form className="team-form" onSubmit={handleSubmit} encType="multipart/form-data">
         <input
           type="text"
-          placeholder="Full Name"
-          value={formData.name}
-          onChange={(e) =>
-            setFormData({ ...formData, name: e.target.value })
-          }
-          required
-        />
-        <input
-          type="text"
-          placeholder="Role"
-          value={formData.role}
-          onChange={(e) =>
-            setFormData({ ...formData, role: e.target.value })
-          }
+          placeholder="Team Name"
+          className="input"
+          value={formData.team_name}
+          onChange={(e) => setFormData({ ...formData, team_name: e.target.value })}
           required
         />
         <input
           type="file"
           accept="image/*"
-          onChange={(e) => setPhoto(e.target.files[0])}
-          required={!editingId}
+          className="file-input"
+          onChange={(e) => setTeamPhoto(e.target.files[0])}
+          required
         />
-        <button type="submit">
-          {editingId ? "Update Member" : "Add Member"}
+        <button type="submit" className="btn">
+          Add Team
         </button>
       </form>
 
-      <div className="member-list">
-        {members.map((member) => (
-          <div className="member-card" key={member._id}>
-            {member.photoUrl && (
-              <img
-                src={`${API_BASE}${member.photoUrl}`}
-                alt={member.name}
-              />
+      {/* All Teams */}
+      <div className="teams-grid">
+        {teams.map((team) => (
+          <div
+            key={team._id}
+            className="team-card"
+            onClick={() => navigate(`/admin/teamDetails/${team._id}`)}
+          >
+            {team.team_photo && (
+              <img src={`${team.team_photo}`} alt={team.team_name} className="team-img" />
             )}
-            <h4>{member.name}</h4>
-            <p>{member.role}</p>
-            <div className="actions">
-              <button onClick={() => handleEdit(member)}>Edit</button>
-              <button onClick={() => handleDelete(member._id)}>Delete</button>
-            </div>
+            <h3 className="team-name">{team.team_name}</h3>
           </div>
         ))}
       </div>

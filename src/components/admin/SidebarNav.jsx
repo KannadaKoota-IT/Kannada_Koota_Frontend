@@ -1,7 +1,8 @@
 import React from "react";
-import "./styles/AdminDashboard.css";
+import { NavLink } from "react-router-dom";
+import "./styles/SidebarNav.css";
 
-export default function SidebarNav({ active, onChange }) {
+export default function SidebarNav() {
   const handleLogout = () => {
     if (window.confirm("Are you sure you want to logout?")) {
       localStorage.removeItem("adminToken");
@@ -10,40 +11,29 @@ export default function SidebarNav({ active, onChange }) {
   };
 
   return (
-    <nav className="admin-sidebar">
-      <h2 className="sidebar-title">Admin Panel</h2>
-      <ul className="sidebar-menu">
-        <li
-          className={active === "announcements" ? "active" : ""}
-          onClick={() => onChange("announcements")}
-        >
-          📢 Announcements
-        </li>
-        <li
-          className={active === "events" ? "active" : ""}
-          onClick={() => onChange("events")}
-        >
-          📅 Events
-        </li>
-        <li
-          className={active === "team" ? "active" : ""}
-          onClick={() => onChange("team")}
-        >
-          👥 Team
-        </li>
-        <li
-          className={active === "gallery" ? "active" : ""}
-          onClick={() => onChange("gallery")}
-        >
-          🖼️ Gallery
-        </li>
-      </ul>
+    <div className="sidebar">
+      <h2 className="sidebar-title">Admin</h2>
+      <nav>
+        <NavLink to="/admin/announcement" className="nav-link">
+          Announcements
+        </NavLink>
+        <NavLink to="/admin/events" className="nav-link">
+          Events
+        </NavLink>
+        <NavLink to="/admin/teams" className="nav-link">
+          Domains
+        </NavLink>
+        <NavLink to="/admin/gallery" className="nav-link">
+          Gallery
+        </NavLink>
+      </nav>
 
       <div className="sidebar-footer">
         <button onClick={handleLogout} className="logout-button">
           🚪 Logout
         </button>
       </div>
-    </nav>
+
+    </div>
   );
 }

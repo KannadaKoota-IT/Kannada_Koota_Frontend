@@ -17,6 +17,7 @@ export default function Gallery() {
       try {
         const res = await fetch(`${API_BASE}/api/gallery`);
         const data = await res.json();
+        console.log("gallery data: ", data);
         if (Array.isArray(data)) {
           setMediaItems(data);
         } else {
