@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
-import "./styles/AdminDashboard.css";
 
 export default function AdminGallery() {
   const [mediaList, setMediaList] = useState([]);
   const [file, setFile] = useState(null);
-  const [title, setTitle] = useState("");
+  const [desc, setDesc] = useState("");
   const [status, setStatus] = useState("");
+  const [preview, setPreview] = useState(null);
+  const [loading, setLoading] = useState(false); // for upload button
 
-  // ✅ Use Vite env variable
   const API_BASE = import.meta.env.VITE_BACKEND_URL;
 
   const fetchMedia = async () => {
@@ -27,16 +27,17 @@ export default function AdminGallery() {
 
   const handleUpload = async (e) => {
     e.preventDefault();
-    if (!file || !title) {
-      setStatus("⚠️ Please provide both title and media file.");
+    if (!file || !desc) {
+      setStatus("⚠️ Please provide both description and media file.");
       return;
     }
 
     const formData = new FormData();
-    formData.append("title", title);
+    formData.append("desc", desc);
     formData.append("media", file);
 
     try {
+      setLoading(true);
       const res = await fetch(`${API_BASE}/api/gallery`, {
         method: "POST",
         body: formData,
@@ -45,7 +46,7 @@ export default function AdminGallery() {
       const data = await res.json();
       if (data.success) {
         setStatus("✅ Media uploaded successfully!");
-        setTitle("");
+        setDesc("");
         setFile(null);
         fetchMedia();
       } else {
@@ -54,6 +55,8 @@ export default function AdminGallery() {
     } catch (err) {
       console.error(err);
       setStatus("❌ Server error during upload.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -78,60 +81,167 @@ export default function AdminGallery() {
     }
   };
 
-  return (
-    <div className="admin-panel">
-      <h2>🖼️ Gallery Management</h2>
-      {status && <p className="status-message">{status}</p>}
+  const handleCancelForm = () => {
+    setDesc("");
+    setFile(null);
+    setStatus("⚪ Form cleared.");
+  };
 
-      <form onSubmit={handleUpload} encType="multipart/form-data" className="event-form">
+  return (
+    <div className="p-6 min-h-screen bg-gray-900 text-white">
+      <h2 className="text-2xl font-bold mb-6 text-center">
+        🖼️ Gallery Management
+      </h2>
+
+      {status && (
+        <p className="mb-4 text-center text-sm font-medium text-yellow-300">
+          {status}
+        </p>
+      )}
+
+      {/* Upload Form */}
+      <form
+        onSubmit={handleUpload}
+        encType="multipart/form-data"
+        className="bg-white rounded-xl shadow-md p-6 mb-8 flex flex-col gap-4"
+      >
         <input
           type="text"
-          placeholder="Media title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Media Description"
+          value={desc}
+          onChange={(e) => setDesc(e.target.value)}
           required
+          className="border border-gray-600 rounded-lg px-3 py-2 text-gray-900"
         />
         <input
           type="file"
           accept="image/*,video/*"
           onChange={(e) => setFile(e.target.files[0])}
           required
+          className="border border-gray-600 rounded-lg px-3 py-2 text-gray-900"
         />
-        <button type="submit">Upload</button>
+        <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={handleCancelForm}
+            className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-semibold"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            disabled={loading}
+            className={`px-4 py-2 rounded-lg font-semibold text-white ${loading
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-lime-500 hover:bg-lime-600"
+              }`}
+          >
+            {loading ? "Uploading..." : "Upload"}
+          </button>
+        </div>
       </form>
 
-      <div className="event-list">
+      {/* Media List */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {mediaList.length === 0 ? (
-          <p style={{ textAlign: "center", color: "#777" }}>No media uploaded yet.</p>
+          <p className="col-span-full text-center text-gray-400">
+            No media uploaded yet.
+          </p>
         ) : (
           mediaList.map((item) => (
-            <div className="event-card" key={item._id}>
+            <div
+              key={item._id}
+              className="bg-gray-800 rounded-lg shadow-md p-4 flex flex-col cursor-pointer relative group"
+              onClick={() => setPreview(item)} // open modal
+            >
               {item.mediaType === "video" ? (
-                <video
-                  controls
-                  src={`${API_BASE}${item.mediaUrl}`}
-                  style={{
-                    width: "100%",
-                    maxHeight: "180px",
-                    objectFit: "cover",
-                    borderRadius: "10px",
-                  }}
-                />
+                <div className="relative">
+                  <video
+                    src={`${item.mediaUrl}`}
+                    className="w-full h-48 object-cover rounded-lg mb-3"
+                    muted
+                  />
+                  {/* Play Icon Overlay */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="bg-black bg-opacity-50 rounded-full p-3">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="white"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="white"
+                        className="w-10 h-10"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M5.25 5.25v13.5l13.5-6.75-13.5-6.75z"
+                        />
+                      </svg>
+                    </span>
+                  </div>
+                </div>
               ) : (
                 <img
-                  src={`${API_BASE}${item.mediaUrl}`}
-                  alt={item.title}
-                  style={{ height: "180px", objectFit: "cover", borderRadius: "10px" }}
+                  src={`${item.mediaUrl}`}
+                  alt={item.desc}
+                  className="w-full h-48 object-cover rounded-lg mb-3"
                 />
               )}
-              <h3>{item.title}</h3>
-              <div className="actions">
-                <button onClick={() => handleDelete(item._id)}>Delete</button>
+              <h3 className="text-sm font-semibold text-lime-400 text-center">
+                {item.desc}
+              </h3>
+              <div className="flex justify-center mt-3">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete(item._id);
+                  }}
+                  className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm"
+                >
+                  Delete
+                </button>
               </div>
             </div>
           ))
         )}
       </div>
+
+
+      {/* Modal */}
+      {preview && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4"
+          onClick={() => setPreview(null)}
+        >
+          <div
+            className="relative max-w-4xl w-full flex flex-col items-center"
+            onClick={(e) => e.stopPropagation()} // keep modal content interactive
+          >
+            {preview.mediaType === "video" ? (
+              <video
+                controls
+                autoPlay
+                src={`${preview.mediaUrl}`}
+                className="max-h-[80vh] w-auto rounded-lg"
+              />
+            ) : (
+              <img
+                src={`${preview.mediaUrl}`}
+                alt={preview.desc}
+                className="max-h-[80vh] w-auto rounded-lg"
+              />
+            )}
+            <button
+              onClick={() => setPreview(null)}
+              className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-lg"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

@@ -15,7 +15,6 @@ export default function AdminEvents() {
 
   const token = localStorage.getItem("adminToken");
 
-  // ✅ Use VITE_ env variable
   const API_BASE = import.meta.env.VITE_BACKEND_URL;
   const API = `${API_BASE}/api/events`;
 
@@ -44,7 +43,6 @@ export default function AdminEvents() {
   const fetchEvents = async () => {
     const res = await fetch(API);
     const data = await res.json();
-    console.log("events: ", data)
     setEvents(data);
   };
 
@@ -53,12 +51,12 @@ export default function AdminEvents() {
   };
 
   const handleImageChange = (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        setImageFile(file);
-        setPreview(URL.createObjectURL(file));
-      }
- };
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      setPreview(URL.createObjectURL(file));
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -126,52 +124,121 @@ export default function AdminEvents() {
   };
 
   return (
-    <div className="admin-events">
-      <h2>Manage Events</h2>
+    <div className="p-6 bg-black min-h-screen">
+      <h2 className="text-2xl font-bold text-white text-center mb-6">Manage Events</h2>
+
       {status && (
-        <div
-          style={{
-            background: "#f0f9ff",
-            padding: "10px 20px",
-            marginBottom: "1rem",
-            border: "1px solid #5dade2",
-            color: "#21618c",
-            borderRadius: "8px",
-            textAlign: "center",
-            fontWeight: 600,
-          }}
-        >
+        <div className="bg-blue-100 text-blue-800 border border-blue-400 rounded-lg px-4 py-2 mb-4 text-center font-semibold">
           {status}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="event-form" encType="multipart/form-data">
-        <input type="text" name="title" placeholder="Title" value={form.title} onChange={handleChange} required />
-        <input type="text" name="description" placeholder="Description" value={form.description} onChange={handleChange} required />
-        <input type="date" name="date" value={form.date} onChange={handleChange} required />
-        <input type="text" name="location" placeholder="Location" value={form.location} onChange={handleChange} />
-        <input type="file" name="image" onChange={handleImageChange} accept="image/*" />
-        {preview && <img src={preview} alt="preview" width="200" />}
-        <button type="submit">{editingId ? "Update" : "Add"} Event</button>
+      {/* Event Form */}
+      <form
+        onSubmit={handleSubmit}
+        encType="multipart/form-data"
+        className="bg-white rounded-lg shadow-md p-6 mb-8 flex flex-col gap-4"
+      >
+        <input
+          type="text"
+          name="title"
+          placeholder="Title"
+          value={form.title}
+          onChange={handleChange}
+          required
+          className="border text-gray-800 rounded-md px-3 py-2 w-full"
+        />
+        <input
+          type="text"
+          name="description"
+          placeholder="Description"
+          value={form.description}
+          onChange={handleChange}
+          required
+          className="border text-gray-800 rounded-md px-3 py-2 w-full"
+        />
+        <input
+          type="date"
+          name="date"
+          value={form.date}
+          onChange={handleChange}
+          required
+          className="border text-gray-800 rounded-md px-3 py-2 w-full"
+        />
+        <input
+          type="text"
+          name="location"
+          placeholder="Location"
+          value={form.location}
+          onChange={handleChange}
+          className="border text-gray-800 rounded-md px-3 py-2 w-full"
+        />
+        <input
+          type="file"
+          name="image"
+          onChange={handleImageChange}
+          accept="image/*"
+          className="border text-gray-800 rounded-md px-3 py-2 w-full"
+        />
+        {preview && (
+          <img src={preview} alt="preview" className="w-48 h-32 object-cover rounded-md mx-auto" />
+        )}
+        <div className="flex gap-3">
+          <button
+            type="submit"
+            className="bg-green-400 hover:bg-green-500 text-white font-semibold px-4 py-2 rounded-md"
+          >
+            {editingId ? "Update" : "Add"} Event
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setForm({ title: "", description: "", date: "", location: "" });
+              setImageFile(null);
+              setPreview(null);
+              setEditingId(null);
+            }}
+            className="bg-gray-400 hover:bg-gray-900 text-white font-semibold px-4 py-2 rounded-md"
+          >
+            Clear
+          </button>
+        </div>
       </form>
 
-      <div className="event-list">
+      {/* Event List */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {events.map((event) => (
-          <div className="event-card" key={event._id}>
-            <h3>{event.title}</h3>
-            <p>{event.description}</p>
-            <small>{new Date(event.date).toLocaleDateString()}</small>
-            {event.location && <p>📍 {event.location}</p>}
+          <div
+            key={event._id}
+            className="bg-white rounded-lg shadow-md p-4 flex flex-col items-center text-center"
+          >
+            <h3 className="text-lg font-bold text-gray-800">{event.title}</h3>
+            <p className="text-gray-600 text-sm">{event.description}</p>
+            <small className="text-gray-500">
+              {new Date(event.date).toLocaleDateString()}
+            </small>
+            {event.location && <p className="text-gray-700 mt-1">📍 {event.location}</p>}
             {event.imageUrl && (
               <img
                 src={`${event.imageUrl}`}
                 alt={event.title}
-                style={{ maxWidth: "100%", marginTop: "10px" }}
+                className="w-full h-40 object-cover rounded-md mt-3"
               />
             )}
-            <div className="actions">
-              <button onClick={() => handleEdit(event)}>Edit</button>
-              <button onClick={() => handleDelete(event._id)}>Delete</button>
+            <div className="flex gap-2 mt-3">
+              <button
+                onClick={() => handleEdit(event)}
+                className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-sm"
+              >
+                Edit
+              </button>
+              <button
+                onClick={() => handleDelete(event._id)}
+                className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md text-sm"
+              >
+                Delete
+              </button>
             </div>
           </div>
         ))}

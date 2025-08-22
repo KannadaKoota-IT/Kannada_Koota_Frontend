@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./styles/TeamPanel.css"
 
 export default function TeamsPanel() {
   const [teams, setTeams] = useState([]);
@@ -55,44 +54,62 @@ export default function TeamsPanel() {
   };
 
   return (
-    <div className="teams-container">
-      <h2 className="teams-title">Teams Panel</h2>
-      {status && <p className="status">{status}</p>}
+    <div className="p-6 bg-black min-h-screen text-white">
+      {status && (
+        <p className="mb-4 text-center text-sm font-semibold text-green-500">
+          {status}
+        </p>
+      )}
 
       {/* Add Team Form */}
-      <form className="team-form" onSubmit={handleSubmit} encType="multipart/form-data">
+      <form
+        className="bg-gray-100 p-6 rounded-xl shadow-md flex flex-col gap-4 mb-8"
+        onSubmit={handleSubmit}
+        encType="multipart/form-data"
+      >
         <input
           type="text"
           placeholder="Team Name"
-          className="input"
+          className="p-3 border border-gray-300 rounded-lg text-black"
           value={formData.team_name}
-          onChange={(e) => setFormData({ ...formData, team_name: e.target.value })}
+          onChange={(e) =>
+            setFormData({ ...formData, team_name: e.target.value })
+          }
           required
         />
         <input
           type="file"
           accept="image/*"
-          className="file-input"
+          className="text-gray-500"
           onChange={(e) => setTeamPhoto(e.target.files[0])}
           required
         />
-        <button type="submit" className="btn">
+        <button
+          type="submit"
+          className="bg-gray-800 text-white py-3 rounded-lg font-semibold hover:bg-gray-900 transition"
+        >
           Add Team
         </button>
       </form>
 
       {/* All Teams */}
-      <div className="teams-grid">
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-6">
         {teams.map((team) => (
           <div
             key={team._id}
-            className="team-card"
+            className="bg-yellow-600 rounded-xl p-4 cursor-pointer transform transition hover:scale-105 w-[250px]"
             onClick={() => navigate(`/admin/teamDetails/${team._id}`)}
           >
             {team.team_photo && (
-              <img src={`${team.team_photo}`} alt={team.team_name} className="team-img" />
+              <img
+                src={team.team_photo}
+                alt={team.team_name}
+                className="w-full h-44 object-cover rounded-lg mb-3"
+              />
             )}
-            <h3 className="team-name">{team.team_name}</h3>
+            <h3 className="text-lg font-bold italic text-center text-black">
+              {team.team_name}
+            </h3>
           </div>
         ))}
       </div>

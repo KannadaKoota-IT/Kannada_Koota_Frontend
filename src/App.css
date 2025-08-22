@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Libertinus+Math&display=swap');
+@import "tailwindcss";
 
 html, body {
   margin: 0;

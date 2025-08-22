@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import SidebarNav from "./SidebarNav";
-import "./styles/AdminDashboard.css";
 
 export default function MainAdminDashboard() {
   const navigate = useNavigate();
@@ -25,9 +24,14 @@ export default function MainAdminDashboard() {
   }, [navigate]);
 
   return (
-    <div className="admin-layout">
-      <SidebarNav />
-      <div className="admin-main-content">
+    <div className="flex min-h-screen font-['Segoe_UI',sans-serif]">
+      {/* Sidebar */}
+      <div className="fixed top-0 left-0 h-screen w-56 bg-[#2c3e50] text-white p-8 shadow-md">
+        <SidebarNav />
+      </div>
+
+      {/* Main content */}
+      <div className="ml-56 flex-grow p-8 bg-black min-h-screen overflow-y-auto">
         <Outlet />
       </div>
     </div>

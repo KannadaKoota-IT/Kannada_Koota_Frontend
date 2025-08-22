@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import "./styles/AdminDashboard.css";
 
 export default function AnnouncementPanel() {
   const [announcements, setAnnouncements] = useState([]);
@@ -73,10 +72,14 @@ export default function AnnouncementPanel() {
   };
 
   return (
-    <div className="admin-panel">
-      <h2>📢 Announcements</h2>
+    <div className="p-6 min-h-screen bg-gray-900 text-white">
+      <h2 className="text-2xl font-bold mb-6 text-center">📢 Announcements</h2>
 
-      <form onSubmit={handleSubmit}>
+      {/* Form */}
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white p-6 rounded-xl shadow-md flex flex-col gap-4 mb-8"
+      >
         <input
           type="text"
           name="title"
@@ -84,6 +87,7 @@ export default function AnnouncementPanel() {
           value={form.title}
           onChange={handleChange}
           required
+          className="border border-gray-300 rounded-lg px-3 py-2 text-gray-900"
         />
         <textarea
           name="message"
@@ -91,20 +95,42 @@ export default function AnnouncementPanel() {
           value={form.message}
           onChange={handleChange}
           required
+          className="border border-gray-300 rounded-lg px-3 py-2 text-gray-900"
         />
-        <button type="submit">
+        <button
+          type="submit"
+          className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2 rounded-lg transition-colors duration-200"
+        >
           {editingId ? "Update" : "Add"} Announcement
         </button>
       </form>
 
-      <ul className="admin-list">
+      {/* Announcements List */}
+      <ul className="flex flex-wrap gap-4">
         {announcements.map((a) => (
-          <li key={a._id} className="announcement-card">
-            <h3 className="announcement-title">{a.title}</h3>
-            <p className="announcement-message">{a.message}</p>
-            <div className="actions">
-              <button onClick={() => handleEdit(a)}>Edit</button>
-              <button onClick={() => handleDelete(a._id)}>Delete</button>
+          <li
+            key={a._id}
+            className="bg-white text-gray-900 w-96 h-52 p-4 rounded-lg shadow-md flex flex-col justify-between"
+          >
+            <div>
+              <h3 className="text-lg font-bold text-indigo-700 mb-2">
+                {a.title}
+              </h3>
+              <p className="text-sm text-gray-700">{a.message}</p>
+            </div>
+            <div className="flex gap-2 mt-3">
+              <button
+                onClick={() => handleEdit(a)}
+                className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md text-sm"
+              >
+                Edit
+              </button>
+              <button
+                onClick={() => handleDelete(a._id)}
+                className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md text-sm"
+              >
+                Delete
+              </button>
             </div>
           </li>
         ))}

@@ -143,7 +143,7 @@ const Events = () => {
         </div>
 
         {/* === ANNOUNCEMENTS SCROLL === */}
-        <div className="announcement-panel">
+        <div className="announcement-panel" id="announcements">
           <h2>
             <span className="emoji">📢</span>
             <span className="section-heading"> Announcements</span>

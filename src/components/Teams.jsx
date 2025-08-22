@@ -1,118 +1,53 @@
-import React, { useEffect, useRef } from "react";
-import "./styles/Teams.css";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-import bedagu from "../components/assets/teams/bedagu.jpg";
-import alankara from "../components/assets/teams/alankara.jpg";
-import balav from "../components/assets/teams/balav.webp";
-import inchara from "../components/assets/teams/inchara.jpg";
+export default function TeamsPanel() {
+  const [teams, setTeams] = useState([]);
+  const [status, setStatus] = useState("");
 
-gsap.registerPlugin(ScrollTrigger);
+  const API_BASE = import.meta.env.VITE_BACKEND_URL;
+  const navigate = useNavigate();
 
-const teams = [
-  {
-    team: "Bedagu",
-    info: "Bedagu is our vibrant cultural dance team that celebrates the traditional folk dances of Karnataka, bringing our rich heritage to life through movement.",
-    image: bedagu,
-  },
-  {
-    team: "Alankara",
-    info: "Alankara is the fashion and styling squad of the Kannada Club, reflecting regional elegance and contemporary flair through costume and design.",
-    image: alankara,
-  },
-  {
-    team: "Balav",
-    info: "Balav is our energetic western dance team that blends contemporary styles with cultural rhythm, adding a dynamic twist to our events.",
-    image: balav,
-  },
-  {
-    team: "Inchara",
-    info: "Inchara is the musical team that brings Kannada melodies to life with soul-touching performances and traditional tunes.",
-    image: inchara,
-  },
-];
-
-export default function Teams() {
-  const cardsRef = useRef([]);
-  const titleRef = useRef();
+  const fetchTeams = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/api/teams`);
+      const data = await res.json();
+      setTeams(data.teams || []);
+    } catch (err) {
+      console.error(err);
+      setStatus("❌ Failed to load teams");
+    }
+  };
 
   useEffect(() => {
-    // Animate h2 title
-    gsap.from(titleRef.current, {
-      scrollTrigger: {
-        trigger: titleRef.current,
-        start: "top 85%",
-      },
-      opacity: 0,
-      y: 40,
-      duration: 1,
-      ease: "power3.out",
-    });
-
-    // Animate team cards
-    cardsRef.current.forEach((card, i) => {
-      gsap.from(card, {
-        opacity: 0,
-        y: 40,
-        duration: 0.8,
-        delay: i * 0.1,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: card,
-          start: "top 90%",
-        },
-      });
-
-      const inner = card.querySelector(".flip-card-inner");
-
-      card.addEventListener("mouseenter", () => {
-        gsap.to(inner, {
-          rotateY: 180,
-          duration: 0.3,
-          ease: "power2.inOut",
-        });
-      });
-
-      card.addEventListener("mouseleave", () => {
-        gsap.to(inner, {
-          rotateY: 0,
-          duration: 0.3,
-          ease: "power2.inOut",
-        });
-      });
-    });
+    fetchTeams();
   }, []);
 
   return (
-    <section className="teams-section" id="teams">
-      <h2 className="section-title" ref={titleRef}>
-        Our Cultural Teams
-      </h2>
-      <div className="teams-grid">
-        {teams.map((team, i) => (
+    <div className="p-6 mt-20 bg-gray-900 min-h-screen text-white">
+      {status && <p className="mb-3 text-sm text-gray-400">{status}</p>}
+
+      {/* All Teams */}
+      <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        {teams.map((team) => (
           <div
-            className="flip-card"
-            key={i}
-            ref={(el) => (cardsRef.current[i] = el)}
+            key={team._id}
+            onClick={() => navigate(`/team-details/${team._id}`)}
+            className="bg-yellow-600 rounded-xl p-3 cursor-pointer transform transition-transform duration-200 hover:scale-105 w-64 mx-auto"
           >
-            <div className="flip-card-inner">
-              <div
-                className="flip-card-front full-image"
-                style={{ backgroundImage: `url(${team.image})` }}
-              >
-                <div className="team-title-overlay">
-                  <h3>{team.team}</h3>
-                </div>
-              </div>
-              <div className="flip-card-back">
-                <h3>{team.team}</h3>
-                <p>{team.info}</p>
-              </div>
-            </div>
+            {team.team_photo && (
+              <img
+                src={team.team_photo}
+                alt={team.team_name}
+                className="w-full h-44 object-cover rounded-lg mb-3"
+              />
+            )}
+            <h3 className="text-lg text-black font-bold italic text-center">
+              {team.team_name}
+            </h3>
           </div>
         ))}
       </div>
-    </section>
+    </div>
   );
 }

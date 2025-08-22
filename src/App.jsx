@@ -2,18 +2,12 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./App.css";
 
-import HeroSection from "./components/HeroSection";
-import SplashCursor from "../Reactbits/SplashCursor/SplashCursor";
 import Navbar from "./components/Navbar";
-import About from "./components/About";
-import Missions from "./components/Missions";
-import Events from "./components/Events";
 import Teams from "./components/Teams";
-import OurMembers from "./components/OurMembers";
+import DomainDetail from "./components/DomainDetail";
 import Gallery from "./components/Gallery";
-import ContactUs from "./components/ContactUs";
-import ScrollToTop from "./components/ScrollToTop";
-import Footer from "./components/Footer";
+import HomePage from "./components/HomePage";
+import Events from "./components/Events";
 
 // Admin components
 import AdminLogin from "./components/admin/AdminLogin";
@@ -23,17 +17,16 @@ import AnnouncementPanel from "./components/admin/AnnouncementPanel";
 import AdminEvents from "./components/admin/AdminEvents";
 import TeamsPanel from "./components/admin/TeamsPanel";
 import AdminGallery from "./components/admin/AdminGallery";
-import TeamDetails from "./components/admin/TeamDetails"
+import TeamDetails from "./components/admin/TeamDetails";
 
 const App = () => {
   return (
     <Router>
-      <SplashCursor />
+      {/* <SplashCursor /> */}
       <Routes>
         {/* Admin login */}
         <Route path="/admin-login" element={<AdminLogin />} />
 
-        {/* Protected admin dashboard with nested routes */}
         <Route
           path="/admin"
           element={
@@ -52,26 +45,14 @@ const App = () => {
         </Route>
 
         {/* Public home page */}
-        <Route
-          path="/"
-          element={
-            <div>
-              <main id="full">
-                <Navbar />
-                <HeroSection />
-                <About />
-                <Events />
-                <Missions />
-                <Teams />
-                <OurMembers />
-                <Gallery />
-                <ContactUs />
-                <Footer />
-              </main>
-              <ScrollToTop />
-            </div>
-          }
-        />
+        <Route path="/" element={<Navbar />}>
+          <Route index element={<HomePage />} />
+          <Route path="teams" element={<Teams />} />
+          <Route path="team-details/:teamId" element={<DomainDetail />} />
+          <Route path="gallery" element={<Gallery />} />
+          <Route path="event" element={<Events />} />
+        </Route>
+
       </Routes>
     </Router>
   );

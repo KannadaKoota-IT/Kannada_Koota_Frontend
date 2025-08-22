@@ -1,146 +1,143 @@
-import React, { useEffect, useRef, useState } from "react";
-import "./styles/Gallery.css";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import React, { useState, useEffect } from "react";
 
-gsap.registerPlugin(ScrollTrigger);
-
-export default function Gallery() {
-  const [mediaItems, setMediaItems] = useState([]);
-  const galleryRef = useRef();
-  const containerRef = useRef();
+export default function AdminGallery() {
+  const [mediaList, setMediaList] = useState([]);
+  const [preview, setPreview] = useState(null);
 
   const API_BASE = import.meta.env.VITE_BACKEND_URL;
 
-  useEffect(() => {
-    const fetchMedia = async () => {
-      try {
-        const res = await fetch(`${API_BASE}/api/gallery`);
-        const data = await res.json();
-        console.log("gallery data: ", data);
-        if (Array.isArray(data)) {
-          setMediaItems(data);
-        } else {
-          console.error("❌ Invalid media response", data);
-        }
-      } catch (err) {
-        console.error("❌ Failed to fetch gallery items:", err);
-      }
-    };
+  const fetchMedia = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/api/gallery`);
+      const data = await res.json();
+      setMediaList(data);
+    } catch (err) {
+      console.error(err);
+      setStatus("❌ Server error while fetching media.");
+    }
+  };
 
+  useEffect(() => {
     fetchMedia();
-  }, [API_BASE]);
+  }, []);
 
-  useEffect(() => {
-    if (mediaItems.length === 0) return;
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this media?")) return;
 
-    const galleryEl = galleryRef.current;
-    const containerEl = containerRef.current;
-    const heading = containerEl.querySelector(".gallery-text h2");
-    const paragraph = containerEl.querySelector(".gallery-text p");
+    try {
+      const res = await fetch(`${API_BASE}/api/gallery/${id}`, {
+        method: "DELETE",
+      });
 
-    gsap.fromTo(
-      heading,
-      { opacity: 0, y: 40 },
-      {
-        opacity: 1,
-        y: 0,
-        duration: 1,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: heading,
-          start: "top 85%",
-        },
-      }
-    );
-
-    gsap.fromTo(
-      paragraph,
-      { opacity: 0, y: 40 },
-      {
-        opacity: 1,
-        y: 0,
-        duration: 1,
-        delay: 0.2,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: paragraph,
-          start: "top 90%",
-        },
-      }
-    );
-
-    const images = galleryEl.querySelectorAll("img, video");
-    let loadedCount = 0;
-
-    const checkAllLoaded = () => {
-      loadedCount++;
-      if (loadedCount === images.length) {
-        const totalScroll =
-          galleryEl.scrollWidth - containerRef.current.offsetWidth;
-
-        gsap.to(galleryEl, {
-          x: -totalScroll,
-          ease: "none",
-          scrollTrigger: {
-            trigger: containerRef.current,
-            start: "top top",
-            end: `+=${totalScroll}`,
-            scrub: 1,
-            pin: true,
-            anticipatePin: 1,
-          },
-        });
-      }
-    };
-
-    images.forEach((media) => {
-      if (media.complete || media.readyState >= 3) {
-        checkAllLoaded();
+      const data = await res.json();
+      if (data.success) {
+        setStatus("🗑️ Media deleted.");
+        fetchMedia();
       } else {
-        media.addEventListener("load", checkAllLoaded);
-        media.addEventListener("loadeddata", checkAllLoaded);
+        setStatus("❌ Failed to delete.");
       }
-    });
-
-    return () => ScrollTrigger.kill();
-  }, [mediaItems]);
+    } catch (err) {
+      console.error(err);
+      setStatus("❌ Server error during delete.");
+    }
+  };
 
   return (
-    <section className="gallery-wrapper" id="gallery" ref={containerRef}>
-      <div className="gallery-text">
-        <h2>Gallery</h2>
-        <p>
-          A glimpse into the vibrant moments captured by Kannada Koota.
-          <br />
-          Here's a beautiful collection of moments we've lived, laughed, and
-          celebrated together. From on-stage brilliance to candid backstage fun,
-          these memories define the spirit of our club.
-        </p>
+    <div className="p-6 mt-20 min-h-screen bg-gray-900 text-white">
+      <h2 className="text-2xl font-bold mb-6 text-center">
+        🖼️ Gallery
+      </h2>
+
+      {/* Media List */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {mediaList.length === 0 ? (
+          <p className="col-span-full text-center text-gray-400">
+            No media uploaded yet.
+          </p>
+        ) : (
+          mediaList.map((item) => (
+            <div
+              key={item._id}
+              className="bg-gray-800 rounded-lg shadow-md p-4 flex flex-col cursor-pointer relative group"
+              onClick={() => setPreview(item)} // open modal
+            >
+              {item.mediaType === "video" ? (
+                <div className="relative">
+                  <video
+                    src={`${item.mediaUrl}`}
+                    className="w-full h-48 object-cover rounded-lg mb-3"
+                    muted
+                  />
+                  {/* Play Icon Overlay */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="bg-black bg-opacity-50 rounded-full p-3">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="white"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="white"
+                        className="w-10 h-10"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M5.25 5.25v13.5l13.5-6.75-13.5-6.75z"
+                        />
+                      </svg>
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <img
+                  src={`${item.mediaUrl}`}
+                  alt={item.desc}
+                  className="w-full h-48 object-cover rounded-lg mb-3"
+                />
+              )}
+              <h3 className="text-sm font-semibold text-lime-400 text-center">
+                {item.desc}
+              </h3>
+            </div>
+          ))
+        )}
       </div>
 
-      <div className="gallery-horizontal" ref={galleryRef}>
-        {mediaItems.map((item, i) => (
-          <div className="gallery-card" key={i}>
-            {item.mediaType === "video" ? (
+
+      {/* Modal */}
+      {preview && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4"
+          onClick={() => setPreview(null)}
+        >
+          <div
+            className="relative max-w-4xl w-full flex flex-col items-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {preview.mediaType === "video" ? (
               <video
-                src={`${API_BASE}${item.mediaUrl}`}
                 controls
                 autoPlay
-                muted
-                loop
-                playsInline
-                className="gallery-video"
+                src={`${preview.mediaUrl}`}
+                className="max-h-[80vh] w-auto rounded-lg"
               />
             ) : (
               <img
-                src={`${API_BASE}${item.mediaUrl}`}
-                alt={item.title || `Gallery ${i}`}
+                src={`${preview.mediaUrl}`}
+                alt={preview.desc}
+                className="max-h-[80vh] w-auto rounded-lg"
               />
             )}
+            <button
+              onClick={() => setPreview(null)}
+              className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-lg"
+            >
+              Close
+            </button>
           </div>
-        ))}
-      </div>
-    </section>
+        </div>
+      )}
+
+    </div>
   );
 }
