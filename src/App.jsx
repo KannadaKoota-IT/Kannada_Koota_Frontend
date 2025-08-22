@@ -8,6 +8,7 @@ import DomainDetail from "./components/DomainDetail";
 import Gallery from "./components/Gallery";
 import HomePage from "./components/HomePage";
 import Events from "./components/Events";
+import Announcements from "./components/Announcements";
 
 // Admin components
 import AdminLogin from "./components/admin/AdminLogin";
@@ -50,7 +51,8 @@ const App = () => {
           <Route path="teams" element={<Teams />} />
           <Route path="team-details/:teamId" element={<DomainDetail />} />
           <Route path="gallery" element={<Gallery />} />
-          <Route path="event" element={<Events />} />
+          <Route path="events" element={<Events />} />
+          <Route path="announcements" element={<Announcements />} />
         </Route>
 
       </Routes>

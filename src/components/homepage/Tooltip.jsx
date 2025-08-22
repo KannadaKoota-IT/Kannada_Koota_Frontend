@@ -33,7 +33,7 @@ const Tooltip = () => {
           <a
             data-social="email"
             aria-label="Email"
-            href="https://mail.google.com/mail/?view=cm&fs=1&to=kannadakoota.pesu@gmail.com"
+            href="https://mail.google.com/mail/?view=cm&fs=1&to=kannadakoota.it@gmail.com"
             target="_blank"
             rel="noopener noreferrer"
           >
