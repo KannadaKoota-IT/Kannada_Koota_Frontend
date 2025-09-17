@@ -6,6 +6,7 @@
   flex-direction: column;
   gap: 4rem;
   font-family: "Poppins", sans-serif;
+  box-shadow: inset 0 0 50px rgba(255, 215, 0, 0.1);
 }
 
 .mission-vision-section {
@@ -15,8 +16,8 @@
   transition: transform 0.3s ease;
 
   /* Glowing border and shadow */
-  box-shadow: 0 0 24px rgba(29, 18, 183, 0.4), 0 0 12px rgba(255, 215, 0, 0.2);
-  border: 1px solid rgba(0, 149, 255, 0.4);
+  box-shadow: 0 0 24px rgba(255, 215, 0, 0.4), 0 0 12px rgba(255, 215, 0, 0.2);
+  border: 1px solid rgba(255, 215, 0, 0.4);
 }
 
 .mission-vision-section:hover {
@@ -37,7 +38,7 @@
 }
 
 .gradient-text {
-  background: linear-gradient(90deg, #ffcc00, #ff0080);
+  background: linear-gradient(90deg, #ffd700, #ffcc00);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;

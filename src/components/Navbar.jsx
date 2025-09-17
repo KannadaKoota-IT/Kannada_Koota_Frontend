@@ -23,7 +23,7 @@ export default function Navbar() {
   const menuItems = [
     { label: "Home", type: "scroll", id: "home" },
     { label: "About", type: "scroll", id: "about" },
-    { label: "Contact", type: "scroll", id: "contact" },
+    { label: "Contact", type: "scroll", id: "footer" },
     { label: "Announcements", type: "route", to: "/announcements" },
     { label: "Events", type: "route", to: "/events" },
     { label: "Teams", type: "route", to: "/teams" },

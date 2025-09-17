@@ -3,7 +3,7 @@ import React from "react";
 import HeroSection from "./homepage/HeroSection";
 import About from "./homepage/About";
 import Missions from "./homepage/Missions";
-import ContactUs from "./homepage/ContactUs";
+// import ContactUs from "./homepage/ContactUs";
 import Footer from "./homepage/Footer";
 
 const HomePage = () => {
@@ -12,7 +12,7 @@ const HomePage = () => {
       <HeroSection />
       <About />
       <Missions />
-      <ContactUs />
+      {/* <ContactUs /> */}
       <Footer />
     </>
   );

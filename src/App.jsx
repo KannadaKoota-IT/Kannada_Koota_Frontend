@@ -8,7 +8,9 @@ import DomainDetail from "./components/DomainDetail";
 import Gallery from "./components/Gallery";
 import HomePage from "./components/HomePage";
 import Events from "./components/Events";
+// import ScrollToTop from "./components/ScrollToTop";
 import Announcements from "./components/Announcements";
+// import OurMembers from "./components/OurMembers";
 
 // Admin components
 import AdminLogin from "./components/admin/AdminLogin";
@@ -24,6 +26,7 @@ const App = () => {
   return (
     <Router>
       {/* <SplashCursor /> */}
+      {/* <ScrollToTop /> */}
       <Routes>
         {/* Admin login */}
         <Route path="/admin-login" element={<AdminLogin />} />

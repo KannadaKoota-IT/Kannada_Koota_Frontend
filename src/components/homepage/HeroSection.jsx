@@ -36,7 +36,7 @@ const HeroSection = () => {
       <div className="hero-wrapper">
         <div className="hero-content">
           <h1 className="hero-title" ref={titleRef}>
-            Welcome to Kannada Koota – PES University’s Cultural Club
+            Welcome to Kannada Koota – PES University’s Techno-Cultural Club
           </h1>
           <p className="hero-subtitle" ref={subtitleRef}>
             Promoting harmony through language, literature, and heritage. We
