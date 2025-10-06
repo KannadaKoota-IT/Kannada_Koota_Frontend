@@ -1,9 +1,9 @@
 // src/components/Footer.jsx
 import React, { useEffect, useRef } from "react";
-import "./Footer.css";
+import { Link } from "react-router-dom";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { FaInstagram, FaYoutube, FaFacebookF } from "react-icons/fa";
+import { FaInstagram, FaYoutube, FaWhatsapp } from "react-icons/fa";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -29,61 +29,108 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer id="footer" className="footer" ref={footerRef}>
-      <div className="footer-content">
-        <h2 className="footer-logo1">Kannada Koota</h2>
-        <p className="footer-tagline">
-          Celebrating Culture, Unity, and Tradition.
-        </p>
+    <footer ref={footerRef} id="footer" className="bg-gray-900 text-gray-200 relative pt-6">
+      {/* Golden top line */}
+      <div className="absolute top-0 left-0 w-full h-1 bg-yellow-500"></div>
 
-        <p className="footer-logo2">
-          Designed and Developed By the I.T. Team
-        </p>
-        <p className="footer-tagline2">Contact Us :</p>
-        <div className="social-media-icons">
-          <a
-            href="https://mail.google.com/mail/?view=cm&fs=1&to=kannadakoota.pesu@gmail.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="social-icon"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              fill="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path d="M1.5 4a2 2 0 0 1 2-2h17a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2h-17a2 2 0 0 1-2-2V4zm2 0v.217l8.5 5.65 8.5-5.65V4h-17zm17 2.783-8.223 5.466a1 1 0 0 1-1.055 0L3.5 6.783V20h17V6.783z" />
-            </svg>
-          </a>
-          <a
-            href="https://www.instagram.com/kannadakoota_pesu"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="social-icon"
-          >
-            <svg
-              xmlSpace="preserve"
-              viewBox="0 0 16 16"
-              className="bi bi-instagram"
-              fill="currentColor"
-              height={16}
-              width={16}
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                fill="currentColor"
-                d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.9 3.9 0 0 0-1.417.923A3.9 3.9 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.9 3.9 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.9 3.9 0 0 0-.923-1.417A3.9 3.9 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599s.453.546.598.92c.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.5 2.5 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.5 2.5 0 0 1-.92-.598 2.5 2.5 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233s.008-2.388.046-3.231c.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92s.546-.453.92-.598c.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92m-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217m0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334"
-              />
-            </svg>
-          </a>
+      <div className="max-w-7xl mx-auto px-6 md:px-12 flex flex-col md:flex-row justify-between gap-8 mt-6">
+        {/* Brand */}
+        <div className="flex-1">
+          <h2 className="text-2xl font-bold mb-2">ಕನ್ನಡ ಕೂಟ</h2>
+          <p className="text-gray-400"
+            style={{ fontFamily: "'Noto Sans Kannada', sans-serif" }}>
+            ಸಂಸ್ಕೃತಿ, ಏಕತೆ ಮತ್ತು ಪಾರಂಪರೆ
+          </p>
         </div>
 
-        <p className="footer-copy">
-          &copy; {new Date().getFullYear()} Kannada Koota. All rights reserved.
-        </p>
+        {/* Navigation */}
+        <div className="flex-1">
+          <h3 className="text-lg font-semibold mb-3">Quick Links</h3>
+          <ul className="space-y-2">
+            <li>
+              <Link
+                to="/events"
+                className="hover:text-yellow-400 transition-colors duration-300"
+              >
+                Events
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/announcements"
+                className="hover:text-yellow-400 transition-colors duration-300"
+              >
+                Announcements
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/gallery"
+                className="hover:text-yellow-400 transition-colors duration-300"
+              >
+                Gallery
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/teams"
+                className="hover:text-yellow-400 transition-colors duration-300"
+              >
+                Teams
+              </Link>
+            </li>
+          </ul>
+        </div>
+
+        {/* Contact & Social */}
+        <div className="flex-1">
+          <h3 className="text-lg font-semibold mb-3">Contact Us</h3>
+          <p className="mb-3">
+            Email:{" "}
+            <a
+              href="https://mail.google.com/mail/?view=cm&fs=1&to=kannadakoota.pesu@gmail.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-yellow-400 transition-colors duration-300"
+            >
+              kannadakoota.pesu@gmail.com
+            </a>
+          </p>
+          <div className="flex gap-4 text-xl">
+            <a
+              href="https://www.instagram.com/kannadakoota_pesu"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-yellow-400 transition-colors duration-300"
+            >
+              <FaInstagram />
+            </a>
+            <a
+              href="https://www.youtube.com/@kannadakoota"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-yellow-400 transition-colors duration-300"
+            >
+              <FaYoutube />
+            </a>
+            <a
+              href="https://www.whatsapp.com/channel/0029VbAoZaX0AgWIUmjc163v"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-yellow-400 transition-colors duration-300"
+            >
+              <FaWhatsapp />
+            </a>
+          </div>
+        </div>
       </div>
+
+      {/* Footer Bottom */}
+      <div className="mt-12 border-t border-gray-800 pt-6 pb-2 text-center text-gray-500 text-sm">
+        <p>&copy; {new Date().getFullYear()} Kannada Koota. All rights reserved.</p>
+        <p>Designed and Developed by the I.T. Team</p>
+      </div>
+
     </footer>
   );
 }

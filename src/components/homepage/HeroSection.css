@@ -95,6 +95,7 @@
   font-family: "Libertinus Math", serif;
   line-height: 1.6;
   opacity: 0.9;
+  padding-top: 15px;
 }
 
 .hero-tagline {
@@ -107,6 +108,7 @@
   /* text-shadow: 0 0 10px rgba(255, 215, 0, 0.8); */
   border-left: 4px solid #ffd700;
   padding-left: 15px;
+  padding-top: 15px;
 }
 
 /* ======================== */
@@ -140,6 +142,8 @@
   transform: scale(1.05);
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(255, 215, 0, 0.5);
 }
+
+
 
 /* ============================ */
 /* === RESPONSIVE STYLING ==== */

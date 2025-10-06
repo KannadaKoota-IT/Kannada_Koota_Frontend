@@ -1,16 +1,19 @@
-@import url('https://fonts.googleapis.com/css2?family=Libertinus+Math&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
 @import "tailwindcss";
 
 html, body {
   margin: 0;
+  border:0;
   padding: 0;
+  height:100%;
   background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 30%, #0a0a0a 70%, #000000 100%);
   color: white;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Outfit', sans-serif;
   line-height: 1.7;
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  scrollbar-gutter: stable;
   scroll-behavior: smooth;
 }
 
@@ -31,6 +34,37 @@ html, body {
   z-index: -1;
   animation: backgroundShift 20s ease-in-out infinite alternate;
 }
+
+/* Reserve gutter and keep layout stable */
+html, body { 
+  scrollbar-gutter: stable;
+}
+
+/* Always keep a fixed scrollbar width (no flicker) */
+::-webkit-scrollbar {
+  width: 8px;
+  background: transparent;
+}
+
+/* “Almost hidden” by default */
+::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.15); /* faint, but present */
+  border-radius: 6px;
+  transition: background-color .2s ease;
+}
+
+/* Darken only when the thumb itself is hovered */
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+/* Optional: keep track transparent */
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+
+
 
 @keyframes backgroundShift {
   0% { opacity: 0.8; }
