@@ -6,29 +6,40 @@ import bedagu from "./assets/bedagu.jpg";
 import alankara from "./assets/alankara.jpg";
 import balav from "./assets/balav.webp";
 import inchara from "./assets/inchara.jpg";
+import rangataranga from "./assets/rangataranga.jpg";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const teams = [
   {
-    team: "Bedagu",
-    info: "Bedagu is our vibrant cultural dance team that celebrates the traditional folk dances of Karnataka, bringing our rich heritage to life through movement.",
+    team: "ಬೆಡಗು",
+    art:"ಸಾಂಸ್ಕೃತಿಕ ನೃತ್ಯ ತಂಡ",
+    info: "ಕನ್ನಡ ನಾಡಿನ ಸಂಸ್ಕೃತಿಯ ಬಿತ್ತರಿಸುವ ನೃತ್ಯ ಸಿರಿ, ಧೀಮಂತ ಪರಂಪರೆಗಳ ಒಡಲೊಳು  ಹರಿಯುವ ನಾಟ್ಯ ಝರಿ,  ಜಾನಪದ ನೃತ್ಯಗಳ ಬೆಡಗನ್ನು ಬಿಂಬಿಸುವ ನಾಟ್ಯಗರಿ!",
     image: bedagu,
   },
   {
-    team: "Alankara",
-    info: "Alankara is the fashion and styling squad of the Kannada Club, reflecting regional elegance and contemporary flair through costume and design.",
+    team: "ಅಲಂಕಾರ",
+    art:"ಫ್ಯಾಷನ್ ತಂಡ",
+    info: "ಬಿಂಕು–ಬಿನ್ನಾಣದೊಂದಿಗೆ ನಮ್ಮ ನಾಡಿನ ಸೊಬಗನ್ನು ಮೆರೆಸುವ  ಕಲಾವೃಂದ, ವಿವಿಧ ಶೈಲಿಯ ಉಡುಪು ಧಾರಣೆಯೊಂದಿಗೆ ವೇದಿಕೆಯನ್ನು ಶೃಂಗರಿಸುವ ಕಲಾರವಿಂದ!",
     image: alankara,
   },
   {
-    team: "Balav",
-    info: "Balav is our energetic western dance team that blends contemporary styles with cultural rhythm, adding a dynamic twist to our events.",
+    team: "ಬಲವ್",
+    art:"ಪಾಶ್ಚಾತ್ಯ ನೃತ್ಯ ತಂಡ",
+    info: "ಹುರುಪಿನ ಹೆಜ್ಜೆಗಳೊಂದಿಗೆ ಸಾಂಸ್ಕೃತಿಕ ಲಯವ ಬೆಸೆವ  ಚೈತನ್ಯ ಲಹರಿ , ಉತ್ಸಾಹ ಭರಿತ ಭರ್ಜರಿ ಪ್ರದರ್ಶನಗಳೊಂದಿಗೆ  ತನು ಮನವ ಕುಣಿಸುವ ನಾಟ್ಯಮಂಜರಿ !",
     image: balav,
   },
   {
-    team: "Inchara",
-    info: "Inchara is the musical team that brings Kannada melodies to life with soul-touching performances and traditional tunes.",
+    team: "ಇಂಚರ",
+    art:"ಗಾಯನ ತಂಡ",
+    info: "ಗಾಯನದ ಇಂಪಲ್ಲಿ , ಕನ್ನಡದ ಕಂಪನ್ನು ಚೆಲ್ಲುವ ಸವಿಗಾನದಂಗಳ, ಭಾವ ಸ್ವರಗಳನುಲಿದು, ಸಾಹಿತ್ಯಮಾಧುರ್ಯವ ಮೆರೆಸುವ ಸಂಗೀತದಳ!",
     image: inchara,
+  },
+  {
+    team: "ರಂಗತರಂಗ",
+    art:"ನಾಟಕ ವೃಂದ",
+    info: "ನವರಸವನು ಅರಗಿಸಿಹ ಅಭಿನಯ ಚತುರರ ರಂಗಸಜ್ಜಿಕೆ, ನಟನೆಯಿಂದ ಕಲಾರಸಿಕರ ಮನವ ನಾಟುವ ಕಥಾಶರ ಬತ್ತಳಿಕೆ!",
+    image: rangataranga,
   },
 ];
 
@@ -134,8 +145,8 @@ export default function CulturalTeams() {
               </div>
               {/* Back */}
               <div className="absolute w-full h-full rounded-2xl backface-hidden bg-gradient-to-br from-black via-purple-950 to-purple-800 p-6 flex flex-col justify-center items-center rotate-y-180">
-                <h3 className="text-xl font-semibold text-yellow-400 mb-3">{team.team}</h3>
-                <p className="text-sm text-gray-300 leading-relaxed text-center">{team.info}</p>
+                <h3 className="text-xl font-semibold text-yellow-400 mb-3">{team.art}</h3>
+                <p className="text-sm text-gray-300 leading-relaxed text-center" style={{ fontFamily: "'Noto Sans Kannada', sans-serif" }}>{team.info}</p>
               </div>
             </div>
           </div>

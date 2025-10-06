@@ -14,7 +14,7 @@ const HomePage = () => {
       <DashboardEvents />
       <About />
       <Missions />
-      {/* <CulturalTeams /> */}
+      <CulturalTeams />
       <Gallery/>
       <Footer />
     </>
