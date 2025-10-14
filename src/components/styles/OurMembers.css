@@ -1,6 +1,6 @@
 /* OurMembers.css - Enhanced black theme styles for OurMembers component */
 
-section {
+#members {
   padding: 6rem 8%;
   background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
   color: white;
@@ -10,7 +10,7 @@ section {
   overflow: hidden;
 }
 
-section::before {
+#members::before {
   content: '';
   position: absolute;
   top: 0;
@@ -179,7 +179,7 @@ section::before {
 }
 
 @media (max-width: 600px) {
-  section {
+  #members {
     padding: 4rem 5%;
   }
 

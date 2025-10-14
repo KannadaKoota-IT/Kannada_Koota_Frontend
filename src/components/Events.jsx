@@ -1,18 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Calendar, Clock } from "lucide-react";
 
-export default function Events() {
-  const [events, setEvents] = useState([]);
+export default function Events({ events: initialEvents }) {
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [events, setEvents] = useState(initialEvents || []);
 
-  const API_BASE = import.meta.env.VITE_BACKEND_URL;
+  const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL;
   const API = `${API_BASE}/api/events`;
-
-  useEffect(() => {
-    fetchEvents();
-  }, []);
 
   const fetchEvents = async () => {
     setLoading(true);

@@ -9,7 +9,7 @@ export default function TeamsPanel() {
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState(null);
 
-  const API_BASE = import.meta.env.VITE_BACKEND_URL;
+  const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL;
   const token = localStorage.getItem("adminToken");
   const navigate = useNavigate();
 

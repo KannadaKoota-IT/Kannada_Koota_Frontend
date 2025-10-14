@@ -1,6 +1,6 @@
 // src/components/Footer.jsx
 import React, { useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { FaInstagram, FaYoutube, FaWhatsapp } from "react-icons/fa";
@@ -49,7 +49,7 @@ export default function Footer() {
           <ul className="space-y-2">
             <li>
               <Link
-                to="/events"
+                href="/events"
                 className="hover:text-yellow-400 transition-colors duration-300"
               >
                 Events
@@ -57,7 +57,7 @@ export default function Footer() {
             </li>
             <li>
               <Link
-                to="/announcements"
+                href="/announcements"
                 className="hover:text-yellow-400 transition-colors duration-300"
               >
                 Announcements
@@ -65,7 +65,7 @@ export default function Footer() {
             </li>
             <li>
               <Link
-                to="/gallery"
+                href="/gallery"
                 className="hover:text-yellow-400 transition-colors duration-300"
               >
                 Gallery
@@ -73,7 +73,7 @@ export default function Footer() {
             </li>
             <li>
               <Link
-                to="/teams"
+                href="/teams"
                 className="hover:text-yellow-400 transition-colors duration-300"
               >
                 Teams

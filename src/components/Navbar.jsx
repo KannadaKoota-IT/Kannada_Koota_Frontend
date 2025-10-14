@@ -1,19 +1,23 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation, Outlet, useNavigate } from "react-router-dom";
+import Link from "next/link";
+import { useRouter } from "next/router";
 import { gsap } from "gsap";
+import { Outlet } from "react-router-dom";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false); // mobile full menu
   const [dropdownOpen, setDropdownOpen] = useState(false); // hamburger dropdown
   const [activeSection, setActiveSection] = useState("home");
-  const location = useLocation();
-  const navigate = useNavigate();
+  const router = useRouter();
+  const location = { pathname: router.pathname };
+  const navigate = router.push;
 
   // Animate navbar on mount
   useEffect(() => {
-    gsap.from(".navbar-container", {
-      y: -80,
-      opacity: 0,
+    gsap.set(".navbar-container", { y: -80, opacity: 0 });
+    gsap.to(".navbar-container", {
+      y: 0,
+      opacity: 1,
       duration: 1,
       ease: "power3.out",
     });
@@ -157,7 +161,7 @@ export default function Navbar() {
                 {dropdownItems.map((item, i) => (
                   <Link
                     key={i}
-                    to={item.to}
+                    href={item.to}
                     onClick={() => setDropdownOpen(false)}
                     className={`block px-4 py-3 text-sm font-medium transition-all duration-200 ${location.pathname === item.to
                       ? "text-blue-400 bg-blue-500/10"

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Link } from "react-router-dom";
+
 
 export default function Teams() {
   const [teams, setTeams] = useState([]);
@@ -7,7 +7,7 @@ export default function Teams() {
   const [loading, setLoading] = useState(false);
   const [hoveredTeam, setHoveredTeam] = useState(null);
 
-  const API_BASE = import.meta.env.VITE_BACKEND_URL;
+  const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   useEffect(() => {
     let mounted = true;

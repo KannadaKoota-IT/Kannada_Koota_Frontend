@@ -8,7 +8,7 @@ export default function ShowGallery() {
   const [mediaItems, setMediaItems] = useState([]);
   const galleryRef = useRef();
   const containerRef = useRef();
-  const API_BASE = import.meta.env.VITE_BACKEND_URL;
+  const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   // Fetch media from backend
   useEffect(() => {

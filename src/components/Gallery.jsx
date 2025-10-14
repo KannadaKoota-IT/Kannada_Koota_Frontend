@@ -7,7 +7,7 @@ export default function Gallery() {
   const [filter, setFilter] = useState("all");
   const [showAll, setShowAll] = useState(false); // NEW STATE
 
-  const API_BASE = import.meta.env.VITE_BACKEND_URL;
+  const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   const fetchMedia = async () => {
     try {

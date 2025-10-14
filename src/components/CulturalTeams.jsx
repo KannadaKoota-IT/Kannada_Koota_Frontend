@@ -6,7 +6,7 @@ import bedagu from "./assets/bedagu.jpg";
 import alankara from "./assets/alankara.jpg";
 import balav from "./assets/balav.webp";
 import inchara from "./assets/inchara.jpg";
-import rangataranga from "./assets/rangataranga.jpg";
+// import rangataranga from "./assets/rangataranga.jpg";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -39,7 +39,7 @@ const teams = [
     team: "ರಂಗತರಂಗ",
     art:"ನಾಟಕ ವೃಂದ",
     info: "ನವರಸವನು ಅರಗಿಸಿಹ ಅಭಿನಯ ಚತುರರ ರಂಗಸಜ್ಜಿಕೆ, ನಟನೆಯಿಂದ ಕಲಾರಸಿಕರ ಮನವ ನಾಟುವ ಕಥಾಶರ ಬತ್ತಳಿಕೆ!",
-    image: rangataranga,
+    image: inchara,
   },
 ];
 
@@ -48,24 +48,28 @@ export default function CulturalTeams() {
   const titleRef = useRef();
 
   useEffect(() => {
+    // Set initial state
+    gsap.set(titleRef.current, { opacity: 0, y: 40 });
+    cardsRef.current.forEach((card) => {
+      gsap.set(card, { opacity: 0, y: 40 });
+    });
+
     // Animate title
-    gsap.from(titleRef.current, {
-      scrollTrigger: { trigger: titleRef.current, start: "top 85%" },
-      opacity: 0,
-      y: 40,
+    gsap.to(titleRef.current, {
+      opacity: 1,
+      y: 0,
       duration: 1,
       ease: "power3.out",
     });
 
     // Animate cards
     cardsRef.current.forEach((card, i) => {
-      gsap.from(card, {
-        opacity: 0,
-        y: 40,
+      gsap.to(card, {
+        opacity: 1,
+        y: 0,
         duration: 0.8,
         delay: i * 0.1,
         ease: "power3.out",
-        scrollTrigger: { trigger: card, start: "top 90%" },
       });
 
       const inner = card.querySelector(".flip-card-inner");
@@ -78,29 +82,10 @@ export default function CulturalTeams() {
         gsap.to(inner, { rotateY: 0, duration: 0.3, ease: "power2.inOut" });
       });
     });
-
-    // Purple glow spots animation
-    const glows = document.querySelectorAll(".purple-glow-spot");
-    glows.forEach((glow) => {
-      const xOffset = (Math.random() - 0.5) * 30;
-      const yOffset = (Math.random() - 0.5) * 30;
-
-      gsap.to(glow, {
-        x: xOffset + "%",
-        y: yOffset + "%",
-        backgroundColor: `rgba(168, 85, 247, ${0.15 + Math.random() * 0.15})`,
-        scale: 1 + Math.random() * 0.3,
-        repeat: -1,
-        yoyo: true,
-        duration: 5 + Math.random() * 5,
-        ease: "sine.inOut",
-      });
-    });
   }, []);
 
   return (
     <section id="teams" className="relative bg-black text-white py-20 px-6 md:px-12 overflow-hidden">
-      {/* Background Purple Glows */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         {Array.from({ length: 6 }).map((_, i) => (
           <div
@@ -120,7 +105,7 @@ export default function CulturalTeams() {
       {/* Title */}
       <h2
         ref={titleRef}
-        className="relative z-10 text-4xl md:text-5xl font-bold text-center mb-16 bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(255,215,0,0.6)]"
+        className="relative z-10 text-4xl md:text-5xl font-bold text-center mb-16 text-yellow-400 drop-shadow-[0_0_15px_rgba(255,215,0,0.6)]"
       >
         Our Cultural Teams
       </h2>
@@ -137,7 +122,7 @@ export default function CulturalTeams() {
               {/* Front */}
               <div
                 className="absolute w-full h-full rounded-2xl backface-hidden bg-cover bg-center flex items-end justify-center overflow-hidden"
-                style={{ backgroundImage: `url(${team.image})` }}
+                style={{ backgroundImage: `url(${team.image.src})` }}
               >
                 <div className="w-full bg-gradient-to-t from-black/80 to-transparent p-4 text-center">
                   <h3 className="text-lg font-semibold text-yellow-400">{team.team}</h3>

@@ -1,16 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 
-export default function Announcements() {
-  const [announcements, setAnnouncements] = useState([]);
-  const [loading, setLoading] = useState(true);
+export default function Announcements({ announcements: initialAnnouncements }) {
+  const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [announcements, setAnnouncements] = useState(initialAnnouncements || []);
 
-  const API_BASE = import.meta.env.VITE_BACKEND_URL;
-
-  useEffect(() => {
-    fetchAnnouncements();
-  }, []);
+  const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   const fetchAnnouncements = async () => {
     setLoading(true);

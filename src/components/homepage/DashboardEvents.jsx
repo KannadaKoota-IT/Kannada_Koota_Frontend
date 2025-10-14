@@ -1,77 +1,17 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import Carousel from "../../../Reactbits/Carousel/Carousel";
 import InfiniteScroll from "../../../Reactbits/InfiniteScroll/InfiniteScroll";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/router";
 
 gsap.registerPlugin(ScrollTrigger);
 
-export default function DashboardEvents() {
+export default function DashboardEvents({ events: initialEvents, announcements: initialAnnouncements }) {
   const sectionRef = useRef(null);
-  const [events, setEvents] = useState([]);
-  const [announcements, setAnnouncements] = useState([]);
-  const navigate = useNavigate();
-
-  const API_BASE = import.meta.env.VITE_BACKEND_URL;
-
-  useEffect(() => {
-    fetchEvents();
-    fetchAnnouncements();
-  }, []);
+  const router = useRouter();
 
 
-  const formatTime = (time) => {
-    if (!time) return "";
-    const [hours, minutes] = time.split(":");
-    let h = parseInt(hours, 10);
-    const ampm = h >= 12 ? "PM" : "AM";
-    h = h % 12 || 12;
-    return `${h}:${minutes} ${ampm}`;
-  };
-
-  const fetchEvents = async () => {
-    try {
-      const res = await fetch(`${API_BASE}/api/events`);
-      const data = await res.json();
-      const formatted = data.map((event) => ({
-        title: event.title,
-        description: event.description,
-        date: new Date(event.date).toLocaleDateString(),
-        time: formatTime(event.eventTime),
-        location: event.location || "TBA",
-        image: event.imageUrl ? `${API_BASE}${event.imageUrl}` : null,
-      }));
-      setEvents(formatted);
-    } catch (err) {
-      console.error("❌ Failed to fetch events:", err);
-    }
-  };
-
-  const fetchAnnouncements = async () => {
-    try {
-      const res = await fetch(`${API_BASE}/api/announcements`);
-      const data = await res.json();
-      if (data.success) {
-        const formatted = data.announcements.map((item, index) => ({
-          content: (
-            <div
-              className="bg-white/5 p-4 rounded-lg mb-3 shadow-md hover:-translate-y-0.5 hover:shadow-lg transition-transform duration-300"
-              key={index}
-            >
-              <h4 className="text-yellow-400 text-lg mb-1">{item.title}</h4>
-              <p className="text-gray-300 text-sm leading-relaxed">
-                {item.message}
-              </p>
-            </div>
-          ),
-        }));
-        setAnnouncements(formatted);
-      }
-    } catch (err) {
-      console.error("❌ Failed to fetch announcements:", err);
-    }
-  };
 
   // GSAP animations
   useEffect(() => {
@@ -188,8 +128,8 @@ export default function DashboardEvents() {
           </h2>
 
           <Carousel
-            items={events}
-            baseWidth={window.innerWidth < 640 ? 320 : 600}
+            items={initialEvents}
+            baseWidth={typeof window !== 'undefined' && window.innerWidth < 640 ? 320 : 600}
             // baseHeight={window.innerWidth < 640 ? 520 : 60}
             autoplay={true}
             autoplayDelay={3000}
@@ -200,7 +140,7 @@ export default function DashboardEvents() {
           {/* More Info Link */}
           <div className="mt-4 text-center">
             <span
-              onClick={() => navigate("/events")}
+              onClick={() => router.push("/events")}
               className="text-blue-400 hover:text-blue-300 cursor-pointer font-semibold"
             >
               More Info →
@@ -230,15 +170,15 @@ export default function DashboardEvents() {
           </div> */}
 
           <div className="relative flex-1 overflow-y-auto max-h-[500px] pr-2 scrollbar-thin scrollbar-thumb-blue-500/30 scrollbar-track-transparent">
-            {announcements.length > 0 ? (
-              announcements.map((item, index) => (
+            {initialAnnouncements.length > 0 ? (
+              initialAnnouncements.map((item, index) => (
                 <div
                   key={index}
                   className="bg-white/5 p-4 rounded-lg mb-3 shadow-md hover:-translate-y-0.5 hover:shadow-lg transition-transform duration-300"
                 >
-                  <h4 className="text-yellow-400 text-lg mb-1">{item.content?.props?.children[0]?.props?.children || item.title}</h4>
+                  <h4 className="text-yellow-400 text-lg mb-1">{item.title}</h4>
                   <p className="text-gray-300 text-sm leading-relaxed">
-                    {item.content?.props?.children[1]?.props?.children || item.message}
+                    {item.message}
                   </p>
                 </div>
               ))
@@ -250,7 +190,7 @@ export default function DashboardEvents() {
           {/* More Info Link */}
           <div className="mt-4 text-center">
             <span
-              onClick={() => navigate("/announcements")}
+              onClick={() => router.push("/announcements")}
               className="text-blue-400 hover:text-blue-300 cursor-pointer font-semibold"
             >
               More Info →

@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Outlet } from "react-router-dom";
 import "./App.css";
 
 import Navbar from "./components/Navbar";
@@ -8,9 +8,7 @@ import DomainDetail from "./components/DomainDetail";
 import Gallery from "./components/Gallery";
 import HomePage from "./components/HomePage";
 import Events from "./components/Events";
-// import ScrollToTop from "./components/ScrollToTop";
 import Announcements from "./components/Announcements";
-// import OurMembers from "./components/OurMembers";
 
 // Admin components
 import AdminLogin from "./components/admin/AdminLogin";

@@ -5,13 +5,12 @@ import Missions from "./homepage/Missions";
 import Footer from "./homepage/Footer";
 import DashboardEvents from "./homepage/DashboardEvents";
 import CulturalTeams from "./CulturalTeams";
-import Gallery from './Gallery'
 
-const HomePage = () => {
+const HomePage = ({ events, announcements }) => {
   return (
     <>
       <HeroSection />
-      <DashboardEvents />
+      <DashboardEvents events={events} announcements={announcements} />
       <About />
       <Missions />
       <CulturalTeams />

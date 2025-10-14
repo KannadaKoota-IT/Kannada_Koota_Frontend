@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { motion, useMotionValue } from "framer-motion";
-import "./Carousel.css";
+
 
 const DEFAULT_ITEMS = [
   {
