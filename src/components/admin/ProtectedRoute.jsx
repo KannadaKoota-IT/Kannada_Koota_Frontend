@@ -1,23 +1,30 @@
-import React from "react";
-import { Navigate } from "react-router-dom";
+import React, { useEffect } from "react";
+import { useRouter } from "next/router";
 
 export default function ProtectedRoute({ children }) {
-  const token = localStorage.getItem("adminToken");
+  const router = useRouter();
 
-  if (!token) {
-    return <Navigate to="/admin-login" replace />;
-  }
+  useEffect(() => {
+    const token = localStorage.getItem("adminToken");
 
-  try {
-    const payload = JSON.parse(atob(token.split(".")[1]));
-    if (payload.exp * 1000 < Date.now()) {
-      localStorage.removeItem("adminToken"); // Clean up expired token
-      return <Navigate to="/admin-login" replace />;
+    if (!token) {
+      router.replace("/admin-login");
+      return;
     }
-  } catch (err) {
-    localStorage.removeItem("adminToken"); // Handle malformed tokens
-    return <Navigate to="/admin-login" replace />;
-  }
+
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      if (payload.exp * 1000 < Date.now()) {
+        localStorage.removeItem("adminToken"); // Clean up expired token
+        router.replace("/admin-login");
+        return;
+      }
+    } catch (err) {
+      localStorage.removeItem("adminToken"); // Handle malformed tokens
+      router.replace("/admin-login");
+      return;
+    }
+  }, [router]);
 
   return children;
 }

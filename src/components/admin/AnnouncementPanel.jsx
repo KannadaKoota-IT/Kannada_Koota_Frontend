@@ -11,7 +11,7 @@ export default function AnnouncementPanel() {
   const [expandedId, setExpandedId] = useState(null);
   const [showForm, setShowForm] = useState(false);
 
-  const API_BASE = import.meta.env.VITE_BACKEND_URL;
+  const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   const fetchAnnouncements = async () => {
     try {
@@ -99,7 +99,7 @@ export default function AnnouncementPanel() {
       message: announcement.message,
       message_k: announcement.message_k,
       link: announcement.link || "",
-      date: announcement.date ? announcement.date.split("T")[0] : "",
+      date: announcement.date.split('T')[0],
     });
     setEditingId(announcement._id);
     setShowForm(true);

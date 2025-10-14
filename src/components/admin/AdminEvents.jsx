@@ -21,7 +21,7 @@ export default function AdminEvents() {
 
 
   const token = localStorage.getItem("adminToken");
-  const API_BASE = import.meta.env.VITE_BACKEND_URL;
+  const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL;
   const API = `${API_BASE}/api/events`;
 
   useEffect(() => {
@@ -375,13 +375,13 @@ export default function AdminEvents() {
                   )}
                   <div className="flex gap-3">
                     <button
-                      onClick={() => handleEdit(event)}
+                      onClick={(e) => { e.stopPropagation(); handleEdit(event); }}
                       className="flex-1 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 px-4 py-2 rounded-lg"
                     >
                       ✏️ Edit
                     </button>
                     <button
-                      onClick={() => handleDelete(event._id)}
+                      onClick={(e) => { e.stopPropagation(); handleDelete(event._id); }}
                       className="flex-1 bg-red-500/20 hover:bg-red-500/30 text-red-300 px-4 py-2 rounded-lg"
                     >
                       🗑️ Delete

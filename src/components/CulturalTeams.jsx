@@ -13,31 +13,31 @@ gsap.registerPlugin(ScrollTrigger);
 const teams = [
   {
     team: "ಬೆಡಗು",
-    art:"ಸಾಂಸ್ಕೃತಿಕ ನೃತ್ಯ ತಂಡ",
+    art: "ಸಾಂಸ್ಕೃತಿಕ ನೃತ್ಯ ತಂಡ",
     info: "ಕನ್ನಡ ನಾಡಿನ ಸಂಸ್ಕೃತಿಯ ಬಿತ್ತರಿಸುವ ನೃತ್ಯ ಸಿರಿ, ಧೀಮಂತ ಪರಂಪರೆಗಳ ಒಡಲೊಳು  ಹರಿಯುವ ನಾಟ್ಯ ಝರಿ,  ಜಾನಪದ ನೃತ್ಯಗಳ ಬೆಡಗನ್ನು ಬಿಂಬಿಸುವ ನಾಟ್ಯಗರಿ!",
     image: bedagu,
   },
   {
     team: "ಅಲಂಕಾರ",
-    art:"ಫ್ಯಾಷನ್ ತಂಡ",
+    art: "ಫ್ಯಾಷನ್ ತಂಡ",
     info: "ಬಿಂಕು–ಬಿನ್ನಾಣದೊಂದಿಗೆ ನಮ್ಮ ನಾಡಿನ ಸೊಬಗನ್ನು ಮೆರೆಸುವ  ಕಲಾವೃಂದ, ವಿವಿಧ ಶೈಲಿಯ ಉಡುಪು ಧಾರಣೆಯೊಂದಿಗೆ ವೇದಿಕೆಯನ್ನು ಶೃಂಗರಿಸುವ ಕಲಾರವಿಂದ!",
     image: alankara,
   },
   {
     team: "ಬಲವ್",
-    art:"ಪಾಶ್ಚಾತ್ಯ ನೃತ್ಯ ತಂಡ",
+    art: "ಪಾಶ್ಚಾತ್ಯ ನೃತ್ಯ ತಂಡ",
     info: "ಹುರುಪಿನ ಹೆಜ್ಜೆಗಳೊಂದಿಗೆ ಸಾಂಸ್ಕೃತಿಕ ಲಯವ ಬೆಸೆವ  ಚೈತನ್ಯ ಲಹರಿ , ಉತ್ಸಾಹ ಭರಿತ ಭರ್ಜರಿ ಪ್ರದರ್ಶನಗಳೊಂದಿಗೆ  ತನು ಮನವ ಕುಣಿಸುವ ನಾಟ್ಯಮಂಜರಿ !",
     image: balav,
   },
   {
     team: "ಇಂಚರ",
-    art:"ಗಾಯನ ತಂಡ",
+    art: "ಗಾಯನ ತಂಡ",
     info: "ಗಾಯನದ ಇಂಪಲ್ಲಿ , ಕನ್ನಡದ ಕಂಪನ್ನು ಚೆಲ್ಲುವ ಸವಿಗಾನದಂಗಳ, ಭಾವ ಸ್ವರಗಳನುಲಿದು, ಸಾಹಿತ್ಯಮಾಧುರ್ಯವ ಮೆರೆಸುವ ಸಂಗೀತದಳ!",
     image: inchara,
   },
   {
     team: "ರಂಗತರಂಗ",
-    art:"ನಾಟಕ ವೃಂದ",
+    art: "ನಾಟಕ ವೃಂದ",
     info: "ನವರಸವನು ಅರಗಿಸಿಹ ಅಭಿನಯ ಚತುರರ ರಂಗಸಜ್ಜಿಕೆ, ನಟನೆಯಿಂದ ಕಲಾರಸಿಕರ ಮನವ ನಾಟುವ ಕಥಾಶರ ಬತ್ತಳಿಕೆ!",
     image: inchara,
   },
@@ -82,10 +82,28 @@ export default function CulturalTeams() {
         gsap.to(inner, { rotateY: 0, duration: 0.3, ease: "power2.inOut" });
       });
     });
+
+    const glows = document.querySelectorAll(".purple-glow-spot");
+    glows.forEach((glow) => {
+      const xOffset = (Math.random() - 0.5) * 30;
+      const yOffset = (Math.random() - 0.5) * 30;
+
+      gsap.to(glow, {
+        x: xOffset + "%",
+        y: yOffset + "%",
+        backgroundColor: `rgba(168, 85, 247, ${0.15 + Math.random() * 0.15})`,
+        scale: 1 + Math.random() * 0.3,
+        repeat: -1,
+        yoyo: true,
+        duration: 5 + Math.random() * 5,
+        ease: "sine.inOut",
+      });
+    });
   }, []);
 
   return (
     <section id="teams" className="relative bg-black text-white py-20 px-6 md:px-12 overflow-hidden">
+      {/* /* Background Purple Glows */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         {Array.from({ length: 6 }).map((_, i) => (
           <div

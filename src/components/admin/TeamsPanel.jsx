@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/router";
 
 export default function TeamsPanel() {
   const [teams, setTeams] = useState([]);
@@ -10,8 +10,14 @@ export default function TeamsPanel() {
   const [preview, setPreview] = useState(null);
 
   const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL;
-  const token = localStorage.getItem("adminToken");
-  const navigate = useNavigate();
+  const router = useRouter();
+  const [token, setToken] = useState(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setToken(localStorage.getItem("adminToken"));
+    }
+  }, []);
 
   const fetchTeams = async () => {
     setLoading(true);
@@ -232,7 +238,7 @@ export default function TeamsPanel() {
               {teams.map((team) => (
                 <div
                   key={team._id}
-                  onClick={() => navigate(`/admin/teamDetails/${team._id}`)}
+                  onClick={() => router.push(`/admin/teamDetails/${team._id}`)}
                   className="group bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl overflow-hidden shadow-2xl cursor-pointer transition-all duration-300 transform hover:scale-105 hover:bg-white/15 hover:shadow-cyan-500/20"
                 >
                   {/* Team Image */}

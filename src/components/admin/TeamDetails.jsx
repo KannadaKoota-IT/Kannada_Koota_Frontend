@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 
-export default function TeamDetails() {
-  const { teamId } = useParams();
+export default function TeamDetails({ teamId }) {
 
   const [heads, setHeads] = useState([]);
   const [members, setMembers] = useState([]);

@@ -1,6 +1,6 @@
-/* OurMembers.css - Enhanced black theme styles for OurMembers component */
+/* OurMembers.css - Enhanced black theme styles for OurMembers component
 
-#members {
+ #members {
   padding: 6rem 8%;
   background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
   color: white;
@@ -202,4 +202,4 @@
     font-size: 2.4rem;
     margin-bottom: 3rem;
   }
-}
+} */
