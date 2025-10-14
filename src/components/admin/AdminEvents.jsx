@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 
 export default function AdminEvents() {
   const [events, setEvents] = useState([]);
@@ -20,31 +21,37 @@ export default function AdminEvents() {
   const [selectedEvent, setSelectedEvent] = useState(null);
 
 
-  const token = localStorage.getItem("adminToken");
+  const [token, setToken] = useState(null);
   const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL;
   const API = `${API_BASE}/api/events`;
 
-  useEffect(() => {
-    if (!token) {
-      alert("Please log in first.");
+useEffect(() => {
+  if (typeof window === "undefined") return;
+
+  const t = localStorage.getItem("adminToken");
+  if (!t) {
+    alert("Please log in first.");
+    window.location.href = "/admin-login";
+    return;
+  }
+
+  try {
+    const payload = JSON.parse(atob(t.split(".")[1]));
+    if (payload.exp * 1000 < Date.now()) {
+      localStorage.removeItem("adminToken");
+      alert("Session expired. Please log in again.");
       window.location.href = "/admin-login";
-    } else {
-      try {
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        if (payload.exp * 1000 < Date.now()) {
-          localStorage.removeItem("adminToken");
-          alert("Session expired. Please log in again.");
-          window.location.href = "/admin-login";
-          return;
-        }
-        fetchEvents();
-      } catch (err) {
-        localStorage.removeItem("adminToken");
-        alert("Invalid token. Please log in again.");
-        window.location.href = "/admin-login";
-      }
+      return;
     }
-  }, []);
+    setToken(t);
+    fetchEvents();
+  } catch (err) {
+    localStorage.removeItem("adminToken");
+    alert("Invalid token. Please log in again.");
+    window.location.href = "/admin-login";
+  }
+}, []);
+
 
   const fetchEvents = async () => {
     setLoading(true);
@@ -444,3 +451,5 @@ export default function AdminEvents() {
     </div>
   );
 }
+
+// export default dynamic(() => Promise.resolve(AdminEvents), { ssr: false });
