@@ -64,12 +64,11 @@ export default function Announcements() {
         {/* Header Section */}
         <div className="mb-12">
           <div className="text-center mb-8">
-            <h1 className="text-5xl md:text-6xl font-bold mb-3 tracking-tight heritage-title">
+            <h1 className="text-5xl md:text-6xl font-bold mb-1 tracking-tight heritage-title text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-cyan-400">
               ಪ್ರಕಟಣೆಗಳು
             </h1>
-            <div className="h-1 w-32 mx-auto mb-6 heritage-divider"></div>
-            <p className="text-lg text-amber-200/80 max-w-2xl mx-auto">
-              {/* Stay Updated with Latest News & Updates */}
+            <p className="text-red-400 text-base md:text-lg font-medium mt-1">
+              (Announcements)
             </p>
           </div>
         </div>
@@ -282,93 +281,12 @@ export default function Announcements() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="w-full max-h-[calc(100dvh-6rem)] overflow-y-auto">
-              <div className="modal-media-container relative rounded-xl overflow-hidden shadow-2xl w-full">
-                {/* Close Button */}
-            <button
-              onClick={() => setPreview(null)}
-              className="absolute top-6 right-6 bg-red-600/80 hover:bg-red-600 backdrop-blur-md text-white p-3 rounded-full transition-all duration-200 z-50 border border-red-400/30 shadow-lg"
-              aria-label="Close"
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2.5}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-                {preview.mediaUrl ? (
-                  preview.mediaType === "image" ? (
-                    <img
-                      src={preview.mediaUrl}
-                      alt={preview.title}
-                      className="w-full max-h-[60vh] object-contain"
-                    />
-                  ) : (
-                    <video
-                      src={preview.mediaUrl}
-                      controls
-                      autoPlay
-                      className="w-full max-h-[60vh]"
-                    />
-                  )
-                ) : (
-                  <div className="w-full h-80 bg-gradient-to-br from-yellow-900/40 to-amber-900/40 flex items-center justify-center">
-                    <svg
-                      className="w-32 h-32 text-yellow-500/40"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={1.5}
-                        d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"
-                      />
-                    </svg>
-                  </div>
-                )}
-              </div>
-
-              {/* Info Box */}
-              <div className="modal-info-bar mt-6 px-8 py-6 w-full">
-                <div className="flex items-center justify-between gap-4 mb-4">
-                  <p className="text-yellow-400/80 text-sm font-medium">
-                    {currentIndex + 1} / {announcements.length}
-                  </p>
-                  {preview.date && (
-                    <span className="text-xs font-bold px-4 py-1.5 rounded-full bg-yellow-500/20 text-yellow-300 border border-yellow-400/30">
-                      {new Date(preview.date).toLocaleDateString("en-US", {
-                        month: "long",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
-                    </span>
-                  )}
-                </div>
-
-                <h2 className="text-2xl font-bold text-yellow-400 mb-3">
-                  {preview.title}
-                </h2>
-
-                <p className="text-amber-100 mb-4 leading-relaxed">
-                  {preview.message}
-                </p>
-
-                {preview.link && (
-                  <a
-                    href={preview.link}
-                    target="_blank"
-                    rel="noreferrer"
-                    onClick={(e) => e.stopPropagation()}
-                    className="inline-flex items-center gap-2 text-yellow-500 hover:text-yellow-400 transition-colors font-medium"
+                <div className="modal-media-container relative rounded-xl overflow-hidden shadow-2xl w-full">
+                  {/* Close Button */}
+                  <button
+                    onClick={() => setPreview(null)}
+                    className="absolute top-6 right-6 bg-red-600/80 hover:bg-red-600 backdrop-blur-md text-white p-3 rounded-full transition-all duration-200 z-50 border border-red-400/30 shadow-lg"
+                    aria-label="Close"
                   >
                     <svg
                       className="w-5 h-5"
@@ -379,20 +297,101 @@ export default function Announcements() {
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+                        strokeWidth={2.5}
+                        d="M6 18L18 6M6 6l12 12"
                       />
                     </svg>
-                    <span>Open Link</span>
-                  </a>
-                )}
-              </div>
+                  </button>
+                  {preview.mediaUrl ? (
+                    preview.mediaType === "image" ? (
+                      <img
+                        src={preview.mediaUrl}
+                        alt={preview.title}
+                        className="w-full max-h-[60vh] object-contain"
+                      />
+                    ) : (
+                      <video
+                        src={preview.mediaUrl}
+                        controls
+                        autoPlay
+                        className="w-full max-h-[60vh]"
+                      />
+                    )
+                  ) : (
+                    <div className="w-full h-80 bg-gradient-to-br from-yellow-900/40 to-amber-900/40 flex items-center justify-center">
+                      <svg
+                        className="w-32 h-32 text-yellow-500/40"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={1.5}
+                          d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"
+                        />
+                      </svg>
+                    </div>
+                  )}
+                </div>
 
-              {/* Keyboard Hint */}
-              <div className="mt-4 text-yellow-500/50 text-sm text-center">
-                Use arrow keys to navigate • ESC to close
+                {/* Info Box */}
+                <div className="modal-info-bar mt-6 px-8 py-6 w-full">
+                  <div className="flex items-center justify-between gap-4 mb-4">
+                    <p className="text-yellow-400/80 text-sm font-medium">
+                      {currentIndex + 1} / {announcements.length}
+                    </p>
+                    {preview.date && (
+                      <span className="text-xs font-bold px-4 py-1.5 rounded-full bg-yellow-500/20 text-yellow-300 border border-yellow-400/30">
+                        {new Date(preview.date).toLocaleDateString("en-US", {
+                          month: "long",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
+                      </span>
+                    )}
+                  </div>
+
+                  <h2 className="text-2xl font-bold text-yellow-400 mb-3">
+                    {preview.title}
+                  </h2>
+
+                  <p className="text-amber-100 mb-4 leading-relaxed">
+                    {preview.message}
+                  </p>
+
+                  {preview.link && (
+                    <a
+                      href={preview.link}
+                      target="_blank"
+                      rel="noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="inline-flex items-center gap-2 text-yellow-500 hover:text-yellow-400 transition-colors font-medium"
+                    >
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+                        />
+                      </svg>
+                      <span>Open Link</span>
+                    </a>
+                  )}
+                </div>
+
+                {/* Keyboard Hint */}
+                <div className="mt-4 text-yellow-500/50 text-sm text-center">
+                  Use arrow keys to navigate • ESC to close
+                </div>
               </div>
-            </div>
             </div>
           </div>
         )}

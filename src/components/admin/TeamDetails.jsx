@@ -10,6 +10,7 @@ export default function TeamDetails() {
   const [teamPhoto, setTeamPhoto] = useState("");
   const [formData, setFormData] = useState({
     name: "",
+    name_k: "",
     email: "",
     phone: "",
     role: "member",
@@ -60,6 +61,7 @@ export default function TeamDetails() {
 
     const form = new FormData();
     form.append("name", formData.name);
+    form.append("name_k", formData.name_k);
     form.append("email", formData.email);
     form.append("phone", formData.phone);
     form.append("role", formData.role);
@@ -83,7 +85,7 @@ export default function TeamDetails() {
           type: "success",
           message: editingId ? "Member updated successfully!" : "Member added successfully!"
         });
-        setFormData({ name: "", email: "", phone: "", role: "member" });
+        setFormData({ name: "", name_k: "", email: "", phone: "", role: "member" });
         setPhoto(null);
         setPreview(null);
         setEditingId(null);
@@ -127,6 +129,7 @@ export default function TeamDetails() {
     setEditingId(mem._id);
     setFormData({
       name: mem.name,
+      name_k: mem.name_k,
       email: mem.email,
       phone: mem.phone,
       role: mem.role,
@@ -138,7 +141,7 @@ export default function TeamDetails() {
   };
 
   const clearForm = () => {
-    setFormData({ name: "", email: "", phone: "", role: "member" });
+    setFormData({ name: "", name_k: "", email: "", phone: "", role: "member" });
     setPhoto(null);
     setPreview(null);
     setEditingId(null);
@@ -221,7 +224,8 @@ export default function TeamDetails() {
 
                   {/* Member Info */}
                   <div className="p-6">
-                    <h3 className="text-xl font-bold text-white mb-2">{member.name}</h3>
+                    <h4 className="text-xl font-bold text-white mb-2">{member.name_k}</h4>
+                    <h5 className="text-sm font-bold !text-white mb-2">{member.name}</h5>
                     <div className="space-y-2 mb-4">
                       <p className="text-slate-300 text-sm flex items-center gap-2">
                         <span>📧</span> {member.email}
@@ -330,22 +334,22 @@ export default function TeamDetails() {
         {/* Image Modal */}
         {modalImg && (
           <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <button
+              onClick={() => setModalImg(null)}
+              className="absolute top-6 right-8 bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-xl font-semibold text-lg transition-all duration-200 transform hover:scale-105 shadow-lg z-50"
+            >
+              ✕ Close
+            </button>
+
             <div className="relative">
               <img
                 src={modalImg}
                 alt="Enlarged"
                 className="max-w-[90vw] max-h-[90vh] rounded-2xl shadow-2xl border-4 border-white/20 object-contain"
               />
-              <button
-                onClick={() => setModalImg(null)}
-                className="absolute top-4 right-4 bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-xl font-semibold text-lg transition-all duration-200 transform hover:scale-105 shadow-lg"
-              >
-                ✕ Close
-              </button>
             </div>
           </div>
         )}
-
 
         {/* Add/Update Member Form */}
         <div className="mb-8">
@@ -375,6 +379,21 @@ export default function TeamDetails() {
                     className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300"
                   />
                 </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    Name in Kannada
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Enter name in Kannada..."
+                    value={formData.name_k}
+                    onChange={(e) => setFormData({ ...formData, name_k: e.target.value })}
+                    required
+                    className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300"
+                  />
+                </div>
+
 
                 {/* Email Input */}
                 <div>

@@ -3,7 +3,7 @@ import { Bell, Plus, Edit2, Trash2, X, Calendar, Link2, Image, ChevronDown, Chev
 
 export default function AnnouncementPanel() {
   const [announcements, setAnnouncements] = useState([]);
-  const [form, setForm] = useState({ title: "", message: "", link: "", date: "" });
+  const [form, setForm] = useState({ title: "", title_k: "", message: "", message_k: "", link: "", date: "" });
   const [media, setMedia] = useState(null);
   const [mediaPreview, setMediaPreview] = useState(null);
   const [editingId, setEditingId] = useState(null);
@@ -36,7 +36,7 @@ export default function AnnouncementPanel() {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setMedia(file);
-    
+
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -59,7 +59,10 @@ export default function AnnouncementPanel() {
 
     const formData = new FormData();
     formData.append("title", form.title);
+    formData.append("title_k", form.title_k);
     formData.append("message", form.message);
+    formData.append("message_k", form.message_k);
+
     if (form.link) formData.append("link", form.link);
     if (form.date) formData.append("date", form.date);
     if (media) formData.append("media", media);
@@ -83,7 +86,7 @@ export default function AnnouncementPanel() {
   };
 
   const resetForm = () => {
-    setForm({ title: "", message: "", link: "", date: "" });
+    setForm({ title: "", title_k: "", message: "", message_k: "", link: "", date: "" });
     setMedia(null);
     setMediaPreview(null);
     setEditingId(null);
@@ -92,7 +95,9 @@ export default function AnnouncementPanel() {
   const handleEdit = (announcement) => {
     setForm({
       title: announcement.title,
+      title_k: announcement.title_k,
       message: announcement.message,
+      message_k: announcement.message_k,
       link: announcement.link || "",
       date: announcement.date ? announcement.date.split("T")[0] : "",
     });
@@ -133,10 +138,9 @@ export default function AnnouncementPanel() {
           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-2xl mb-6 shadow-2xl shadow-purple-500/50 transform hover:scale-110 transition-transform duration-300">
             <Bell className="w-10 h-10 text-white" />
           </div>
-          <h1 className="text-5xl md:text-6xl font-extrabold text-white mb-4 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+          <h1 className="text-2xl md:text-4xl font-extrabold text-white mb-4 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
             Announcements Hub
           </h1>
-          <p className="text-slate-400 text-lg md:text-xl">Manage and broadcast important updates</p>
         </div>
 
         {/* Create Button */}
@@ -180,38 +184,74 @@ export default function AnnouncementPanel() {
                   <X className="w-6 h-6 text-slate-400 hover:text-white" />
                 </button>
               </div>
+              <div className="space-y-8">
+                {/* Title Fields */}
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-300 mb-3">
+                      Announcement Title (English) *
+                    </label>
+                    <input
+                      type="text"
+                      name="title"
+                      placeholder="Enter a compelling title..."
+                      value={form.title}
+                      onChange={handleChange}
+                      required
+                      className="w-full bg-slate-800/50 border border-slate-700 rounded-2xl px-4 py-3 text-white text-base placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all hover:bg-slate-800/70"
+                    />
+                  </div>
 
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-semibold text-slate-300 mb-3">
-                    Announcement Title *
-                  </label>
-                  <input
-                    type="text"
-                    name="title"
-                    placeholder="Enter a compelling title..."
-                    value={form.title}
-                    onChange={handleChange}
-                    required
-                    className="w-full bg-slate-800/50 border border-slate-700 rounded-2xl px-6 py-4 text-white text-lg placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 hover:bg-slate-800/70"
-                  />
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-300 mb-3">
+                      Announcement Title (Kannada) *
+                    </label>
+                    <input
+                      type="text"
+                      name="title_k"
+                      placeholder="ಘೋಷಣೆಯ ಶೀರ್ಷಿಕೆ..."
+                      value={form.title_k}
+                      onChange={handleChange}
+                      required
+                      className="w-full bg-slate-800/50 border border-slate-700 rounded-2xl px-4 py-3 text-white text-base placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all hover:bg-slate-800/70"
+                    />
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-semibold text-slate-300 mb-3">
-                    Message *
-                  </label>
-                  <textarea
-                    name="message"
-                    placeholder="Write your announcement message..."
-                    value={form.message}
-                    onChange={handleChange}
-                    required
-                    rows="5"
-                    className="w-full bg-slate-800/50 border border-slate-700 rounded-2xl px-6 py-4 text-white text-lg placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 resize-none hover:bg-slate-800/70"
-                  />
+                {/* Message Fields */}
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-300 mb-3">
+                      Message (English) *
+                    </label>
+                    <textarea
+                      name="message"
+                      placeholder="Write your announcement message..."
+                      value={form.message}
+                      onChange={handleChange}
+                      required
+                      rows="5"
+                      className="w-full bg-slate-800/50 border border-slate-700 rounded-2xl px-4 py-3 text-white text-base placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none transition-all hover:bg-slate-800/70"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-300 mb-3">
+                      Message (Kannada) *
+                    </label>
+                    <textarea
+                      name="message_k"
+                      placeholder="ಘೋಷಣೆಯ ಸಂದೇಶವನ್ನು ಬರೆಯಿರಿ..."
+                      value={form.message_k}
+                      onChange={handleChange}
+                      required
+                      rows="5"
+                      className="w-full bg-slate-800/50 border border-slate-700 rounded-2xl px-4 py-3 text-white text-base placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none transition-all hover:bg-slate-800/70"
+                    />
+                  </div>
                 </div>
 
+                {/* Link & Date */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-semibold text-slate-300 mb-3 flex items-center gap-2">
@@ -224,7 +264,7 @@ export default function AnnouncementPanel() {
                       placeholder="https://example.com"
                       value={form.link}
                       onChange={handleChange}
-                      className="w-full bg-slate-800/50 border border-slate-700 rounded-2xl px-6 py-4 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 hover:bg-slate-800/70"
+                      className="w-full bg-slate-800/50 border border-slate-700 rounded-2xl px-6 py-4 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all hover:bg-slate-800/70"
                     />
                   </div>
 
@@ -238,11 +278,12 @@ export default function AnnouncementPanel() {
                       name="date"
                       value={form.date}
                       onChange={handleChange}
-                      className="w-full bg-slate-800/50 border border-slate-700 rounded-2xl px-6 py-4 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 hover:bg-slate-800/70"
+                      className="w-full bg-slate-800/50 border border-slate-700 rounded-2xl px-6 py-4 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all hover:bg-slate-800/70"
                     />
                   </div>
                 </div>
 
+                {/* Media Upload */}
                 <div>
                   <label className="block text-sm font-semibold text-slate-300 mb-3 flex items-center gap-2">
                     <Image className="w-4 h-4" />
@@ -253,13 +294,13 @@ export default function AnnouncementPanel() {
                       type="file"
                       accept="image/*,video/*"
                       onChange={handleFileChange}
-                      className="w-full bg-slate-800/50 border border-slate-700 rounded-2xl px-6 py-4 text-white file:mr-4 file:py-2 file:px-6 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-300 hover:bg-slate-800/70 cursor-pointer"
+                      className="w-full bg-slate-800/50 border border-slate-700 rounded-2xl px-6 py-4 text-white file:mr-4 file:py-2 file:px-6 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-purple-500 file:text-white hover:file:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all hover:bg-slate-800/70 cursor-pointer"
                     />
                   </div>
-                  
+
                   {mediaPreview && (
                     <div className="mt-4 relative group">
-                      {mediaPreview.type.startsWith('image/') ? (
+                      {mediaPreview.type.startsWith("image/") ? (
                         <img
                           src={mediaPreview.url}
                           alt="Preview"
@@ -285,11 +326,12 @@ export default function AnnouncementPanel() {
                   )}
                 </div>
 
+                {/* Buttons */}
                 <div className="flex flex-col sm:flex-row gap-4 pt-4">
                   <button
                     onClick={handleSubmit}
                     disabled={loading || !form.title || !form.message}
-                    className="flex-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 hover:from-blue-600 hover:via-purple-600 hover:to-pink-600 text-white font-bold px-8 py-4 rounded-2xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-purple-400/50 shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-3"
+                    className="flex-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 hover:from-blue-600 hover:via-purple-600 hover:to-pink-600 text-white font-bold px-8 py-4 rounded-2xl transition-all transform hover:scale-105 focus:ring-4 focus:ring-purple-400/50 shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
                   >
                     {loading ? (
                       <>
@@ -307,13 +349,14 @@ export default function AnnouncementPanel() {
                   <button
                     type="button"
                     onClick={resetForm}
-                    className="sm:w-auto bg-slate-700 hover:bg-slate-600 text-white font-bold px-8 py-4 rounded-2xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-slate-400/50 shadow-xl flex items-center justify-center gap-2"
+                    className="sm:w-auto bg-slate-700 hover:bg-slate-600 text-white font-bold px-8 py-4 rounded-2xl transition-all transform hover:scale-105 focus:ring-4 focus:ring-slate-400/50 shadow-xl flex items-center justify-center gap-2"
                   >
                     <X className="w-5 h-5" />
                     Clear
                   </button>
                 </div>
               </div>
+
             </div>
           </div>
         )}
@@ -343,11 +386,10 @@ export default function AnnouncementPanel() {
                 return (
                   <div
                     key={a._id}
-                    className={`bg-gradient-to-br from-slate-900/90 to-purple-900/90 backdrop-blur-xl border rounded-3xl overflow-hidden shadow-2xl transition-all duration-500 transform hover:scale-[1.01] ${
-                      isExpanded 
-                        ? "border-purple-500/50 shadow-purple-500/30 ring-2 ring-purple-500/30" 
+                    className={`bg-gradient-to-br from-slate-900/90 to-purple-900/90 backdrop-blur-xl border rounded-3xl overflow-hidden shadow-2xl transition-all duration-500 transform hover:scale-[1.01] ${isExpanded
+                        ? "border-purple-500/50 shadow-purple-500/30 ring-2 ring-purple-500/30"
                         : "border-white/10 hover:border-purple-500/30"
-                    }`}
+                      }`}
                   >
                     <div
                       onClick={() => toggleExpand(a._id)}
@@ -355,15 +397,16 @@ export default function AnnouncementPanel() {
                     >
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1">
-                          <h3 className="text-2xl font-bold text-white mb-2 flex items-start gap-3">
-                            <div className="flex-shrink-0 w-2 h-2 bg-purple-500 rounded-full mt-2" />
-                            {a.title}
-                          </h3>
+                          <p className="!text-2xl !font-bold !text-yellow-400 mb-2 flex items-start gap-3">
+                            {a.title_k}
+                            <span className="text-xl font-semibold text-red-300">{`(${a.title})`}</span>
+                          </p>
+
                           <p className={`text-slate-300 leading-relaxed ${isExpanded ? '' : 'line-clamp-2'}`}>
-                            {a.message}
+                            {a.message_k}
                           </p>
                         </div>
-                        
+
                         <div className="flex flex-col items-end gap-3">
                           {a.date && (
                             <div className="flex items-center gap-2 bg-gradient-to-r from-red-500/20 to-pink-500/20 text-red-300 px-4 py-2 rounded-xl text-sm font-semibold backdrop-blur-sm border border-red-500/30">
@@ -384,6 +427,10 @@ export default function AnnouncementPanel() {
 
                     {isExpanded && (
                       <div className="px-6 pb-6 space-y-6 animate-slideDown">
+                          <p className={`text-slate-300 leading-relaxed ${isExpanded ? '' : 'line-clamp-2'}`}>
+                            {a.message}
+                          </p>
+
                         {a.link && (
                           <a
                             href={a.link}

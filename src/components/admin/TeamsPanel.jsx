@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function TeamsPanel() {
   const [teams, setTeams] = useState([]);
-  const [formData, setFormData] = useState({ team_name: "" });
+  const [formData, setFormData] = useState({ team_name: "", team_name_k: "" });
   const [teamPhoto, setTeamPhoto] = useState(null);
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(false);
@@ -43,9 +43,10 @@ export default function TeamsPanel() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    
+
     const form = new FormData();
     form.append("team_name", formData.team_name);
+    form.append("team_name_k", formData.team_name_k);
     if (teamPhoto) form.append("photo", teamPhoto);
 
     try {
@@ -57,7 +58,7 @@ export default function TeamsPanel() {
       const data = await res.json();
       if (data?.team) {
         setStatus({ type: "success", message: "Team added successfully!" });
-        setFormData({ team_name: "" });
+        setFormData({ team_name: "", team_name_k: "" }); // reset both fields
         setTeamPhoto(null);
         setPreview(null);
         fetchTeams();
@@ -74,6 +75,7 @@ export default function TeamsPanel() {
       setLoading(false);
     }
   };
+
 
   const clearForm = () => {
     setFormData({ team_name: "" });
@@ -97,11 +99,10 @@ export default function TeamsPanel() {
 
         {/* Status Alert */}
         {status && (
-          <div className={`rounded-2xl px-6 py-4 mb-8 text-center font-semibold text-lg shadow-xl border backdrop-blur-lg transition-all duration-500 transform ${
-            status.type === "success" 
-              ? "bg-green-500/20 text-green-300 border-green-400/30" 
-              : "bg-red-500/20 text-red-300 border-red-400/30"
-          }`}>
+          <div className={`rounded-2xl px-6 py-4 mb-8 text-center font-semibold text-lg shadow-xl border backdrop-blur-lg transition-all duration-500 transform ${status.type === "success"
+            ? "bg-green-500/20 text-green-300 border-green-400/30"
+            : "bg-red-500/20 text-red-300 border-red-400/30"
+            }`}>
             <div className="flex items-center justify-center gap-3">
               <span className="text-2xl">{status.type === "success" ? "✅" : "❌"}</span>
               {status.message}
@@ -119,7 +120,7 @@ export default function TeamsPanel() {
             <h2 className="text-3xl font-bold text-white mb-8 text-center">
               ✨ Create New Team
             </h2>
-            
+
             <div className="space-y-6">
               {/* Team Name Input */}
               <div>
@@ -136,10 +137,24 @@ export default function TeamsPanel() {
                 />
               </div>
 
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-2">
+                  Team Name (Kannada)
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter team name in Kannada..."
+                  value={formData.team_name_k}
+                  onChange={(e) => setFormData({ ...formData, team_name_k: e.target.value })}
+                  required
+                  className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-300 text-lg"
+                />
+              </div>
+
               {/* Photo Upload */}
               <div>
                 <label className="block text-sm font-medium text-slate-300 mb-2">
-                  Team Photo
+                  Team Logo
                 </label>
                 <input
                   type="file"
@@ -154,10 +169,10 @@ export default function TeamsPanel() {
               {preview && (
                 <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
                   <p className="text-sm text-slate-300 mb-3 font-medium">Preview:</p>
-                  <img 
-                    src={preview} 
-                    alt="preview" 
-                    className="w-full h-48 object-cover rounded-xl shadow-lg border border-white/20" 
+                  <img
+                    src={preview}
+                    alt="preview"
+                    className="w-full h-48 object-cover rounded-xl shadow-lg border border-white/20"
                   />
                 </div>
               )}
@@ -168,9 +183,8 @@ export default function TeamsPanel() {
               <button
                 type="submit"
                 disabled={loading}
-                className={`flex-1 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-semibold px-8 py-4 rounded-xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-cyan-300 shadow-xl ${
-                  loading ? "opacity-70 cursor-not-allowed" : ""
-                }`}
+                className={`flex-1 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-semibold px-8 py-4 rounded-xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-cyan-300 shadow-xl ${loading ? "opacity-70 cursor-not-allowed" : ""
+                  }`}
               >
                 {loading ? (
                   <span className="flex items-center justify-center gap-2">
@@ -201,7 +215,7 @@ export default function TeamsPanel() {
           <h2 className="text-3xl font-bold text-white mb-8 text-center">
             All Teams ({teams.length})
           </h2>
-          
+
           {loading && teams.length === 0 ? (
             <div className="text-center py-16">
               <div className="animate-spin h-12 w-12 border-4 border-cyan-500 border-t-transparent rounded-full mx-auto mb-4"></div>
@@ -250,7 +264,7 @@ export default function TeamsPanel() {
                         </svg>
                       </div>
                     </div>
-                    
+
                     <div className="mt-4 pt-4 border-t border-white/10">
                       <p className="text-slate-400 text-sm flex items-center gap-2">
                         <span>👥</span>

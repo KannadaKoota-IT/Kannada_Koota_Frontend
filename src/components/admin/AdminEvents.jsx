@@ -4,16 +4,21 @@ export default function AdminEvents() {
   const [events, setEvents] = useState([]);
   const [form, setForm] = useState({
     title: "",
+    title_k: "",
     description: "",
+    description_k: "",
     date: "",
     eventTime: "",
     location: "",
   });
+
   const [imageFile, setImageFile] = useState(null);
   const [editingId, setEditingId] = useState(null);
   const [status, setStatus] = useState("");
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+
 
   const token = localStorage.getItem("adminToken");
   const API_BASE = import.meta.env.VITE_BACKEND_URL;
@@ -72,7 +77,10 @@ export default function AdminEvents() {
 
     const formData = new FormData();
     formData.append("title", form.title);
+    formData.append("title_k", form.title_k);
     formData.append("description", form.description);
+    formData.append("description_k", form.description_k);
+
     formData.append("date", form.date);
     formData.append("eventTime", form.eventTime);
     formData.append("location", form.location);
@@ -92,10 +100,7 @@ export default function AdminEvents() {
 
       if (res.ok) {
         fetchEvents();
-        setForm({ title: "", description: "", date: "", eventTime: "", location: "" });
-        setImageFile(null);
-        setEditingId(null);
-        setPreview(null);
+        clearForm();
         setStatus({
           type: "success",
           message: editingId ? "Event updated successfully!" : "Event created successfully!",
@@ -117,7 +122,9 @@ export default function AdminEvents() {
   const handleEdit = (event) => {
     setForm({
       title: event.title,
+      title_k: event.title_k,
       description: event.description,
+      description_k: event.description_k,
       date: event.date.split("T")[0],
       eventTime: event.eventTime || "",
       location: event.location || "",
@@ -150,7 +157,7 @@ export default function AdminEvents() {
   };
 
   const clearForm = () => {
-    setForm({ title: "", description: "", date: "", eventTime: "", location: "" });
+    setForm({ title: "", title_k: "", description: "", description_k: "", date: "", eventTime: "", location: "" });
     setImageFile(null);
     setPreview(null);
     setEditingId(null);
@@ -182,11 +189,10 @@ export default function AdminEvents() {
         {/* Status */}
         {status && (
           <div
-            className={`mb-8 p-4 rounded-xl text-center font-semibold shadow-lg ${
-              status.type === "success"
-                ? "bg-green-500/20 text-green-300 border border-green-400/40"
-                : "bg-red-500/20 text-red-300 border border-red-400/40"
-            }`}
+            className={`mb-8 p-4 rounded-xl text-center font-semibold shadow-lg ${status.type === "success"
+              ? "bg-green-500/20 text-green-300 border border-green-400/40"
+              : "bg-red-500/20 text-red-300 border border-red-400/40"
+              }`}
           >
             {status.type === "success" ? "✅" : "❌"} {status.message}
           </div>
@@ -198,13 +204,14 @@ export default function AdminEvents() {
           encType="multipart/form-data"
           className="bg-white/10 border border-white/20 rounded-2xl p-8 backdrop-blur-md shadow-xl mb-16"
         >
-          <h2 className="text-2xl font-bold mb-8">
+          <h2 className="text-2xl font-bold mb-8 text-center">
             {editingId ? "✏️ Edit Event" : "✨ Create New Event"}
           </h2>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Left column */}
-            <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Title & Title (Kannada) */}
+            <div>
+              <label className="block mb-2 text-slate-300 font-medium">Event Title</label>
               <input
                 type="text"
                 name="title"
@@ -214,7 +221,24 @@ export default function AdminEvents() {
                 required
                 className="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 placeholder-slate-400 focus:ring-2 focus:ring-orange-500 outline-none"
               />
+            </div>
 
+            <div>
+              <label className="block mb-2 text-slate-300 font-medium">Event Title (Kannada)</label>
+              <input
+                type="text"
+                name="title_k"
+                placeholder="Event Title in Kannada"
+                value={form.title_k}
+                onChange={handleChange}
+                required
+                className="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 placeholder-slate-400 focus:ring-2 focus:ring-orange-500 outline-none"
+              />
+            </div>
+
+            {/* Description & Description (Kannada) */}
+            <div>
+              <label className="block mb-2 text-slate-300 font-medium">Event Description</label>
               <textarea
                 name="description"
                 placeholder="Event Description..."
@@ -224,52 +248,75 @@ export default function AdminEvents() {
                 required
                 className="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 placeholder-slate-400 focus:ring-2 focus:ring-orange-500 outline-none resize-none"
               />
+            </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <input
-                  type="date"
-                  name="date"
-                  value={form.date}
-                  onChange={handleChange}
-                  required
-                  className="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-500 outline-none"
-                />
-                <input
-                  type="time"
-                  name="eventTime"
-                  value={form.eventTime}
-                  onChange={handleChange}
-                  required
-                  className="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-500 outline-none"
-                />
-              </div>
-
-              <input
-                type="text"
-                name="location"
-                placeholder="Event Location (Optional)"
-                value={form.location}
+            <div>
+              <label className="block mb-2 text-slate-300 font-medium">Event Description (Kannada)</label>
+              <textarea
+                name="description_k"
+                placeholder="Event Description in Kannada..."
+                value={form.description_k}
                 onChange={handleChange}
-                className="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 placeholder-slate-400 focus:ring-2 focus:ring-orange-500 outline-none"
+                rows="4"
+                required
+                className="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 placeholder-slate-400 focus:ring-2 focus:ring-orange-500 outline-none resize-none"
               />
             </div>
 
-            {/* Right column */}
-            <div className="space-y-6">
+            {/* Date & Time */}
+            <div>
+              <label className="block mb-2 text-slate-300 font-medium">Event Date</label>
               <input
-                type="file"
-                name="image"
-                onChange={handleImageChange}
-                accept="image/*"
-                className="block w-full text-sm text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-orange-500/20 file:text-orange-300 hover:file:bg-orange-500/30"
+                type="date"
+                name="date"
+                value={form.date}
+                onChange={handleChange}
+                required
+                className="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-500 outline-none"
               />
-
-              {preview && (
-                <div className="border border-white/10 rounded-xl overflow-hidden">
-                  <img src={preview} alt="preview" className="w-full h-48 object-cover" />
-                </div>
-              )}
             </div>
+
+            <div>
+              <label className="block mb-2 text-slate-300 font-medium">Event Time</label>
+              <input
+                type="time"
+                name="eventTime"
+                value={form.eventTime}
+                onChange={handleChange}
+                className="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-500 outline-none"
+              />
+            </div>
+          </div>
+
+          {/* Location (Full width) */}
+          <div className="mt-8">
+            <label className="block mb-2 text-slate-300 font-medium">Event Location (Optional)</label>
+            <input
+              type="text"
+              name="location"
+              placeholder="Event Location"
+              value={form.location}
+              onChange={handleChange}
+              className="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 placeholder-slate-400 focus:ring-2 focus:ring-orange-500 outline-none"
+            />
+          </div>
+
+          {/* Image Upload (Full width) */}
+          <div className="mt-8">
+            <label className="block mb-2 text-slate-300 font-medium">Upload Event Image</label>
+            <input
+              type="file"
+              name="image"
+              onChange={handleImageChange}
+              accept="image/*"
+              className="block w-full text-sm text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-orange-500/20 file:text-orange-300 hover:file:bg-orange-500/30"
+            />
+
+            {preview && (
+              <div className="border border-white/10 rounded-xl overflow-hidden mt-4">
+                <img src={preview} alt="preview" className="w-full h-48 object-cover" />
+              </div>
+            )}
           </div>
 
           {/* Actions */}
@@ -291,6 +338,7 @@ export default function AdminEvents() {
           </div>
         </form>
 
+
         {/* Events grid */}
         <h2 className="text-3xl font-bold mb-8 text-center">
           📅 All Events ({events.length})
@@ -305,7 +353,8 @@ export default function AdminEvents() {
             {events.map((event) => (
               <div
                 key={event._id}
-                className="bg-white/10 border border-white/20 rounded-2xl overflow-hidden shadow-lg hover:scale-[1.02] transition-transform"
+                onClick={() => setSelectedEvent(event)}
+                className="bg-white/10 border border-white/20 rounded-2xl overflow-hidden shadow-lg cursor-pointer hover:scale-[1.02] transition-transform"
               >
                 {event.imageUrl && (
                   <img
@@ -315,12 +364,12 @@ export default function AdminEvents() {
                   />
                 )}
                 <div className="p-6">
-                  <h3 className="text-xl font-bold mb-2">{event.title}</h3>
+                  <h3 className="!text-xl !font-bold mb-2">{event.title_k}</h3>
+                  <h3 className="!text-sm !text-red-300 !font-bold mb-2">{`(${event.title})`}</h3>
                   <p className="text-sm text-slate-300 mb-2">
                     {new Date(event.date).toLocaleDateString()} •{" "}
                     {formatTime(event.eventTime)}
                   </p>
-                  <p className="text-slate-400 mb-4 line-clamp-3">{event.description}</p>
                   {event.location && (
                     <p className="text-sm text-slate-400 mb-4">📍 {event.location}</p>
                   )}
@@ -344,6 +393,54 @@ export default function AdminEvents() {
           </div>
         )}
       </div>
+
+      {/* 🔹 Event Detail Modal */}
+      {selectedEvent && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+          <button
+            onClick={() => setSelectedEvent(null)}
+            className="fixed top-6 right-6 bg-red-500 hover:bg-red-600 text-white rounded-full p-3 shadow-lg transition-all z-50"
+          >
+            ✖
+          </button>
+
+          <div className="bg-slate-900 border border-white/20 rounded-2xl shadow-2xl max-w-2xl w-full mx-4 overflow-hidden relative">
+            {/* Image */}
+            {selectedEvent.imageUrl && (
+              <div className="p-3 border-b border-white/10 flex justify-center">
+                <img
+                  src={selectedEvent.imageUrl}
+                  alt={selectedEvent.title}
+                  className="max-h-40 object-contain rounded-lg"
+                />
+              </div>
+            )}
+
+
+            {/* Content */}
+            <div className="p-6 space-y-4">
+              <h3>{selectedEvent.title_k}
+                <span className="text-xl ml-2 text-yellow-200 font-semibold">{`(${selectedEvent.title})`}</span>
+              </h3>
+
+              <p className="text-sm text-slate-300">
+                📅 {new Date(selectedEvent.date).toLocaleDateString()} • {formatTime(selectedEvent.eventTime)}
+              </p>
+
+              {selectedEvent.location && (
+                <p className="text-sm text-slate-400">📍 {selectedEvent.location}</p>
+              )}
+
+              <div className="border-t border-white/10 pt-4 space-y-3">
+                <p className="text-base text-slate-100 leading-relaxed">{selectedEvent.description_k}</p>
+                <p className="text-sm text-slate-400 leading-relaxed italic">{selectedEvent.description}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+
     </div>
   );
 }

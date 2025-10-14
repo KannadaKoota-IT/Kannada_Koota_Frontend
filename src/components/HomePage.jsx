@@ -15,7 +15,7 @@ const HomePage = () => {
       <About />
       <Missions />
       <CulturalTeams />
-      <Gallery/>
+      {/* <Gallery/> */}
       <Footer />
     </>
   );

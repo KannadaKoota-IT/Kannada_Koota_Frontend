@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Calendar, Clock } from "lucide-react";
 
 export default function Events() {
   const [events, setEvents] = useState([]);
@@ -44,6 +45,17 @@ export default function Events() {
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [preview, currentIndex]);
 
+  // 🔹 Format time into 12-hour AM/PM
+  const formatTime = (time) => {
+    if (!time) return "";
+    const [hours, minutes] = time.split(":");
+    let h = parseInt(hours, 10);
+    const ampm = h >= 12 ? "PM" : "AM";
+    h = h % 12 || 12; // convert 0 -> 12
+    return `${h}:${minutes} ${ampm}`;
+  };
+
+
   return (
     <div className="heritage-events min-h-screen mt-20 relative overflow-hidden">
       {/* Animated Background Elements */}
@@ -60,12 +72,11 @@ export default function Events() {
         {/* Header Section */}
         <div className="mb-12">
           <div className="text-center mb-8">
-            <h1 className="text-5xl md:text-6xl font-bold mb-3 tracking-tight heritage-title">
+            <h1 className="text-5xl md:text-6xl font-bold mb-1 tracking-tight heritage-title text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-cyan-400">
               ಮುಂಬರುವ ಕಾರ್ಯಕ್ರಮಗಳು
             </h1>
-            <div className="h-1 w-32 mx-auto mb-6 heritage-divider"></div>
-            <p className="text-lg text-amber-200/80 max-w-2xl mx-auto">
-              {/* Celebrating Karnataka's Cultural Milestones */}
+            <p className="text-red-400 text-base md:text-lg font-medium mt-1">
+              (Events)
             </p>
           </div>
         </div>
@@ -117,11 +128,17 @@ export default function Events() {
               >
                 {/* Date at Top */}
                 <div className="absolute top-4 right-4 z-10">
-                  <div className="bg-gradient-to-r from-yellow-500 to-amber-600 text-black text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
-                    {new Date(event.date).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                    })}
+                  <div className="flex items-center justify-center gap-3 bg-gradient-to-r from-yellow-400 to-amber-500 text-black text-xs font-semibold px-3 py-1.5 rounded-full shadow-md">
+                    <span className="flex items-center gap-1">
+                      <Calendar className="w-3 h-3" />
+                      {new Date(event.date).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Clock className="w-3 h-3" /> {formatTime(event.eventTime)}
+                    </span>
                   </div>
                 </div>
 
@@ -332,13 +349,18 @@ export default function Events() {
                     <p className="text-yellow-400/80 text-sm font-medium">
                       {currentIndex + 1} / {events.length}
                     </p>
-                    <span className="text-xs font-bold px-4 py-1.5 rounded-full bg-yellow-500/20 text-yellow-300 border border-yellow-400/30">
-                      {new Date(preview.date).toLocaleDateString("en-US", {
-                        month: "long",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
-                    </span>
+                    <div className="flex items-center justify-center gap-3 bg-gradient-to-r from-yellow-400 to-amber-500 text-black text-xs font-semibold px-3 py-1.5 rounded-full shadow-md">
+                      <span className="flex items-center gap-1">
+                        <Calendar className="w-3 h-3" />
+                        {new Date(preview.date).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                        })}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-3 h-3" /> {formatTime(preview.eventTime)}
+                      </span>
+                    </div>
                   </div>
 
                   <h2 className="text-2xl font-bold text-yellow-400 mb-3">

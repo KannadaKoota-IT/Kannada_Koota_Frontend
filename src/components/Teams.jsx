@@ -82,27 +82,7 @@ export default function Teams() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
         {/* Header Section */}
-        <div className="mb-16 text-center">
-          <div className="inline-block mb-6">
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <div className="h-px w-12 bg-gradient-to-r from-transparent to-yellow-500"></div>
-              <svg
-                className="w-8 h-8 text-yellow-500"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-              </svg>
-              <div className="h-px w-12 bg-gradient-to-l from-transparent to-yellow-500"></div>
-            </div>
-          </div>
-
-          <h1 className="text-6xl md:text-7xl font-bold mb-4 bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600 bg-clip-text text-transparent animate-gradient">
-            Our Teams
-          </h1>
-
-          <div className="h-1 w-32 mx-auto mb-6 bg-gradient-to-r from-transparent via-yellow-500 to-transparent animate-pulse-slow"></div>
-
+        <div className="mb-10 text-center">
           {/* <p className="text-lg text-amber-200/80 max-w-5xl mx-auto leading-relaxed">
             Meet the visionary leaders of Kannada Koota, guiding our community
             with passion and dedication. These brilliant minds drive culture,
@@ -154,13 +134,12 @@ export default function Teams() {
                   <div className="flex items-center gap-4 mb-4">
                     <div className="flex-1 h-px bg-gradient-to-r from-yellow-500/50 to-transparent"></div>
                     <div className="relative">
-                      <Link
-                        // to={`/team-details/${team._id}`}
-                        className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 transition-all duration-300 relative group/link"
-                      >
-                        {team.team_name}
-                        <span className="absolute -bottom-2 left-0 w-0 h-0.5 bg-gradient-to-r from-yellow-400 to-amber-500 group-hover/link:w-full transition-all duration-500"></span>
-                      </Link>
+                      <span className="text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 transition-all duration-300 relative group/link">
+                        {team.team_name_k} 
+                      </span>
+                      <span className="text-xl md:text-2xl text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-amber-500 hover:from-red-300 hover:to-amber-400 transition-all duration-300 relative group/link ml-2">
+                        ({team.team_name}) 
+                      </span>
 
                       {/* Decorative corner elements */}
                       <div className="absolute -top-3 -left-3 w-6 h-6 border-t-2 border-l-2 border-yellow-500/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -220,8 +199,11 @@ export default function Teams() {
                           {/* Info Section */}
                           <div className="relative p-5 bg-black/90">
                             <h3 className="text-xl font-bold text-yellow-400 mb-1 group-hover/card:text-yellow-300 transition-colors duration-300">
-                              {head.name}
+                              {head.name_k}
                             </h3>
+                            <h5 className="text-xl font-bold !text-blue-400 mb-1 group-hover/card:text-blue-300 transition-colors duration-300">
+                              {head.name}
+                            </h5>
 
                             {/* Hover Glow Effect */}
                             <div className="absolute inset-0 bg-gradient-radial from-yellow-500/10 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-500 pointer-events-none"></div>

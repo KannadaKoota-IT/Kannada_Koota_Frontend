@@ -179,9 +179,12 @@ export default function DashboardEvents() {
       <div className="flex flex-wrap lg:flex-nowrap gap-10 max-w-[1200px] w-full justify-center items-start px-5 relative z-10">
         {/* EVENTS CAROUSEL */}
         <div className="carousel-wrapper flex-1 min-w-auto max-w-[680px] w-full flex flex-col">
-          <h2 className="flex items-center gap-2 text-2xl sm:text-xl mb-6 bg-gradient-to-r from-purple-700 to-cyan-400 bg-clip-text text-transparent">
-            <span className="text-xl sm:text-xl">🗓️</span>
-            <span>ಮುಂ. ಕಾರ್ಯಕ್ರಮಗಳು</span>
+          <h2 className="flex flex-col items-start mb-6 bg-gradient-to-r from-purple-700 to-cyan-400 bg-clip-text text-transparent">
+            <span className="flex items-center gap-2 text-2xl sm:text-xl">
+              <span className="text-xl sm:text-xl">🗓️</span>
+              <span className="text-xl md:text-2xl font-semibold">ಮುಂ. ಕಾರ್ಯಕ್ರಮಗಳು</span>
+            </span>
+            <span className="text-sm md:text-base text-red-500 mt-1 ml-7">(Events)</span>
           </h2>
 
           <Carousel
@@ -203,22 +206,19 @@ export default function DashboardEvents() {
               More Info →
             </span>
           </div>
-          <div
-            id="culture-tagline"
-            className="text-center text-2xl sm:text-xl font-semibold mt-8 opacity-0 translate-y-5 bg-gradient-to-r from-purple-700 to-cyan-400 bg-clip-text text-transparent transition-all duration-400"
-          >
-            "Preserving culture through celebration"
-          </div>
         </div>
 
         {/* ANNOUNCEMENTS SCROLL */}
-        <div className="announcement-panel flex-1 min-w-[300px] max-w-[420px] bg-black/4 border border-yellow-400/10 backdrop-blur-md p-6 sm:p-4 rounded-xl shadow-lg max-h-[600px] flex flex-col transition-all duration-300">
-          <h2 className="flex items-center gap-2 text-2xl sm:text-xl mb-6 bg-gradient-to-r from-purple-700 to-cyan-400 bg-clip-text text-transparent">
-            <span className="text-2xl sm:text-xl">📢</span>
-            <span>ಪ್ರಕಟಣೆಗಳು</span>
+        <div className="announcement-panel flex-1 min-w-[300px] max-w-[420px] bg-black/4 border border-yellow-400/10 backdrop-blur-md p-6 sm:p-4 rounded-xl shadow-lg max-h-[500px] flex flex-col transition-all duration-300">
+          <h2 className="flex flex-col items-start mb-6 bg-gradient-to-r from-purple-700 to-cyan-400 bg-clip-text text-transparent">
+            <span className="flex items-center gap-2 text-2xl sm:text-xl">
+              <span className="text-2xl sm:text-xl">📢</span>
+              <span className="text-xl md:text-2xl font-semibold">ಪ್ರಕಟಣೆಗಳು</span>
+            </span>
+            <span className="text-sm md:text-base text-red-500 mt-1 ml-7">(Announcements)</span>
           </h2>
 
-          <div className="relative flex-1">
+          {/* <div className="relative flex-1">
             <InfiniteScroll
               items={announcements}
               isTilted={true}
@@ -227,6 +227,24 @@ export default function DashboardEvents() {
               autoplayDirection="up"
               pauseOnHover={true}
             />
+          </div> */}
+
+          <div className="relative flex-1 overflow-y-auto max-h-[500px] pr-2 scrollbar-thin scrollbar-thumb-blue-500/30 scrollbar-track-transparent">
+            {announcements.length > 0 ? (
+              announcements.map((item, index) => (
+                <div
+                  key={index}
+                  className="bg-white/5 p-4 rounded-lg mb-3 shadow-md hover:-translate-y-0.5 hover:shadow-lg transition-transform duration-300"
+                >
+                  <h4 className="text-yellow-400 text-lg mb-1">{item.content?.props?.children[0]?.props?.children || item.title}</h4>
+                  <p className="text-gray-300 text-sm leading-relaxed">
+                    {item.content?.props?.children[1]?.props?.children || item.message}
+                  </p>
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-400 text-sm text-center">No announcements yet.</p>
+            )}
           </div>
 
           {/* More Info Link */}
