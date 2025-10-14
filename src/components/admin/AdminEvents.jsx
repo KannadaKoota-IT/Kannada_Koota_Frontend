@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 
-export default function AdminEvents() {
+function AdminEvents() {
   const [events, setEvents] = useState([]);
   const [form, setForm] = useState({
     title: "",
@@ -452,4 +452,4 @@ useEffect(() => {
   );
 }
 
-// export default dynamic(() => Promise.resolve(AdminEvents), { ssr: false });
+export default dynamic(() => Promise.resolve(AdminEvents), { ssr: false });
