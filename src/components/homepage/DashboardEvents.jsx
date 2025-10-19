@@ -5,6 +5,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useRouter } from "next/router";
 import { useLanguage } from "../../context/LanguageContext";
+import { ChevronLeft, ChevronRight, Calendar, Clock, MapPin } from "lucide-react";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -15,6 +16,9 @@ export default function DashboardEvents({ announcements: initialAnnouncements })
   const [events, setEvents] = useState([]);
   const [announcements, setAnnouncements] = useState(initialAnnouncements || []);
   const [loading, setLoading] = useState(true);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const autoPlayRef = useRef(null);
 
   // Fetch events based on language
   const fetchEvents = async () => {
@@ -71,6 +75,37 @@ export default function DashboardEvents({ announcements: initialAnnouncements })
     fetchEvents();
     fetchAnnouncements();
   }, [language]);
+
+  // Auto-play for carousel
+  useEffect(() => {
+    if (isAutoPlaying && events.length > 1) {
+      autoPlayRef.current = setInterval(() => {
+        setCurrentSlide((prev) => (prev + 1) % events.length);
+      }, 4000);
+    }
+    return () => {
+      if (autoPlayRef.current) clearInterval(autoPlayRef.current);
+    };
+  }, [isAutoPlaying, events.length]);
+
+  const goToSlide = (index) => {
+    setCurrentSlide(index);
+    setIsAutoPlaying(false);
+    setTimeout(() => setIsAutoPlaying(true), 8000);
+  };
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % events.length);
+    setIsAutoPlaying(false);
+    setTimeout(() => setIsAutoPlaying(true), 8000);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + events.length) % events.length);
+    setIsAutoPlaying(false);
+    setTimeout(() => setIsAutoPlaying(true), 8000);
+  };
+
 
   // GSAP animations
   useEffect(() => {
@@ -208,39 +243,95 @@ export default function DashboardEvents({ announcements: initialAnnouncements })
           ) : events.length === 0 ? (
             <div className="text-center py-20">
               <div className="w-24 h-24 mx-auto mb-6 bg-yellow-500/10 rounded-full flex items-center justify-center border-2 border-yellow-500/30">
-                <svg
-                  className="w-12 h-12 text-yellow-500"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  />
+                <svg className="w-12 h-12 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
               </div>
               <h2 className="text-2xl font-semibold text-yellow-400 mb-2">
                 No events yet
               </h2>
-              <p className="text-amber-200/60">
-                Check back later for upcoming events!
-              </p>
+              <p className="text-amber-200/60">Check back later for upcoming events!</p>
             </div>
           ) : (
-            <Carousel
-              items={events}
-              baseWidth={typeof window !== 'undefined' && window.innerWidth < 640 ? 320 : 600}
-              // baseHeight={window.innerWidth < 640 ? 520 : 60}
-              autoplay={true}
-              autoplayDelay={3000}
-              pauseOnHover={true}
-              loop={true}
-              round={false}
-            />
+            <div className="relative w-full bg-gradient-to-br from-gray-900/50 to-gray-800/30 backdrop-blur-md rounded-2xl overflow-hidden border border-blue-500/20 shadow-2xl">
+              <div className="relative h-[255px] sm:h-[265px]">
+                {events.map((event, index) => (
+                  <div
+                    key={index}
+                    className={`absolute inset-0 transition-all duration-700 ease-in-out ${index === currentSlide
+                      ? "opacity-100 translate-x-0 z-10"
+                      : index < currentSlide
+                        ? "opacity-0 -translate-x-full z-0"
+                        : "opacity-0 translate-x-full z-0"
+                      }`}
+                  >
+                    <div className="h-full flex flex-col p-6 sm:p-5">
+                      <h3 className="text-2xl sm:text-xl font-bold text-white mb-2 line-clamp-2">
+                        {event.title_k || event.title}
+                      </h3>
+                      <div className="space-y-3 mb-3">
+                        <div className="flex items-center gap-3 text-cyan-400">
+                          <Calendar size={18} />
+                          <span className="text-sm font-medium">{event.date}</span>
+                        </div>
+                        {event.eventTime && (
+                          <div className="flex items-center gap-3 text-purple-400">
+                            <Clock size={18} />
+                            <span className="text-sm font-medium">{event.eventTime}</span>
+                          </div>
+                        )}
+                        {event.location && (
+                          <div className="flex items-center gap-3 text-pink-400">
+                            <MapPin size={18} />
+                            <span className="text-sm font-medium line-clamp-1">{event.location}</span>
+                          </div>
+                        )}
+                      </div>
+                      <p className="text-gray-300 text-sm leading-relaxed line-clamp-3"
+                      style={language === 'kn' ? { fontFamily: "'Noto Sans Kannada', sans-serif" } : {}}
+                      >
+                        {event.description_k || event.description}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* {events.length > 1 && (
+                <>
+                  <button
+                    onClick={prevSlide}
+                    className="absolute left-4 top-[70%] -translate-y-1/2 z-20 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full backdrop-blur-sm transition-all duration-300 hover:scale-110"
+                    aria-label="Previous slide"
+                  >
+                    <ChevronLeft size={24} />
+                  </button>
+                  <button
+                    onClick={nextSlide}
+                    className="absolute right-4 top-[70%] -translate-y-1/2 z-20 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full backdrop-blur-sm transition-all duration-300 hover:scale-110"
+                    aria-label="Next slide"
+                  >
+                    <ChevronRight size={24} />
+                  </button>
+                </>
+              )} */}
+
+              {events.length > 1 && (
+                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+                  {events.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => goToSlide(index)}
+                      className={`transition-all duration-300 rounded-full ${index === currentSlide ? "w-8 h-2 bg-blue-500" : "w-2 h-2 bg-gray-500 hover:bg-gray-400"
+                        }`}
+                      aria-label={`Go to slide ${index + 1}`}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
           )}
+
           {/* More Info Link */}
           <div className="mt-4 text-center">
             <span
@@ -278,18 +369,16 @@ export default function DashboardEvents({ announcements: initialAnnouncements })
               announcements.map((item, index) => (
                 <div
                   key={index}
-                  className="bg-white/5 p-4 rounded-lg mb-3 shadow-md hover:-translate-y-0.5 hover:shadow-lg transition-transform duration-300"
+                  className="bg-white/5 p-4 rounded-lg mb-3 shadow-md hover:-translate-y-0.5 hover:shadow-lg transition-transform duration-300 border border-white/5"
                 >
-                  <h4 className="text-yellow-400 text-lg mb-1">{item.title}</h4>
-                  <p
-                    className="text-gray-300 text-sm leading-relaxed"
-                    style={language === 'kn' ? { fontFamily: "'Noto Sans Kannada', sans-serif" } : {}}
-                  >
-                    {item.message}
-                  </p>
+                  <h4 className="text-yellow-400 text-lg mb-1 font-semibold">{item.title}</h4>
+                  <p className="text-gray-300 text-sm leading-relaxed"
+                  style={language === 'kn' ? { fontFamily: "'Noto Sans Kannada', sans-serif" } : {}}
+                  >{item.message}</p>
                 </div>
               ))
             ) : (
+
               <p className="text-gray-400 text-sm text-center">No announcements yet.</p>
             )}
           </div>

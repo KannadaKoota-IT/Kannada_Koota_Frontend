@@ -2,10 +2,12 @@ import React, { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import emailjs from "emailjs-com";
+import { useLanguage } from "../../context/LanguageContext";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function About() {
+  const { isKannada } = useLanguage();
   const aboutRef = useRef();
   const statsRef = useRef([]);
   const imageRef = useRef();
@@ -146,11 +148,11 @@ export default function About() {
         {/* Header */}
         <div className="relative z-10 text-center mb-20">
           <h2 className="text-5xl md:text-7xl font-bold mb-4 bg-gradient-to-r from-yellow-400 via-amber-300 to-yellow-500 bg-clip-text text-transparent drop-shadow-[0_0_25px_rgba(255,215,0,0.4)]">
-            ಕನ್ನಡ ಕೂಟ
+            {isKannada ? "ಕನ್ನಡ ಕೂಟ" : "Kannada Koota"}
           </h2>
           <p className="mt-4 text-xl md:text-2xl text-gray-300 font-light"
-          style={{ fontFamily: "'Noto Sans Kannada', sans-serif" }}>
-            ಸಂಸ್ಕೃತಿ, ಏಕತೆ ಮತ್ತು ಪಾರಂಪರೆ
+          style={{ fontFamily: isKannada ? "'Noto Sans Kannada', sans-serif" : "inherit" }}>
+            {isKannada ? "ಸಂಸ್ಕೃತಿ, ಏಕತೆ ಮತ್ತು ಪಾರಂಪರೆ" : "Culture, Unity and Tradition"}
           </p>
         </div>
 
@@ -158,19 +160,25 @@ export default function About() {
         <div className="relative z-10 grid lg:grid-cols-2 gap-16 max-w-7xl mx-auto items-start">
           {/* Text */}
           <div className="about-text space-y-8"
-          style={{ fontFamily: "'Noto Sans Kannada', sans-serif" }}>
+          style={{ fontFamily: isKannada ? "'Noto Sans Kannada', sans-serif" : "inherit" }}>
             {[
               {
-                title: "ನಮ್ಮ ಬಗ್ಗೆ",
-                text: "ಪಿ.ಇ.ಎಸ್ ವಿಶ್ವವಿದ್ಯಾಲಯದಲ್ಲಿನ ಕನ್ನಡದ ಮನಸ್ಸುಗಳನ್ನು ಅಭಿಮಾನದ ಬೆಸುಗೆಯಿಂದ ಬಂಧಿಸುವ ಕೊಂಡಿ ನಮ್ಮ ಕೂಟ. ಕನ್ನಡದ ಮಣಿಹಾರಕ್ಕೆ ಕೂಟ ಒಂದು ದಾರ. ಕನ್ನಡವೇ ನಮ್ಮ ಸಾರ, ಕನ್ನಡವೇ ನಮ್ಮ ವಿಚಾರ!",
+                title: isKannada ? "ನಮ್ಮ ಬಗ್ಗೆ" : "Who We Are",
+                text: isKannada
+                  ? "ಪಿ.ಇ.ಎಸ್ ವಿಶ್ವವಿದ್ಯಾಲಯದಲ್ಲಿನ ಕನ್ನಡದ ಮನಸ್ಸುಗಳನ್ನು ಅಭಿಮಾನದ ಬೆಸುಗೆಯಿಂದ ಬಂಧಿಸುವ ಕೊಂಡಿ ನಮ್ಮ ಕೂಟ. ಕನ್ನಡದ ಮಣಿಹಾರಕ್ಕೆ ಕೂಟ ಒಂದು ದಾರ. ಕನ್ನಡವೇ ನಮ್ಮ ಸಾರ, ಕನ್ನಡವೇ ನಮ್ಮ ವಿಚಾರ!"
+                  : "Kannada Koota is a cultural club at PES University dedicated to preserving and celebrating the richness of Kannada language, traditions, and heritage.",
               },
               {
-                title: "ನಮ್ಮ ಕೆಲಸದ ಬಗ್ಗೆ",
-                text: "ಭಾವ-ಜೀವಗಳನ್ನು ಮುತ್ತಿನಂತೆ ಪೋಣಿಸುವ, ಅಭಿಮಾನವನ್ನು ಉಣಿಸುವ, ಹೃದಯಗಳನ್ನು ತಣಿಸುವ, ಮನಗಳನ್ನು ಕುಣಿಸುವ ಕಾರ್ಯಕ್ರಮಗಳ ಮೂಲಕ ನಮ್ಮ ಹೆಜ್ಜೆ ಗುರುತುಗಳನ್ನು ಮೂಡಿಸುತ್ತೇವೆ. ಕನ್ನಡದ ದೀಪ ಹಚ್ಚುವ ಬತ್ತಿಯಾಗುತ್ತೇವೆ, ಕನ್ನಡದ ಚಿತ್ರಪಟಕ್ಕೆ ಭಿತ್ತಿಯಾಗುತ್ತೇವೆ.",
+                title: isKannada ? "ನಮ್ಮ ಕೆಲಸದ ಬಗ್ಗೆ" : "What We Do",
+                text: isKannada
+                  ? "ಭಾವ-ಜೀವಗಳನ್ನು ಮುತ್ತಿನಂತೆ ಪೋಣಿಸುವ, ಅಭಿಮಾನವನ್ನು ಉಣಿಸುವ, ಹೃದಯಗಳನ್ನು ತಣಿಸುವ, ಮನಗಳನ್ನು ಕುಣಿಸುವ ಕಾರ್ಯಕ್ರಮಗಳ ಮೂಲಕ ನಮ್ಮ ಹೆಜ್ಜೆ ಗುರುತುಗಳನ್ನು ಮೂಡಿಸುತ್ತೇವೆ. ಕನ್ನಡದ ದೀಪ ಹಚ್ಚುವ ಬತ್ತಿಯಾಗುತ್ತೇವೆ, ಕನ್ನಡದ ಚಿತ್ರಪಟಕ್ಕೆ ಭಿತ್ತಿಯಾಗುತ್ತೇವೆ."
+                  : "From folk dances and classical music to literature events and heritage workshops, we create meaningful cultural experiences.",
               },
               {
-                title: "ಮಹತ್ವ",
-                text: "ಬೇರು ಗಟ್ಟಿಯಿದ್ದರೆ ಮಾತ್ರವೇ ಬೇರೆಲ್ಲವೂ ಗಟ್ಟಿಯಿರಲು ಸಾಧ್ಯ. ಮಾತೃಭಾಷೆ ಮಾತ್ರವೇ ಪ್ರತಿ ವ್ಯಕ್ತಿಗೆ ಮತ್ತು ಅಭಿವ್ಯಕ್ತಿಗೆ ಸಂಪೂರ್ಣ ಸ್ವಾತಂತ್ರ್ಯದ ಹಿತಕೊಡುತ್ತದೆ ಎಂಬುದು ನಮ್ಮ ನಂಬಿಕೆ.",
+                title: isKannada ? "ಮಹತ್ವ" : "Why It Matters",
+                text: isKannada
+                  ? "ಬೇರು ಗಟ್ಟಿಯಿದ್ದರೆ ಮಾತ್ರವೇ ಬೇರೆಲ್ಲವೂ ಗಟ್ಟಿಯಿರಲು ಸಾಧ್ಯ. ಮಾತೃಭಾಷೆ ಮಾತ್ರವೇ ಪ್ರತಿ ವ್ಯಕ್ತಿಗೆ ಮತ್ತು ಅಭಿವ್ಯಕ್ತಿಗೆ ಸಂಪೂರ್ಣ ಸ್ವಾತಂತ್ರ್ಯದ ಹಿತಕೊಡುತ್ತದೆ ಎಂಬುದು ನಮ್ಮ ನಂಬಿಕೆ."
+                  : "We foster pride, identity, and creativity among students by blending tradition with modern expression.",
               },
             ].map((section, i) => (
               <div key={i}>
@@ -184,14 +192,14 @@ export default function About() {
             ))}
 
             <blockquote className="mt-10 text-xl italic text-yellow-300 border-l-4 border-yellow-400 pl-5">
-              “ನಮ್ಮ ನಡೆಯಲ್ಲಿ, ನಮ್ಮ ನುಡಿಯಲ್ಲಿ” — ಕನ್ನಡ ಕೂಟ
+              {isKannada ? "“ನಮ್ಮ ನಡೆಯಲ್ಲಿ, ನಮ್ಮ ನುಡಿಯಲ್ಲಿ” — ಕನ್ನಡ ಕೂಟ" : '"In our language, in our walk." — Kannada Koota'}
             </blockquote>
 
             <button
               onClick={() => setShowModal(true)}
               className="mt-10 px-8 py-4 rounded-full font-bold bg-gradient-to-r from-yellow-400 to-amber-500 text-black shadow-lg hover:scale-105 hover:shadow-yellow-400/40 transition-all"
             >
-              ನೀವೂ ನಮ್ಮ ಸಮುದಾಯದ ಭಾಗವಾಗಿ
+              {isKannada ? "ನೀವೂ ನಮ್ಮ ಸಮುದಾಯದ ಭಾಗವಾಗಿ" : "Join Our Community"}
             </button>
           </div>
 
@@ -205,7 +213,10 @@ export default function About() {
               />
             </div>
             <div className="flex flex-wrap gap-6 justify-center">
-              {["ಕಾರ್ಯಕ್ರಮಗಳು", "ಸದಸ್ಯರು"].map((label, i) => (
+              {[
+                isKannada ? "ಕಾರ್ಯಕ್ರಮಗಳು" : "Events",
+                isKannada ? "ಸದಸ್ಯರು" : "Members"
+              ].map((label, i) => (
                 <div
                   key={i}
                   className="px-6 py-4 rounded-xl bg-gradient-to-br from-neutral-900 via-black to-neutral-950 border border-yellow-400/30 backdrop-blur-lg shadow-lg text-center hover:scale-105 transition-all"
@@ -234,34 +245,34 @@ export default function About() {
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className="text-2xl font-semibold text-yellow-300 mb-6">
-              Join Kannada Koota
+              {isKannada ? "ಕನ್ನಡ ಕೂಟಕ್ಕೆ ಸೇರಿ" : "Join Kannada Koota"}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <input
                 name="name"
                 type="text"
                 required
-                placeholder="Your Name"
+                placeholder={isKannada ? "ನಿಮ್ಮ ಹೆಸರು" : "Your Name"}
                 className="w-full px-4 py-3 rounded-lg bg-neutral-800 border border-neutral-700 text-white focus:outline-none focus:ring-2 focus:ring-yellow-400"
               />
               <input
                 name="email"
                 type="email"
                 required
-                placeholder="Your Email"
+                placeholder={isKannada ? "ನಿಮ್ಮ ಇಮೇಲ್" : "Your Email"}
                 className="w-full px-4 py-3 rounded-lg bg-neutral-800 border border-neutral-700 text-white focus:outline-none focus:ring-2 focus:ring-yellow-400"
               />
               <textarea
                 name="message"
                 required
-                placeholder="Why do you want to join?"
+                placeholder={isKannada ? "ನೀವು ಏಕೆ ಸೇರಲು ಬಯಸುತ್ತೀರಿ?" : "Why do you want to join?"}
                 className="w-full px-4 py-3 rounded-lg bg-neutral-800 border border-neutral-700 text-white h-28 resize-none focus:outline-none focus:ring-2 focus:ring-yellow-400"
               />
               <button
                 type="submit"
                 className="w-full px-6 py-3 rounded-full font-bold bg-gradient-to-r from-yellow-400 to-amber-500 text-black shadow-md hover:shadow-yellow-400/40 transition-all"
               >
-                Submit
+                {isKannada ? "ಸಲ್ಲಿಸಿ" : "Submit"}
               </button>
             </form>
             <button

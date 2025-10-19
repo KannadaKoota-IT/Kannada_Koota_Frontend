@@ -111,7 +111,7 @@ export default function Navbar() {
   return (
     <>
       <nav className="navbar-container fixed top-0 left-0 w-full z-[1000] bg-black/90 backdrop-blur-xl border-b border-blue-500/20 shadow-2xl">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-4 lg:px-2 flex justify-between items-center h-20">
           {/* Logo */}
           <div
             className="flex-shrink-0 cursor-pointer group"

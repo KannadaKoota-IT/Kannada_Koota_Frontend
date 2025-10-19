@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
+import { useLanguage } from "../context/LanguageContext";
 
 export default function Gallery() {
+  const { isKannada } = useLanguage();
   const [mediaList, setMediaList] = useState([]);
   const [preview, setPreview] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -65,7 +67,7 @@ export default function Gallery() {
         <div className="mb-12">
           <div className="text-center mb-8">
             <h1 className="text-5xl md:text-6xl font-bold mb-3 tracking-tight heritage-title">
-              ನಮ್ಮ ಸಂಸ್ಕೃತಿಯ ಬಿಂಬ
+              {isKannada ? "ನಮ್ಮ ಸಂಸ್ಕೃತಿಯ ಬಿಂಬ" : "Gallery"}
             </h1>
             <div className="h-1 w-32 mx-auto mb-6 heritage-divider"></div>
             <p className="text-lg text-amber-200/80 max-w-2xl mx-auto">
@@ -85,7 +87,7 @@ export default function Gallery() {
                   : "text-yellow-400 hover:bg-yellow-500/10"
                 }`}
             >
-              All
+              {isKannada ? "ಎಲ್ಲಾ" : "All"}
             </button>
             <button
               onClick={() => {
@@ -97,7 +99,7 @@ export default function Gallery() {
                   : "text-yellow-400 hover:bg-yellow-500/10"
                 }`}
             >
-              Photos
+              {isKannada ? "ಫೋಟೋ" : "Photos"}
             </button>
             <button
               onClick={() => {
@@ -109,7 +111,7 @@ export default function Gallery() {
                   : "text-yellow-400 hover:bg-yellow-500/10"
                 }`}
             >
-              Videos
+              {isKannada ? "ವೀಡಿಯೊ" : "Videos"}
             </button>
           </div>
         </div>
@@ -133,12 +135,12 @@ export default function Gallery() {
               </svg>
             </div>
             <h2 className="text-2xl font-semibold text-yellow-400 mb-2">
-              No media found
+              {isKannada ? "ಮಾಧ್ಯಮ ಕಂಡುಬಂದಿಲ್ಲ" : "No media found"}
             </h2>
             <p className="text-amber-200/60">
               {filter === "all"
-                ? "No media has been uploaded yet"
-                : `No ${filter}s available`}
+                ? (isKannada ? "ಇನ್ನೂ ಯಾವುದೇ ಮಾಧ್ಯಮವನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಲಾಗಿಲ್ಲ" : "No media has been uploaded yet")
+                : (isKannada ? `ಯಾವುದೇ ${filter === "image" ? "ಫೋಟೋಗಳು" : "ವೀಡಿಯೋಗಳು"} ಲಭ್ಯವಿಲ್ಲ` : `No ${filter}s available`)}
             </p>
           </div>
         ) : (

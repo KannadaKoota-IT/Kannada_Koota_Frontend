@@ -1,49 +1,51 @@
 import React, { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useLanguage } from "../context/LanguageContext";
 
 import bedagu from "./assets/bedagu.jpg";
 import alankara from "./assets/alankara.jpg";
 import balav from "./assets/balav.webp";
 import inchara from "./assets/inchara.jpg";
-// import rangataranga from "./assets/rangataranga.jpg";
+import ranga from "./assets/ranga.jpg"
 
 gsap.registerPlugin(ScrollTrigger);
 
-const teams = [
-  {
-    team: "ಬೆಡಗು",
-    art: "ಸಾಂಸ್ಕೃತಿಕ ನೃತ್ಯ ತಂಡ",
-    info: "ಕನ್ನಡ ನಾಡಿನ ಸಂಸ್ಕೃತಿಯ ಬಿತ್ತರಿಸುವ ನೃತ್ಯ ಸಿರಿ, ಧೀಮಂತ ಪರಂಪರೆಗಳ ಒಡಲೊಳು  ಹರಿಯುವ ನಾಟ್ಯ ಝರಿ,  ಜಾನಪದ ನೃತ್ಯಗಳ ಬೆಡಗನ್ನು ಬಿಂಬಿಸುವ ನಾಟ್ಯಗರಿ!",
-    image: bedagu,
-  },
-  {
-    team: "ಅಲಂಕಾರ",
-    art: "ಫ್ಯಾಷನ್ ತಂಡ",
-    info: "ಬಿಂಕು–ಬಿನ್ನಾಣದೊಂದಿಗೆ ನಮ್ಮ ನಾಡಿನ ಸೊಬಗನ್ನು ಮೆರೆಸುವ  ಕಲಾವೃಂದ, ವಿವಿಧ ಶೈಲಿಯ ಉಡುಪು ಧಾರಣೆಯೊಂದಿಗೆ ವೇದಿಕೆಯನ್ನು ಶೃಂಗರಿಸುವ ಕಲಾರವಿಂದ!",
-    image: alankara,
-  },
-  {
-    team: "ಬಲವ್",
-    art: "ಪಾಶ್ಚಾತ್ಯ ನೃತ್ಯ ತಂಡ",
-    info: "ಹುರುಪಿನ ಹೆಜ್ಜೆಗಳೊಂದಿಗೆ ಸಾಂಸ್ಕೃತಿಕ ಲಯವ ಬೆಸೆವ  ಚೈತನ್ಯ ಲಹರಿ , ಉತ್ಸಾಹ ಭರಿತ ಭರ್ಜರಿ ಪ್ರದರ್ಶನಗಳೊಂದಿಗೆ  ತನು ಮನವ ಕುಣಿಸುವ ನಾಟ್ಯಮಂಜರಿ !",
-    image: balav,
-  },
-  {
-    team: "ಇಂಚರ",
-    art: "ಗಾಯನ ತಂಡ",
-    info: "ಗಾಯನದ ಇಂಪಲ್ಲಿ , ಕನ್ನಡದ ಕಂಪನ್ನು ಚೆಲ್ಲುವ ಸವಿಗಾನದಂಗಳ, ಭಾವ ಸ್ವರಗಳನುಲಿದು, ಸಾಹಿತ್ಯಮಾಧುರ್ಯವ ಮೆರೆಸುವ ಸಂಗೀತದಳ!",
-    image: inchara,
-  },
-  {
-    team: "ರಂಗತರಂಗ",
-    art: "ನಾಟಕ ವೃಂದ",
-    info: "ನವರಸವನು ಅರಗಿಸಿಹ ಅಭಿನಯ ಚತುರರ ರಂಗಸಜ್ಜಿಕೆ, ನಟನೆಯಿಂದ ಕಲಾರಸಿಕರ ಮನವ ನಾಟುವ ಕಥಾಶರ ಬತ್ತಳಿಕೆ!",
-    image: inchara,
-  },
-];
+const CulturalTeams = () => {
+  const { isKannada } = useLanguage();
 
-export default function CulturalTeams() {
+  const teams = [
+    {
+      team: isKannada ? "ಬೆಡಗು" : "Bedagu",
+      art: isKannada ? "ಸಾಂಸ್ಕೃತಿಕ ನೃತ್ಯ ತಂಡ" : "Cultural Dance Team",
+      info: isKannada ? "ಕನ್ನಡ ನಾಡಿನ ಸಂಸ್ಕೃತಿಯ ಬಿತ್ತರಿಸುವ ನೃತ್ಯ ಸಿರಿ, ಧೀಮಂತ ಪರಂಪರೆಗಳ ಒಡಲೊಳು  ಹರಿಯುವ ನಾಟ್ಯ ಝರಿ,  ಜಾನಪದ ನೃತ್ಯಗಳ ಬೆಡಗನ್ನು ಬಿಂಬಿಸುವ ನಾಟ್ಯಗರಿ!" : "Bedagu is our vibrant cultural dance team that celebrates the traditional folk dances of Karnataka, bringing our rich heritage to life through movement.",
+      image: bedagu,
+    },
+    {
+      team: isKannada ? "ಅಲಂಕಾರ" : "Alankara",
+      art: isKannada ? "ಫ್ಯಾಷನ್ ತಂಡ" : "Fashion Team",
+      info: isKannada ? "ಬಿಂಕು–ಬಿನ್ನಾಣದೊಂದಿಗೆ ನಮ್ಮ ನಾಡಿನ ಸೊಬಗನ್ನು ಮೆರೆಸುವ  ಕಲಾವೃಂದ, ವಿವಿಧ ಶೈಲಿಯ ಉಡುಪು ಧಾರಣೆಯೊಂದಿಗೆ ವೇದಿಕೆಯನ್ನು ಶೃಂಗರಿಸುವ ಕಲಾರವಿಂದ!" : "Alankara is the fashion and styling squad of the Kannada Club, reflecting regional elegance and contemporary flair through costume and design.",
+      image: alankara,
+    },
+    {
+      team: isKannada ? "ಬಲವ್" : "Balav",
+      art: isKannada ? "ಪಾಶ್ಚಾತ್ಯ ನೃತ್ಯ ತಂಡ" : "Western Dance Team",
+      info: isKannada ? "ಹುರುಪಿನ ಹೆಜ್ಜೆಗಳೊಂದಿಗೆ ಸಾಂಸ್ಕೃತಿಕ ಲಯವ ಬೆಸೆವ  ಚೈತನ್ಯ ಲಹರಿ , ಉತ್ಸಾಹ ಭರಿತ ಭರ್ಜರಿ ಪ್ರದರ್ಶನಗಳೊಂದಿಗೆ  ತನು ಮನವ ಕುಣಿಸುವ ನಾಟ್ಯಮಂಜರಿ !" : "Balav is our energetic western dance team that blends contemporary styles with cultural rhythm, adding a dynamic twist to our events.",
+      image: balav,
+    },
+    {
+      team: isKannada ? "ಇಂಚರ" : "Inchara",
+      art: isKannada ? "ಗಾಯನ ತಂಡ" : "Singing Team",
+      info: isKannada ? "ಗಾಯನದ ಇಂಪಲ್ಲಿ , ಕನ್ನಡದ ಕಂಪನ್ನು ಚೆಲ್ಲುವ ಸವಿಗಾನದಂಗಳ, ಭಾವ ಸ್ವರಗಳನುಲಿದು, ಸಾಹಿತ್ಯಮಾಧುರ್ಯವ ಮೆರೆಸುವ ಸಂಗೀತದಳ!" : "Inchara is the musical team that brings Kannada melodies to life with soul-touching performances and traditional tunes.",
+      image: inchara,
+    },
+    {
+      team: isKannada ? "ರಂಗತರಂಗ" : "Rangataranga",
+      art: isKannada ? "ನಾಟಕ ವೃಂದ" : "Drama Group",
+      info: isKannada ? "ನವರಸವನು ಅರಗಿಸಿಹ ಅಭಿನಯ ಚತುರರ ರಂಗಸಜ್ಜಿಕೆ, ನಟನೆಯಿಂದ ಕಲಾರಸಿಕರ ಮನವ ನಾಟುವ ಕಥಾಶರ ಬತ್ತಳಿಕೆ!" : "A stage of skilled actors who evoke the nine emotions, that captivates the minds of art lovers through acting!",
+      image: ranga,
+    },
+  ];
   const cardsRef = useRef([]);
   const titleRef = useRef();
 
@@ -125,7 +127,7 @@ export default function CulturalTeams() {
         ref={titleRef}
         className="relative z-10 text-4xl md:text-5xl font-bold text-center mb-16 text-yellow-400 drop-shadow-[0_0_15px_rgba(255,215,0,0.6)]"
       >
-        Our Cultural Teams
+        {isKannada ? "ನಮ್ಮ ಸಾಂಸ್ಕೃತಿಕ ತಂಡಗಳು" : "Our Cultural Teams"}
       </h2>
 
       {/* Grid */}
@@ -157,4 +159,6 @@ export default function CulturalTeams() {
       </div>
     </section>
   );
-}
+};
+
+export default CulturalTeams;

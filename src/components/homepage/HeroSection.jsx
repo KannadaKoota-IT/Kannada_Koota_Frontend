@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
+import { useLanguage } from "../../context/LanguageContext";
 
 const HeroSection = () => {
+  const { isKannada } = useLanguage();
   const titleRef = useRef(null);
   const subtitleRef = useRef(null);
   const taglineRef = useRef(null);
@@ -81,22 +83,23 @@ const HeroSection = () => {
             ref={titleRef}
             className="text-4xl md:text-5xl lg:text-6xl font-extrabold bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600 bg-clip-text text-transparent mb-5 drop-shadow-xl animate-gradient"
           >
-            ಕನ್ನಡ ಕೂಟಕ್ಕೆ ಸುಸ್ವಾಗತ
+            {isKannada ? "ಕನ್ನಡ ಕೂಟಕ್ಕೆ ಸುಸ್ವಾಗತ" : "Welcome to Kannada Koota – PES University’s Techno-Cultural Club"}
           </h1>
           <p
             ref={subtitleRef}
             className="text-lg md:text-xl text-gray-300/80 leading-relaxed font-medium"
-            style={{ fontFamily: "'Noto Sans Kannada', sans-serif" }}
+            style={{ fontFamily: isKannada ? "'Noto Sans Kannada', sans-serif" : "inherit" }}
           >
-            ಪಿ.ಇ.ಎಸ್ ವಿಶ್ವವಿದ್ಯಾಲಯದಲ್ಲಿ ಕರುನಾಡ ಕಲೆ-ಸಂಸ್ಕೃತಿಯ ಹೆಜ್ಜೆಯೊಡನೆ
-            ತಾಂತ್ರಿಕತೆಯ ಕೊಂಡಿ ಬೆಸೆಯುವ ಹಂಬಲದ ಮನಸುಗಳಿಗೆ ಸದಾ ತೆರೆದ ಬಾಗಿಲು ನಮ್ಮೀ ‘
-            ಕನ್ನಡ ಕೂಟ ’. ಇಲ್ಲಿಂದ ಶುರುವಾಗಲಿ ನಮ್ಮ-ನಿಮ್ಮ ಹೊಸ ಒಡನಾಟ 💛❤️.
+            {isKannada
+              ? "ಪಿ.ಇ.ಎಸ್ ವಿಶ್ವವಿದ್ಯಾಲಯದಲ್ಲಿ ಕರುನಾಡ ಕಲೆ-ಸಂಸ್ಕೃತಿಯ ಹೆಜ್ಜೆಯೊಡನೆ ತಾಂತ್ರಿಕತೆಯ ಕೊಂಡಿ ಬೆಸೆಯುವ ಹಂಬಲದ ಮನಸುಗಳಿಗೆ ಸದಾ ತೆರೆದ ಬಾಗಿಲು ನಮ್ಮೀ ‘ ಕನ್ನಡ ಕೂಟ ’. ಇಲ್ಲಿಂದ ಶುರುವಾಗಲಿ ನಮ್ಮ-ನಿಮ್ಮ ಹೊಸ ಒಡನಾಟ 💛❤️."
+              : "Promoting harmony through language, literature, and heritage. We celebrate and preserve Kannada culture, inspiring pride in the next generation. 💛❤️."
+            }
           </p>
           <h3
             ref={taglineRef}
             className="text-xl md:text-2xl font-semibold italic text-yellow-400 border-l-4 border-yellow-500 pl-5 mt-2 py-2 animate-pulse"
           >
-            "ನಮ್ಮ ನಡೆಯಲ್ಲಿ, ನಮ್ಮ ನುಡಿಯಲ್ಲಿ"
+            {isKannada ? '"ನಮ್ಮ ನಡೆಯಲ್ಲಿ, ನಮ್ಮ ನುಡಿಯಲ್ಲಿ"' : '"In our language, in our walk"'}
           </h3>
         </div>
 

@@ -1,10 +1,12 @@
 import React, { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useLanguage } from "../../context/LanguageContext";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const Missions = () => {
+  const { isKannada } = useLanguage();
   const sectionsRef = useRef([]);
 
   useEffect(() => {
@@ -30,30 +32,33 @@ const Missions = () => {
   const sections = [
     {
       emoji: "🎯",
-      title: "ನಮ್ಮ ಧ್ಯೇಯ",
-      content: [
+      title: isKannada ? "ನಮ್ಮ ಧ್ಯೇಯ" : "Our Vision",
+      content: isKannada ? [
         "ಮನಸ್ಸುಗಳ ನಡುವೆ ಭಾವಪರಾಗವನ್ನು ರವಾನಿಸುವ ದುಂಬಿ ಭಾಷೆ. ದುಂಬಿ ಸಂಪಾದಿಸಿಹ ಜೇನು ಕನ್ನಡ! ಆ ಜೇನ ಹೀರುವ ರಸಿಕರು ನಾವುಗಳು!",
         "ಕನ್ನಡದ ಪರವಾಗಬೇಕು, ಕನ್ನಡದ ಕಾಯಕಕ್ಕೆ ಕೈ ಜೋಡಿಸುವ ಕರವಾಗಬೇಕು, ಮಾತೆಯ ಕೊರಳಲ್ಲಿನ ಸರವಾಗಬೇಕು, ಕನ್ನಡದ ಉದ್ಯಾನದಲ್ಲೊಂದು ಮರವಾಗಬೇಕು ಎಂಬುದೇ ನಮ್ಮ ಆಶಯ!",
+      ] : [
+        "To create a vibrant, inclusive space that celebrates the heart and heritage of Karnataka. Through culture, language, art, and community, we bring together students who share a love for Kannada or are curious to explore it.",
+        "We exist to keep traditions alive, nurture identity, and inspire pride in who we are and where we come from.",
       ],
     },
     {
       emoji: "🛣️",
-      title: "ನಮ್ಮ ದಾರಿ",
-      content: [
+      title: isKannada ? "ನಮ್ಮ ದಾರಿ" : "Our Path",
+      content: isKannada ? [
         "ಕರ್ನಾಟಕದ ಹಾಡು-ಕುಣಿತ, ಭವ್ಯತೆ-ನವ್ಯತೆ, ಪ್ರಕೃತಿ-ಸಂಸ್ಕೃತಿ, ಸಂಪದ-ಜಾನಪದ, ಉಡುಗೆ-ತೊಡುಗೆ, ಊಟ-ಉಪಚಾರ, ಹಬ್ಬ-ಹರಿದಿನ, ವ್ಯವಹಾರ-ಆಚರಣೆ, ರೀತಿ-ನೀತಿ‌-ಪ್ರೀತಿ ಹೀಗೆ ಹತ್ತು ಹಲವಾರು ಧಾತುಗಳ ನಡುವಿನ ಸೇತುವಾಗಿ ನಿಲ್ಲುವುದೇ ನಮ್ಮ ನಿಲುವು. ಇವೆಲ್ಲವನ್ನು ಸ್ವಾಗತಿಸುವ ಮತ್ತು ಸಂಭ್ರಮಿಸುವ ಸಾಂಸ್ಕೃತಿಕ ಹಾಗೂ ತಾಂತ್ರಿಕ ಕಾರ್ಯಕ್ರಮಗಳ ಮುಖಾಂತರ ನಮ್ಮತನದ ಭಾವನೆಯನ್ನು ಉದ್ದೀಪಿಸುವ ಕೆಲಸ ನಮ್ಮದು",
+      ] : [
+        "We envision a world where Kannada culture echoes far beyond its borders — where students from all walks of life come together to dance to folk tunes, savor hometown flavors, and speak in the language of unity.",
       ],
-      // list: [
-      //   "🌟 A beacon of cultural pride",
-      //   "🌉 A bridge between generations and communities",
-      //   "🎤 A platform for expression, celebration, and connection",
-      // ],
     },
     {
       emoji: "💫",
-      title: "ನಮ್ಮ ನಂಬಿಕೆ",
-      content: [
+      title: isKannada ? "ನಮ್ಮ ನಂಬಿಕೆ" : "Our Belief",
+      content: isKannada ? [
         "ಭಾಷೆ ಎಂಬುದು ಪೆಟ್ಟಿಗೆಯಲ್ಲಿ ಗಾಜಿನ ಹಿಂದಿಟ್ಟು ಸಂರಕ್ಷಿಸುವ ಗ್ರಂಥ ಎನ್ನುವುದಕ್ಕಿಂತ ಅದರ ಪ್ರತಿ ಶಬ್ದವೂ ನಮ್ಮ ಸ್ವಂತ ಎನ್ನುವುದು ನಮ್ಮ ನಂಬಿಕೆ. ",
         "ನಮ್ಮ ಪಾಲಿಗೆ ಇದು ಬರೀ ಭಾಷೆಯಲ್ಲ, ನಮ್ಮ ನಾಲಿಗೆಯ ತುಡಿತ, ಎದೆಯ ಬಡಿತ, ಮನಸ್ಸಿನ ಮಿಡಿತ!",
+      ] : [
+        "At Kannada Koota, we believe that culture is not just preserved — it is lived, shared, and passed on with joy.",
+        "We welcome anyone with an open heart — whether you're from Karnataka or just curious to learn.",
       ],
     },
   ];
@@ -67,7 +72,7 @@ const Missions = () => {
       </div>
 
       <h2 className="text-center text-4xl md:text-5xl font-bold mb-16 bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(255,215,0,0.6)]">
-        ಧ್ಯೇಯ ಮತ್ತು ದಾರಿ
+        {isKannada ? "ಧ್ಯೇಯ ಮತ್ತು ದಾರಿ" : "Vision and Path"}
       </h2>
 
       <div className="flex flex-col gap-12 max-w-6xl mx-auto">
