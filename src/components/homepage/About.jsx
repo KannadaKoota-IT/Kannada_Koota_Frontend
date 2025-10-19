@@ -13,8 +13,21 @@ export default function About() {
   const imageRef = useRef();
   const [showModal, setShowModal] = useState(false);
   const [successMsg, setSuccessMsg] = useState(false);
+  const [glowStyles, setGlowStyles] = useState([]);
 
   useEffect(() => {
+    // Generate glow styles on client-side only
+    const styles = [...Array(6)].map((_, i) => ({
+      width: `${200 + Math.random() * 200}px`,
+      height: `${200 + Math.random() * 200}px`,
+      top: `${Math.random() * 100}%`,
+      left: `${Math.random() * 100}%`,
+      background: i % 2
+        ? "radial-gradient(circle, rgba(7,130,7,0.25) 0%, transparent 70%)"
+        : "radial-gradient(circle, rgba(255,215,0,0.25) 0%, transparent 70%)",
+    }));
+    setGlowStyles(styles);
+
     const ctx = gsap.context(() => {
       // Section animation
       gsap.from(aboutRef.current, {
@@ -128,19 +141,11 @@ export default function About() {
         {/* Background */}
         <div className="absolute inset-0 bg-gradient-to-br from-black via-neutral-950 to-black" />
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          {[...Array(6)].map((_, i) => (
+          {glowStyles.map((style, i) => (
             <div
               key={i}
               className="glow-spot absolute rounded-full blur-3xl opacity-20"
-              style={{
-                width: `${200 + Math.random() * 200}px`,
-                height: `${200 + Math.random() * 200}px`,
-                top: `${Math.random() * 100}%`,
-                left: `${Math.random() * 100}%`,
-                background: i % 2
-                  ? "radial-gradient(circle, rgba(7,130,7,0.25) 0%, transparent 70%)"
-                  : "radial-gradient(circle, rgba(255,215,0,0.25) 0%, transparent 70%)",
-              }}
+              style={style}
             />
           ))}
         </div>

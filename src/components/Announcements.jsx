@@ -27,7 +27,7 @@ export default function Announcements({ initialAnnouncements = [] }) {
 
   const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL;
   const API = `${API_BASE}/api/announcements?lang=${language}`;
-  console.log('[Announcements] language =', language, 'API =', `${API}&_v=${language}`);
+  // console.log('[Announcements] language =', language, 'API =', `${API}&_v=${language}`);
 
   const fetchAnnouncements = async (signal) => {
     setLoading(true);
@@ -38,7 +38,7 @@ export default function Announcements({ initialAnnouncements = [] }) {
         signal,
       });
       const data = await res.json();
-      console.log('[Announcements] response sample:', Array.isArray(data) ? data?.[0] : data?.announcements?.[0]);
+      // console.log('[Announcements] response sample:', Array.isArray(data) ? data?.[0] : data?.announcements?.[0]);
       if (data && data.success) {
         setAnnouncements(data.announcements);
       } else {

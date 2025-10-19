@@ -158,17 +158,7 @@ export default function DashboardEvents({ announcements: initialAnnouncements })
         }
       );
 
-      gsap.to("#culture-tagline", {
-        opacity: 1,
-        y: 0,
-        duration: 1,
-        delay: 0.6,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: "#culture-tagline",
-          start: "top 90%",
-        },
-      });
+
 
       gsap.to(".blue-glow", {
         x: "20%",
