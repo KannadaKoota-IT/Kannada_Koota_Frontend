@@ -48,7 +48,7 @@ export default function About() {
           el,
           { innerText: 0 },
           {
-            innerText: [30, 200][i],
+            innerText: [30, 300][i],
             duration: 2.2,
             snap: { innerText: 1 },
             ease: "power2.out",
