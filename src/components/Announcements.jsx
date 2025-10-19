@@ -1,25 +1,51 @@
 import React, { useState, useEffect } from "react";
+import { useLanguage } from "../context/LanguageContext";
 
-export default function Announcements({ announcements: initialAnnouncements }) {
+export default function Announcements({ initialAnnouncements = [] }) {
+  const { language } = useLanguage();
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [announcements, setAnnouncements] = useState(initialAnnouncements || []);
+  const [announcements, setAnnouncements] = useState(initialAnnouncements);
+
+  const translations = {
+    en: {
+      title: "Announcements",
+      subtitle: "(ಪ್ರಕಟಣೆಗಳು)",
+      loading: "Loading announcements...",
+      noAnnouncements: "No announcements yet",
+      checkBack: "Check back later for updates!"
+    },
+    kn: {
+      title: "ಪ್ರಕಟಣೆಗಳು",
+      subtitle: "(Announcements)",
+      loading: "ಪ್ರಕಟಣೆಗಳನ್ನು ಲೋಡ್ ಮಾಡುತ್ತಿದೆ...",
+      noAnnouncements: "ಇನ್ನೂ ಪ್ರಕಟಣೆಗಳಿಲ್ಲ",
+      checkBack: "ನವೀಕರಣಗಳಿಗಾಗಿ ನೋಡಿ!"
+    }
+  };
 
   const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL;
+  const API = `${API_BASE}/api/announcements?lang=${language}`;
+  console.log('[Announcements] language =', language, 'API =', `${API}&_v=${language}`);
 
-  const fetchAnnouncements = async () => {
+  const fetchAnnouncements = async (signal) => {
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/api/announcements`);
+      const res = await fetch(`${API_BASE}/api/announcements?lang=${language}&_v=${encodeURIComponent(language)}`, {
+        cache: 'no-store',
+        headers: { 'Cache-Control': 'no-cache' },
+        signal,
+      });
       const data = await res.json();
+      console.log('[Announcements] response sample:', Array.isArray(data) ? data?.[0] : data?.announcements?.[0]);
       if (data && data.success) {
         setAnnouncements(data.announcements);
       } else {
         setAnnouncements([]);
       }
     } catch (err) {
-      console.error("Failed to fetch announcements:", err);
+      if (err.name !== 'AbortError') console.error("Failed to fetch announcements:", err);
       setAnnouncements([]);
     } finally {
       setLoading(false);
@@ -40,12 +66,20 @@ export default function Announcements({ announcements: initialAnnouncements }) {
   };
 
   useEffect(() => {
+    const ac = new AbortController();
+    fetchAnnouncements(ac.signal);
+    setPreview(null);
+    setCurrentIndex(0);
+    return () => ac.abort();
+  }, [language]);
+
+  useEffect(() => {
     window.addEventListener("keydown", handleKeyPress);
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [preview, currentIndex]);
 
   return (
-    <div className="heritage-announcements min-h-screen mt-20 relative overflow-hidden">
+    <div key={language} className="heritage-announcements min-h-screen mt-20 relative overflow-hidden">
       {/* Animated Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="mandala-1"></div>
@@ -61,10 +95,10 @@ export default function Announcements({ announcements: initialAnnouncements }) {
         <div className="mb-12">
           <div className="text-center mb-8">
             <h1 className="text-5xl md:text-6xl font-bold mb-1 tracking-tight heritage-title text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-cyan-400">
-              ಪ್ರಕಟಣೆಗಳು
+              {translations[language].title}
             </h1>
             <p className="text-red-400 text-base md:text-lg font-medium mt-1">
-              (Announcements)
+              {translations[language].subtitle}
             </p>
           </div>
         </div>
@@ -76,7 +110,7 @@ export default function Announcements({ announcements: initialAnnouncements }) {
               <div className="spinner"></div>
             </div>
             <h2 className="text-2xl font-semibold text-yellow-400 mb-2">
-              Loading announcements...
+              {translations[language].loading}
             </h2>
           </div>
         ) : announcements.length === 0 ? (
@@ -97,17 +131,17 @@ export default function Announcements({ announcements: initialAnnouncements }) {
               </svg>
             </div>
             <h2 className="text-2xl font-semibold text-yellow-400 mb-2">
-              No announcements yet
+              {translations[language].noAnnouncements}
             </h2>
             <p className="text-amber-200/60">
-              Check back later for updates!
+              {translations[language].checkBack}
             </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {announcements.map((announcement, index) => (
               <div
-                key={announcement._id}
+                key={`${announcement._id}-${language}`}
                 className="heritage-card group relative rounded-2xl overflow-hidden cursor-pointer flex flex-col"
                 onClick={() => {
                   setPreview(announcement);
@@ -179,7 +213,10 @@ export default function Announcements({ announcements: initialAnnouncements }) {
                     <h3 className="text-lg font-bold text-yellow-400 mb-2">
                       {announcement.title}
                     </h3>
-                    <p className="text-sm text-amber-100/80 line-clamp-3 mb-2">
+                    <p
+                      className="text-sm text-amber-100/80 line-clamp-3 mb-2"
+                      style={language === 'kn' ? { fontFamily: "'Noto Sans Kannada', sans-serif" } : {}}
+                    >
                       {announcement.message}
                     </p>
                   </div>
@@ -353,7 +390,10 @@ export default function Announcements({ announcements: initialAnnouncements }) {
                     {preview.title}
                   </h2>
 
-                  <p className="text-amber-100 mb-4 leading-relaxed">
+                  <p
+                    className="text-amber-100 mb-4 leading-relaxed"
+                    style={language === 'kn' ? { fontFamily: "'Noto Sans Kannada', sans-serif" } : {}}
+                  >
                     {preview.message}
                   </p>
 

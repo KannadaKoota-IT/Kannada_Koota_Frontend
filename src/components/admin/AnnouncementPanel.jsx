@@ -15,7 +15,7 @@ export default function AnnouncementPanel() {
 
   const fetchAnnouncements = async () => {
     try {
-      const res = await fetch(`${API_BASE}/api/announcements`);
+      const res = await fetch(`${API_BASE}/api/announcements?admin=true`);
       const data = await res.json();
       if (data.success) {
         setAnnouncements(data.announcements);

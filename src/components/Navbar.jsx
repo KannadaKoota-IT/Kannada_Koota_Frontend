@@ -3,8 +3,10 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { gsap } from "gsap";
 import { Outlet } from "react-router-dom";
+import { useLanguage } from "../context/LanguageContext";
 
 export default function Navbar() {
+  const { language, toggleLanguage } = useLanguage();
   const [menuOpen, setMenuOpen] = useState(false); // mobile full menu
   const [dropdownOpen, setDropdownOpen] = useState(false); // hamburger dropdown
   const [activeSection, setActiveSection] = useState("home");
@@ -122,7 +124,7 @@ export default function Navbar() {
             <img
               src="/logo.png"
               alt="Logo"
-              className="w-14 h-14 rounded-full object-cover ring-2 ring-blue-500/50 group-hover:ring-blue-400 transition-all duration-300 shadow-lg shadow-blue-500/30 group-hover:shadow-blue-400/50 group-hover:scale-105"
+              className="w-14 h-14 rounded-full object-cover ring-2 ring-yellow-500/50 group-hover:ring-yellow-400 transition-all duration-300 shadow-lg shadow-blue-500/30 group-hover:shadow-blue-400/50 group-hover:scale-105"
             />
           </div>
 
@@ -173,6 +175,23 @@ export default function Navbar() {
                 ))}
               </div>
             </div>
+
+            {/* Language Toggle Switch */}
+            <div className="flex items-center space-x-2">
+              <span className="text-sm font-bold text-yellow-400">KN</span>
+              <button
+                onClick={toggleLanguage}
+                className="relative w-12 h-6 bg-gradient-to-r from-yellow-500 to-amber-600 rounded-full shadow-lg transition-all duration-300 hover:scale-105 focus:outline-none"
+                aria-label="Toggle language"
+              >
+                <div
+                  className={`absolute top-0.5 w-5 h-5 bg-black rounded-full shadow-md transition-all duration-300 ${
+                    language === 'en' ? 'left-6.5' : 'left-0.5'
+                  }`}
+                ></div>
+              </button>
+              <span className="text-sm font-bold text-yellow-400">EN</span>
+            </div>
           </div>
 
           {/* Mobile Hamburger (full menu) */}
@@ -207,6 +226,23 @@ export default function Navbar() {
             }`}
         >
           <div className="px-4 pt-2 pb-4 space-y-2 bg-black/95 backdrop-blur-xl border-t border-blue-500/10 flex flex-col">
+            {/* Language Toggle for Mobile */}
+            <div className="flex items-center justify-center space-x-2 py-2">
+              <span className="text-sm font-bold text-yellow-400">KN</span>
+              <button
+                onClick={toggleLanguage}
+                className="relative w-12 h-6 bg-gradient-to-r from-yellow-500 to-amber-600 rounded-full shadow-lg transition-all duration-300 hover:scale-105 focus:outline-none"
+                aria-label="Toggle language"
+              >
+                <div
+                  className={`absolute top-0.5 w-5 h-5 bg-black rounded-full shadow-md transition-all duration-300 ${
+                    language === 'en' ? 'left-6.5' : 'left-0.5'
+                  }`}
+                ></div>
+              </button>
+              <span className="text-sm font-bold text-yellow-400">EN</span>
+            </div>
+
             {[...mainMenuItems, ...dropdownItems].map((item, i) => (
               item.type ? (
                 <NavItem key={i} item={item} onClick={handleNavClick} />

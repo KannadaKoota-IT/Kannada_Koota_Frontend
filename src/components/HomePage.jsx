@@ -6,11 +6,11 @@ import Footer from "./homepage/Footer";
 import DashboardEvents from "./homepage/DashboardEvents";
 import CulturalTeams from "./CulturalTeams";
 
-const HomePage = ({ events, announcements }) => {
+const HomePage = ({ announcements }) => {
   return (
     <>
       <HeroSection />
-      <DashboardEvents events={events} announcements={announcements} />
+      <DashboardEvents announcements={announcements} />
       <About />
       <Missions />
       <CulturalTeams />

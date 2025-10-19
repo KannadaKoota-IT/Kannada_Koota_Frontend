@@ -12,13 +12,14 @@ import Navbar from '../src/components/Navbar'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { useRouter } from 'next/router'
+import { LanguageProvider } from '../src/context/LanguageContext'
 
 export default function App({ Component, pageProps }) {
   const router = useRouter()
   const isAdminPage = router.pathname.startsWith('/admin')
 
   return (
-    <>
+    <LanguageProvider>
       {!isAdminPage && <Navbar />}
       <Component {...pageProps} />
       <ToastContainer
@@ -33,6 +34,6 @@ export default function App({ Component, pageProps }) {
         pauseOnHover
         theme="dark"
       />
-    </>
+    </LanguageProvider>
   )
 }

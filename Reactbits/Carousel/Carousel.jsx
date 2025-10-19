@@ -166,7 +166,12 @@ export default function Carousel({
             >
               <div className="carousel-item-content">
                 <div className="carousel-item-title">{item.title}</div>
-                <p className="carousel-item-description">{item.description}</p>
+                <p
+                  className="carousel-item-description"
+                  style={item.language === 'kn' ? { fontFamily: "'Noto Sans Kannada', sans-serif" } : {}}
+                >
+                  {item.description}
+                </p>
 
                 {/* ✅ Date and location */}
                 {item.date && (

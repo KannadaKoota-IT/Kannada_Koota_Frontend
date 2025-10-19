@@ -1,17 +1,76 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Carousel from "../../../Reactbits/Carousel/Carousel";
 import InfiniteScroll from "../../../Reactbits/InfiniteScroll/InfiniteScroll";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useRouter } from "next/router";
+import { useLanguage } from "../../context/LanguageContext";
 
 gsap.registerPlugin(ScrollTrigger);
 
-export default function DashboardEvents({ events: initialEvents, announcements: initialAnnouncements }) {
+export default function DashboardEvents({ announcements: initialAnnouncements }) {
   const sectionRef = useRef(null);
   const router = useRouter();
+  const { language } = useLanguage();
+  const [events, setEvents] = useState([]);
+  const [announcements, setAnnouncements] = useState(initialAnnouncements || []);
+  const [loading, setLoading] = useState(true);
 
+  // Fetch events based on language
+  const fetchEvents = async () => {
+    setLoading(true);
+    try {
+      const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL;
+      const res = await fetch(`${API_BASE}/api/events?lang=${language}&_v=${encodeURIComponent(language)}`, {
+        cache: 'no-store',
+        headers: { 'Cache-Control': 'no-cache' },
+      });
+      const data = await res.json();
+      const formattedEvents = data.map((event) => ({
+        title: event.title,
+        description: event.description,
+        date: new Date(event.date).toLocaleDateString(),
+        time: formatTime(event.eventTime),
+        location: event.location || "TBA",
+        image: event.imageUrl ? `${API_BASE}${event.imageUrl}` : null,
+        language: language,
+      }));
+      setEvents(formattedEvents);
+    } catch (err) {
+      console.error("Failed to fetch events:", err);
+      setEvents([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  // Fetch announcements based on language
+  const fetchAnnouncements = async () => {
+    try {
+      const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL;
+      const res = await fetch(`${API_BASE}/api/announcements?lang=${language}&_v=${encodeURIComponent(language)}`, {
+        cache: 'no-store',
+        headers: { 'Cache-Control': 'no-cache' },
+      });
+      const data = await res.json();
+      if (data && data.success) {
+        setAnnouncements(data.announcements.map((item) => ({
+          title: item.title,
+          message: item.message,
+        })));
+      } else {
+        setAnnouncements([]);
+      }
+    } catch (err) {
+      console.error("Failed to fetch announcements:", err);
+      setAnnouncements([]);
+    }
+  };
+
+  useEffect(() => {
+    fetchEvents();
+    fetchAnnouncements();
+  }, [language]);
 
   // GSAP animations
   useEffect(() => {
@@ -103,6 +162,16 @@ export default function DashboardEvents({ events: initialEvents, announcements: 
     return () => ctx.revert();
   }, []);
 
+  // Format time helper
+  const formatTime = (time) => {
+    if (!time) return "";
+    const [hours, minutes] = time.split(":");
+    let h = parseInt(hours, 10);
+    const ampm = h >= 12 ? "PM" : "AM";
+    h = h % 12 || 12;
+    return `${h}:${minutes} ${ampm}`;
+  };
+
 
   return (
     <div
@@ -127,16 +196,51 @@ export default function DashboardEvents({ events: initialEvents, announcements: 
             <span className="text-sm md:text-base text-red-500 mt-1 ml-7">(Events)</span>
           </h2>
 
-          <Carousel
-            items={initialEvents}
-            baseWidth={typeof window !== 'undefined' && window.innerWidth < 640 ? 320 : 600}
-            // baseHeight={window.innerWidth < 640 ? 520 : 60}
-            autoplay={true}
-            autoplayDelay={3000}
-            pauseOnHover={true}
-            loop={true}
-            round={false}
-          />
+          {loading ? (
+            <div className="text-center py-20">
+              <div className="w-24 h-24 mx-auto mb-6 bg-yellow-500/10 rounded-full flex items-center justify-center border-2 border-yellow-500/30">
+                <div className="spinner"></div>
+              </div>
+              <h2 className="text-2xl font-semibold text-yellow-400 mb-2">
+                Loading events...
+              </h2>
+            </div>
+          ) : events.length === 0 ? (
+            <div className="text-center py-20">
+              <div className="w-24 h-24 mx-auto mb-6 bg-yellow-500/10 rounded-full flex items-center justify-center border-2 border-yellow-500/30">
+                <svg
+                  className="w-12 h-12 text-yellow-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+              </div>
+              <h2 className="text-2xl font-semibold text-yellow-400 mb-2">
+                No events yet
+              </h2>
+              <p className="text-amber-200/60">
+                Check back later for upcoming events!
+              </p>
+            </div>
+          ) : (
+            <Carousel
+              items={events}
+              baseWidth={typeof window !== 'undefined' && window.innerWidth < 640 ? 320 : 600}
+              // baseHeight={window.innerWidth < 640 ? 520 : 60}
+              autoplay={true}
+              autoplayDelay={3000}
+              pauseOnHover={true}
+              loop={true}
+              round={false}
+            />
+          )}
           {/* More Info Link */}
           <div className="mt-4 text-center">
             <span
@@ -170,14 +274,17 @@ export default function DashboardEvents({ events: initialEvents, announcements: 
           </div> */}
 
           <div className="relative flex-1 overflow-y-auto max-h-[500px] pr-2 scrollbar-thin scrollbar-thumb-blue-500/30 scrollbar-track-transparent">
-            {initialAnnouncements.length > 0 ? (
-              initialAnnouncements.map((item, index) => (
+            {announcements.length > 0 ? (
+              announcements.map((item, index) => (
                 <div
                   key={index}
                   className="bg-white/5 p-4 rounded-lg mb-3 shadow-md hover:-translate-y-0.5 hover:shadow-lg transition-transform duration-300"
                 >
                   <h4 className="text-yellow-400 text-lg mb-1">{item.title}</h4>
-                  <p className="text-gray-300 text-sm leading-relaxed">
+                  <p
+                    className="text-gray-300 text-sm leading-relaxed"
+                    style={language === 'kn' ? { fontFamily: "'Noto Sans Kannada', sans-serif" } : {}}
+                  >
                     {item.message}
                   </p>
                 </div>

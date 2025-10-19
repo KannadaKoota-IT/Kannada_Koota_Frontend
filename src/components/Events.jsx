@@ -1,27 +1,60 @@
 import React, { useState, useEffect } from "react";
 import { Calendar, Clock } from "lucide-react";
+import { useLanguage } from "../context/LanguageContext";
 
-export default function Events({ events: initialEvents }) {
+export default function Events({ initialEvents = [] }) {
+  const { language } = useLanguage();
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [events, setEvents] = useState(initialEvents || []);
+  const [events, setEvents] = useState(initialEvents);
+
+  const translations = {
+    en: {
+      title: "Upcoming Events",
+      subtitle: "(ಕಾರ್ಯಕ್ರಮಗಳು)",
+      loading: "Loading events...",
+      noEvents: "No events yet",
+      checkBack: "Check back later for upcoming events!"
+    },
+    kn: {
+      title: "ಮುಂಬರುವ ಕಾರ್ಯಕ್ರಮಗಳು",
+      subtitle: "(Events)",
+      loading: "ಕಾರ್ಯಕ್ರಮಗಳನ್ನು ಲೋಡ್ ಮಾಡುತ್ತಿದೆ...",
+      noEvents: "ಇನ್ನೂ ಕಾರ್ಯಕ್ರಮಗಳಿಲ್ಲ",
+      checkBack: "ಮುಂಬರುವ ಕಾರ್ಯಕ್ರಮಗಳಿಗಾಗಿ ನೋಡಿ!"
+    }
+  };
 
   const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL;
-  const API = `${API_BASE}/api/events`;
+  const API = `${API_BASE}/api/events?lang=${language}`;
+  // console.log('[Events] language =', language, 'API =', `${API}&_v=${language}`);
 
-  const fetchEvents = async () => {
+  const fetchEvents = async (signal) => {
     setLoading(true);
     try {
-      const res = await fetch(API);
+      const res = await fetch(`${API}&_v=${encodeURIComponent(language)}`, {
+               cache: 'no-store',
+               headers: { 'Cache-Control': 'no-cache' },
+               signal,
+             });
       const data = await res.json();
+      // console.log('[Events] first title:', data?.[0]?.title);
       setEvents(data);
     } catch (err) {
-      console.error("Failed to fetch events:", err);
+      if (err.name !== 'AbortError') console.error("Failed to fetch events:", err);
     } finally {
       setLoading(false);
     }
   };
+
+   useEffect(() => {
+       const ac = new AbortController();
+       fetchEvents(ac.signal);
+       setPreview(null);
+       setCurrentIndex(0);
+       return () => ac.abort();
+     }, [language]);
 
   const handleKeyPress = (e) => {
     if (!preview) return;
@@ -53,7 +86,7 @@ export default function Events({ events: initialEvents }) {
 
 
   return (
-    <div className="heritage-events min-h-screen mt-20 relative overflow-hidden">
+    <div key={language} className="heritage-events min-h-screen mt-20 relative overflow-hidden">
       {/* Animated Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="mandala-1"></div>
@@ -69,10 +102,10 @@ export default function Events({ events: initialEvents }) {
         <div className="mb-12">
           <div className="text-center mb-8">
             <h1 className="text-5xl md:text-6xl font-bold mb-1 tracking-tight heritage-title text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-cyan-400">
-              ಮುಂಬರುವ ಕಾರ್ಯಕ್ರಮಗಳು
+              {translations[language].title}
             </h1>
             <p className="text-red-400 text-base md:text-lg font-medium mt-1">
-              (Events)
+              {translations[language].subtitle}
             </p>
           </div>
         </div>
@@ -84,7 +117,7 @@ export default function Events({ events: initialEvents }) {
               <div className="spinner"></div>
             </div>
             <h2 className="text-2xl font-semibold text-yellow-400 mb-2">
-              Loading events...
+              {translations[language].loading}
             </h2>
           </div>
         ) : events.length === 0 ? (
@@ -105,17 +138,17 @@ export default function Events({ events: initialEvents }) {
               </svg>
             </div>
             <h2 className="text-2xl font-semibold text-yellow-400 mb-2">
-              No events yet
+              {translations[language].noEvents}
             </h2>
             <p className="text-amber-200/60">
-              Check back later for upcoming events!
+              {translations[language].checkBack}
             </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {events.map((event, index) => (
               <div
-                key={event._id}
+                key={`${event._id}-${language}`}
                 className="heritage-card group relative rounded-2xl overflow-hidden cursor-pointer flex flex-col"
                 onClick={() => {
                   setPreview(event);
@@ -170,7 +203,10 @@ export default function Events({ events: initialEvents }) {
                     <h3 className="text-lg font-bold text-yellow-400 mb-2">
                       {event.title}
                     </h3>
-                    <p className="text-sm text-amber-100/80 line-clamp-3 mb-2">
+                    <p
+                      className="text-sm text-amber-100/80 line-clamp-3 mb-2"
+                      style={language === 'kn' ? { fontFamily: "'Noto Sans Kannada', sans-serif" } : {}}
+                    >
                       {event.description}
                     </p>
                   </div>
@@ -363,7 +399,10 @@ export default function Events({ events: initialEvents }) {
                     {preview.title}
                   </h2>
 
-                  <p className="text-amber-100 mb-4 leading-relaxed">
+                  <p
+                    className="text-amber-100 mb-4 leading-relaxed"
+                    style={language === 'kn' ? { fontFamily: "'Noto Sans Kannada', sans-serif" } : {}}
+                  >
                     {preview.description}
                   </p>
 

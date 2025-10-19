@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 
 const HeroSection = () => {
@@ -6,34 +6,58 @@ const HeroSection = () => {
   const subtitleRef = useRef(null);
   const taglineRef = useRef(null);
   const imageRef = useRef(null);
+  const [showRing, setShowRing] = useState(false);
 
   useEffect(() => {
-    const commonDelay = 0.3; // h1 and image animate together
-    const commonDuration = 3; // duration for both
+    const titleDelay = 0.3;
+    const subtitleDelay = titleDelay + 1.2;
+    const taglineDelay = subtitleDelay + 1.2;
 
+    // Animate title
     gsap.fromTo(
       titleRef.current,
       { opacity: 0, y: 100 },
-      { opacity: 1, y: 0, duration: commonDuration, delay: commonDelay, ease: "power3.out" }
+      { opacity: 1, y: 0, duration: 1.2, delay: titleDelay, ease: "power3.out" }
     );
 
     gsap.fromTo(
       imageRef.current,
       { opacity: 0, x: 100 },
-      { opacity: 1, x: 0, duration: 0.5, delay: commonDelay, ease: "power3.out" }
+      {
+        opacity: 1,
+        x: 0,
+        duration: 0.8,
+        delay: titleDelay,
+        ease: "power3.out",
+        onComplete: () => {
+          setTimeout(() => setShowRing(true), 200);
+        },
+      }
     );
 
-    // Subtitle and tagline remain staggered
     gsap.fromTo(
       subtitleRef.current,
       { opacity: 0, y: 100 },
-      { opacity: 1, y: 0, duration: 3, delay: 1, ease: "power3.out" }
+      {
+        opacity: 1,
+        y: 0,
+        duration: 1.2,
+        delay: subtitleDelay,
+        ease: "power3.out",
+      }
     );
 
+    const isMobile = window.innerWidth < 768;
     gsap.fromTo(
       taglineRef.current,
-      { opacity: 0, y: 100 },
-      { opacity: 1, y: 0, duration: 3, delay: 2, ease: "power3.out" }
+      { opacity: 0, y: isMobile ? 0 : 100 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 1.2,
+        delay: taglineDelay,
+        ease: "power3.out",
+      }
     );
   }, []);
 
@@ -56,20 +80,17 @@ const HeroSection = () => {
           <h1
             ref={titleRef}
             className="text-4xl md:text-5xl lg:text-6xl font-extrabold bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600 bg-clip-text text-transparent mb-5 drop-shadow-xl animate-gradient"
-            style={{ fontFamily: "'Noto Serif Kannada', sans-serif" }}
           >
-            ಕನ್ನಡ ಕೂಟಕ್ಕೆ ಸುಸ್ವಾಗತ 
+            ಕನ್ನಡ ಕೂಟಕ್ಕೆ ಸುಸ್ವಾಗತ
           </h1>
           <p
             ref={subtitleRef}
-            className="text-lg md:text-xl text-gray-300/80 leading-relaxed font-bold fontfamily-"
+            className="text-lg md:text-xl text-gray-300/80 leading-relaxed font-medium"
             style={{ fontFamily: "'Noto Sans Kannada', sans-serif" }}
           >
-            ಪಿ.ಇ.ಎಸ್ ವಿಶ್ವವಿದ್ಯಾಲಯದಲ್ಲಿ ಕರುನಾಡ ಕಲೆ-ಸಂಸ್ಕೃತಿಯ<br/>
-            ಹೆಜ್ಜೆಯೊಡನೆ ತಾಂತ್ರಿಕತೆಯ ಕೊಂಡಿ ಬೆಸೆಯುವ ಹಂಬಲದ<br/>
-            ಮನಸುಗಳಿಗೆ ಸದಾ ತೆರೆದ ಬಾಗಿಲು ನಮ್ಮೀ  ‘ ಕನ್ನಡ ಕೂಟ ’. <br/>
-            ಇಲ್ಲಿಂದ ಶುರುವಾಗಲಿ ನಮ್ಮ-ನಿಮ್ಮ ಹೊಸ ಒಡನಾಟ 💛❤️.<br />
-            {/* We celebrate and preserve Kannada culture, inspiring pride in the next generation. */}
+            ಪಿ.ಇ.ಎಸ್ ವಿಶ್ವವಿದ್ಯಾಲಯದಲ್ಲಿ ಕರುನಾಡ ಕಲೆ-ಸಂಸ್ಕೃತಿಯ ಹೆಜ್ಜೆಯೊಡನೆ
+            ತಾಂತ್ರಿಕತೆಯ ಕೊಂಡಿ ಬೆಸೆಯುವ ಹಂಬಲದ ಮನಸುಗಳಿಗೆ ಸದಾ ತೆರೆದ ಬಾಗಿಲು ನಮ್ಮೀ ‘
+            ಕನ್ನಡ ಕೂಟ ’. ಇಲ್ಲಿಂದ ಶುರುವಾಗಲಿ ನಮ್ಮ-ನಿಮ್ಮ ಹೊಸ ಒಡನಾಟ 💛❤️.
           </p>
           <h3
             ref={taglineRef}
@@ -82,17 +103,26 @@ const HeroSection = () => {
         {/* Image */}
         <div className="flex-1 flex justify-center items-center min-w-[260px]">
           <div className="relative group">
+            {/* Soft glow behind image */}
             <div className="absolute -inset-2 bg-gradient-to-br from-yellow-400/40 to-amber-300/15 rounded-full blur-3xl opacity-50 animate-pulse pointer-events-none"></div>
+
+            {/* Main image */}
             <img
               ref={imageRef}
               src={"/logo.png"}
               alt="Kannada Koota Illustration"
               className="w-[260px] h-[260px] md:w-[340px] md:h-[340px] rounded-full object-cover shadow-[0_18px_38px_rgba(0,0,0,0.4)] border-4 border-yellow-400/30 transition-all duration-400 hover:scale-105 hover:border-amber-400"
             />
-            {/* Animated border shimmer */}
-            <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-yellow-400 to-transparent animate-shimmer opacity-80 pointer-events-none" />
-            {/* Decorative ring */}
-            <div className="absolute inset-0 rounded-full border-2 border-yellow-400/30 group-hover:border-amber-400 transition-all duration-500 pointer-events-none" />
+
+            {/* Golden line (stationary) */}
+            <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-yellow-400 to-transparent opacity-80 pointer-events-none" />
+
+            {/* Decorative ring (appears after animation) */}
+            <div
+              className={`absolute inset-0 rounded-full border-2 border-yellow-400/30 group-hover:border-amber-400 transition-all duration-700 pointer-events-none ${
+                showRing ? "opacity-100 scale-100" : "opacity-0 scale-125"
+              }`}
+            />
           </div>
         </div>
       </div>
@@ -123,11 +153,7 @@ const HeroSection = () => {
           background-size: 200% 200%;
           animation: gradient 4.5s ease infinite;
         }
-        @keyframes shimmer {
-          0% { transform: translateX(-100%);}
-          100% { transform: translateX(100%);}
-        }
-        .animate-shimmer { animation: shimmer 2.5s linear infinite;}
+        /* Stationary golden line — shimmer removed */
         .bg-gradient-radial {
           background: radial-gradient(circle at center, var(--tw-gradient-stops));
         }
