@@ -31,7 +31,6 @@ export default function Events({ initialEvents = [] }) {
   // console.log('[Events] language =', language, 'API =', `${API}&_v=${language}`);
 
   const fetchEvents = async (signal) => {
-    setLoading(true);
     try {
       const res = await fetch(`${API}&_v=${encodeURIComponent(language)}`, {
                cache: 'no-store',
@@ -49,6 +48,7 @@ export default function Events({ initialEvents = [] }) {
   };
 
    useEffect(() => {
+       setLoading(true);
        const ac = new AbortController();
        fetchEvents(ac.signal);
        setPreview(null);
@@ -111,7 +111,7 @@ export default function Events({ initialEvents = [] }) {
         </div>
 
         {/* Events Grid */}
-        {loading && events.length === 0 ? (
+        {loading ? (
           <div className="text-center py-20">
             <div className="w-24 h-24 mx-auto mb-6 bg-yellow-500/10 rounded-full flex items-center justify-center border-2 border-yellow-500/30">
               <div className="spinner"></div>

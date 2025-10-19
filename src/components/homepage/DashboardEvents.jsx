@@ -18,6 +18,8 @@ export default function DashboardEvents({ announcements: initialAnnouncements })
   const [loading, setLoading] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [loadingAnnouncements, setLoadingAnnouncements] = useState(true);
+
   const autoPlayRef = useRef(null);
 
   // Fetch events based on language
@@ -50,6 +52,7 @@ export default function DashboardEvents({ announcements: initialAnnouncements })
 
   // Fetch announcements based on language
   const fetchAnnouncements = async () => {
+    setLoadingAnnouncements(true);
     try {
       const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL;
       const res = await fetch(`${API_BASE}/api/announcements?lang=${language}&_v=${encodeURIComponent(language)}`, {
@@ -68,6 +71,8 @@ export default function DashboardEvents({ announcements: initialAnnouncements })
     } catch (err) {
       console.error("Failed to fetch announcements:", err);
       setAnnouncements([]);
+    } finally {
+      setLoadingAnnouncements(false);
     }
   };
 
@@ -288,7 +293,7 @@ export default function DashboardEvents({ announcements: initialAnnouncements })
                         )}
                       </div>
                       <p className="text-gray-300 text-sm leading-relaxed line-clamp-3"
-                      style={language === 'kn' ? { fontFamily: "'Noto Sans Kannada', sans-serif" } : {}}
+                        style={language === 'kn' ? { fontFamily: "'Noto Sans Kannada', sans-serif" } : {}}
                       >
                         {event.description_k || event.description}
                       </p>
@@ -365,23 +370,35 @@ export default function DashboardEvents({ announcements: initialAnnouncements })
           </div> */}
 
           <div className="relative flex-1 overflow-y-auto max-h-[500px] pr-2 scrollbar-thin scrollbar-thumb-blue-500/30 scrollbar-track-transparent">
-            {announcements.length > 0 ? (
+            {loadingAnnouncements ? (
+              <div className="text-center py-20">
+                <div className="w-16 h-16 mx-auto mb-6 bg-yellow-500/10 rounded-full flex items-center justify-center border-2 border-yellow-500/30">
+                  <div className="spinner"></div>
+                </div>
+                <h2 className="text-lg font-semibold text-yellow-400 mb-2">
+                  Loading announcements...
+                </h2>
+              </div>
+            ) : announcements.length > 0 ? (
               announcements.map((item, index) => (
                 <div
                   key={index}
                   className="bg-white/5 p-4 rounded-lg mb-3 shadow-md hover:-translate-y-0.5 hover:shadow-lg transition-transform duration-300 border border-white/5"
                 >
                   <h4 className="text-yellow-400 text-lg mb-1 font-semibold">{item.title}</h4>
-                  <p className="text-gray-300 text-sm leading-relaxed"
-                  style={language === 'kn' ? { fontFamily: "'Noto Sans Kannada', sans-serif" } : {}}
-                  >{item.message}</p>
+                  <p
+                    className="text-gray-300 text-sm leading-relaxed"
+                    style={language === 'kn' ? { fontFamily: "'Noto Sans Kannada', sans-serif" } : {}}
+                  >
+                    {item.message}
+                  </p>
                 </div>
               ))
             ) : (
-
               <p className="text-gray-400 text-sm text-center">No announcements yet.</p>
             )}
           </div>
+
 
           {/* More Info Link */}
           <div className="mt-4 text-center">
