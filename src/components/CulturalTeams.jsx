@@ -49,6 +49,16 @@ const CulturalTeams = () => {
   const cardsRef = useRef([]);
   const titleRef = useRef();
 
+  // Fixed glow configurations to prevent hydration mismatch
+  const glowConfigs = [
+    { width: 350, height: 250, top: 20, left: 10, bgAlpha: 0.18 },
+    { width: 400, height: 300, top: 50, left: 70, bgAlpha: 0.22 },
+    { width: 280, height: 220, top: 80, left: 30, bgAlpha: 0.16 },
+    { width: 450, height: 320, top: 30, left: 80, bgAlpha: 0.20 },
+    { width: 320, height: 280, top: 70, left: 50, bgAlpha: 0.19 },
+    { width: 380, height: 260, top: 10, left: 40, bgAlpha: 0.17 },
+  ];
+
   useEffect(() => {
     // Set initial state
     gsap.set(titleRef.current, { opacity: 0, y: 40 });
@@ -86,14 +96,15 @@ const CulturalTeams = () => {
     });
 
     const glows = document.querySelectorAll(".purple-glow-spot");
-    glows.forEach((glow) => {
+    glows.forEach((glow, i) => {
+      const config = glowConfigs[i];
       const xOffset = (Math.random() - 0.5) * 30;
       const yOffset = (Math.random() - 0.5) * 30;
 
       gsap.to(glow, {
         x: xOffset + "%",
         y: yOffset + "%",
-        backgroundColor: `rgba(168, 85, 247, ${0.15 + Math.random() * 0.15})`,
+        backgroundColor: `rgba(168, 85, 247, ${config.bgAlpha + Math.random() * 0.05})`,
         scale: 1 + Math.random() * 0.3,
         repeat: -1,
         yoyo: true,
@@ -107,16 +118,16 @@ const CulturalTeams = () => {
     <section id="teams" className="relative bg-black text-white py-20 px-6 md:px-12 overflow-hidden">
       {/* /* Background Purple Glows */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {Array.from({ length: 6 }).map((_, i) => (
+        {glowConfigs.map((config, i) => (
           <div
             key={i}
             className="purple-glow-spot absolute rounded-full blur-3xl"
             style={{
-              width: `${200 + Math.random() * 400}px`,
-              height: `${200 + Math.random() * 400}px`,
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              backgroundColor: `rgba(168, 85, 247, ${0.1 + Math.random() * 0.2})`,
+              width: `${config.width}px`,
+              height: `${config.height}px`,
+              top: `${config.top}%`,
+              left: `${config.left}%`,
+              backgroundColor: `rgba(168, 85, 247, ${config.bgAlpha})`,
             }}
           />
         ))}

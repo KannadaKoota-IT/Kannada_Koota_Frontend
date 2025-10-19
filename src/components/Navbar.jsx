@@ -8,7 +8,7 @@ import { useLanguage } from "../context/LanguageContext";
 export default function Navbar() {
   const { language, toggleLanguage } = useLanguage();
   const [menuOpen, setMenuOpen] = useState(false); // mobile full menu
-  const [dropdownOpen, setDropdownOpen] = useState(false); // hamburger dropdown
+  const [dropdownOpen, setDropdownOpen] = useState(false); // desktop dropdown
   const [activeSection, setActiveSection] = useState("home");
   const router = useRouter();
   const location = { pathname: router.pathname };
@@ -25,10 +25,8 @@ export default function Navbar() {
     });
   }, []);
 
-  // Section highlight observer
   useEffect(() => {
     if (location.pathname !== "/") return;
-
     const sections = ["home", "about", "footer"];
     const observer = new IntersectionObserver(
       (entries) => {
@@ -38,12 +36,10 @@ export default function Navbar() {
       },
       { rootMargin: "-50% 0px -50% 0px" }
     );
-
     sections.forEach((id) => {
       const el = document.getElementById(id);
       if (el) observer.observe(el);
     });
-
     return () => observer.disconnect();
   }, [location.pathname]);
 
@@ -99,10 +95,11 @@ export default function Navbar() {
   const NavItem = ({ item, onClick }) => (
     <button
       onClick={() => onClick(item)}
-      className={`w-full text-left px-4 py-3 rounded-lg text-base font-medium transition-all duration-300 ${isActive(item)
+      className={`w-full text-left px-4 py-3 rounded-lg text-base font-medium transition-all duration-300 ${
+        isActive(item)
           ? "bg-blue-500/20 text-blue-400"
           : "text-yellow-300 hover:bg-blue-500/10 hover:text-blue-400"
-        }`}
+      }`}
     >
       {item.label}
     </button>
@@ -111,7 +108,7 @@ export default function Navbar() {
   return (
     <>
       <nav className="navbar-container fixed top-0 left-0 w-full z-[1000] bg-black/90 backdrop-blur-xl border-b border-blue-500/20 shadow-2xl">
-        <div className="max-w-7xl mx-auto px-4 sm:px-4 lg:px-2 flex justify-between items-center h-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-20">
           {/* Logo */}
           <div
             className="flex-shrink-0 cursor-pointer group"
@@ -128,56 +125,64 @@ export default function Navbar() {
             />
           </div>
 
-          {/* Desktop Menu */}
-          <div className="hidden md:flex items-center space-x-2">
-            {mainMenuItems.map((item, i) => (
-              <NavItem key={i} item={item} onClick={handleNavClick} />
-            ))}
+          {/* Right Section*/}
+          <div className="flex items-center gap-4 md:gap-6">
+            {/* Desktop Menu */}
+            <div className="hidden md:flex items-center space-x-2">
+              {mainMenuItems.map((item, i) => (
+                <NavItem key={i} item={item} onClick={handleNavClick} />
+              ))}
 
-            {/* Desktop Hamburger Dropdown */}
-            <div className="relative">
-              <button
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="w-10 h-10 text-yellow-300 hover:text-blue-400 focus:outline-none flex flex-col justify-center items-center gap-1"
-              >
-                <span
-                  className={`block w-6 h-0.5 bg-current transition-all duration-300 ${dropdownOpen ? "rotate-45 translate-y-1.5" : ""
+              {/* Desktop Dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                  className="w-10 h-10 text-yellow-300 hover:text-blue-400 focus:outline-none flex flex-col justify-center items-center gap-1"
+                >
+                  <span
+                    className={`block w-6 h-0.5 bg-current transition-all duration-300 ${
+                      dropdownOpen ? "rotate-45 translate-y-1.5" : ""
                     }`}
-                ></span>
-                <span
-                  className={`block w-6 h-0.5 bg-current transition-all duration-300 ${dropdownOpen ? "opacity-0" : ""
+                  ></span>
+                  <span
+                    className={`block w-6 h-0.5 bg-current transition-all duration-300 ${
+                      dropdownOpen ? "opacity-0" : ""
                     }`}
-                ></span>
-                <span
-                  className={`block w-6 h-0.5 bg-current transition-all duration-300 ${dropdownOpen ? "-rotate-45 -translate-y-1.5" : ""
+                  ></span>
+                  <span
+                    className={`block w-6 h-0.5 bg-current transition-all duration-300 ${
+                      dropdownOpen ? "-rotate-45 -translate-y-1.5" : ""
                     }`}
-                ></span>
-              </button>
+                  ></span>
+                </button>
 
-              <div
-                className={`absolute top-full right-0 mt-3 w-48 bg-black/95 backdrop-blur-xl border border-blue-500/20 rounded-lg shadow-2xl overflow-hidden transition-all duration-300 ${dropdownOpen
-                  ? "opacity-100 visible translate-y-0"
-                  : "opacity-0 invisible -translate-y-2"
+                <div
+                  className={`absolute top-full right-0 mt-3 w-48 bg-black/95 backdrop-blur-xl border border-blue-500/20 rounded-lg shadow-2xl overflow-hidden transition-all duration-300 ${
+                    dropdownOpen
+                      ? "opacity-100 visible translate-y-0"
+                      : "opacity-0 invisible -translate-y-2"
                   }`}
-              >
-                {dropdownItems.map((item, i) => (
-                  <Link
-                    key={i}
-                    href={item.to}
-                    onClick={() => setDropdownOpen(false)}
-                    className={`block px-4 py-3 text-sm font-medium transition-all duration-200 ${location.pathname === item.to
-                      ? "text-blue-400 bg-blue-500/10"
-                      : "text-yellow-300 hover:text-blue-400 hover:bg-blue-500/10"
+                >
+                  {dropdownItems.map((item, i) => (
+                    <Link
+                      key={i}
+                      href={item.to}
+                      onClick={() => setDropdownOpen(false)}
+                      className={`block px-4 py-3 text-sm font-medium transition-all duration-200 ${
+                        location.pathname === item.to
+                          ? "text-blue-400 bg-blue-500/10"
+                          : "text-yellow-300 hover:text-blue-400 hover:bg-blue-500/10"
                       }`}
-                  >
-                    {item.label}
-                  </Link>
-                ))}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
               </div>
             </div>
 
-            {/* Language Toggle Switch */}
-            <div className="flex items-center space-x-2">
+            {/* Language Toggle */}
+            <div className="hidden sm:flex items-center space-x-2">
               <span className="text-sm font-bold text-yellow-400">KN</span>
               <button
                 onClick={toggleLanguage}
@@ -186,47 +191,51 @@ export default function Navbar() {
               >
                 <div
                   className={`absolute top-0.5 w-5 h-5 bg-black rounded-full shadow-md transition-all duration-300 ${
-                    language === 'en' ? 'left-6.5' : 'left-0.5'
+                    language === "en" ? "left-[1.6rem]" : "left-[0.2rem]"
                   }`}
                 ></div>
               </button>
               <span className="text-sm font-bold text-yellow-400">EN</span>
             </div>
-          </div>
 
-          {/* Mobile Hamburger (full menu) */}
-          <button
-            onClick={() => {
-              setMenuOpen(!menuOpen);
-              setDropdownOpen(false);
-            }}
-            className="md:hidden relative w-10 h-10 text-blue-400 focus:outline-none"
-            aria-label="Toggle menu"
-          >
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-              <span
-                className={`block w-6 h-0.5 bg-current mb-1.5 transition-all duration-300 ${menuOpen ? "rotate-45 translate-y-2" : ""
+            {/* Mobile Hamburger */}
+            <button
+              onClick={() => {
+                setMenuOpen(!menuOpen);
+                setDropdownOpen(false);
+              }}
+              className="md:hidden w-10 h-10 text-blue-400 focus:outline-none"
+              aria-label="Toggle menu"
+            >
+              <div className="flex flex-col justify-center items-center">
+                <span
+                  className={`block w-6 h-0.5 bg-current mb-1.5 transition-all duration-300 ${
+                    menuOpen ? "rotate-45 translate-y-2" : ""
                   }`}
-              ></span>
-              <span
-                className={`block w-6 h-0.5 bg-current mb-1.5 transition-all duration-300 ${menuOpen ? "opacity-0" : ""
+                ></span>
+                <span
+                  className={`block w-6 h-0.5 bg-current mb-1.5 transition-all duration-300 ${
+                    menuOpen ? "opacity-0" : ""
                   }`}
-              ></span>
-              <span
-                className={`block w-6 h-0.5 bg-current transition-all duration-300 ${menuOpen ? "-rotate-45 -translate-y-2" : ""
+                ></span>
+                <span
+                  className={`block w-6 h-0.5 bg-current transition-all duration-300 ${
+                    menuOpen ? "-rotate-45 -translate-y-2" : ""
                   }`}
-              ></span>
-            </div>
-          </button>
+                ></span>
+              </div>
+            </button>
+          </div>
         </div>
 
         {/* Mobile Menu */}
         <div
-          className={`md:hidden overflow-hidden transition-all duration-500 ease-in-out ${menuOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
-            }`}
+          className={`md:hidden overflow-hidden transition-all duration-500 ease-in-out ${
+            menuOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
+          }`}
         >
           <div className="px-4 pt-2 pb-4 space-y-2 bg-black/95 backdrop-blur-xl border-t border-blue-500/10 flex flex-col">
-            {/* Language Toggle for Mobile */}
+            {/* Mobile Language Toggle */}
             <div className="flex items-center justify-center space-x-2 py-2">
               <span className="text-sm font-bold text-yellow-400">KN</span>
               <button
@@ -236,14 +245,14 @@ export default function Navbar() {
               >
                 <div
                   className={`absolute top-0.5 w-5 h-5 bg-black rounded-full shadow-md transition-all duration-300 ${
-                    language === 'en' ? 'left-6.5' : 'left-0.5'
+                    language === "en" ? "left-[1.6rem]" : "left-[0.2rem]"
                   }`}
                 ></div>
               </button>
               <span className="text-sm font-bold text-yellow-400">EN</span>
             </div>
 
-            {[...mainMenuItems, ...dropdownItems].map((item, i) => (
+            {[...mainMenuItems, ...dropdownItems].map((item, i) =>
               item.type ? (
                 <NavItem key={i} item={item} onClick={handleNavClick} />
               ) : (
@@ -253,17 +262,17 @@ export default function Navbar() {
                     navigate(item.to);
                     setMenuOpen(false);
                   }}
-                  className={`w-full text-left px-4 py-3 rounded-lg text-base font-medium transition-all duration-200 ${location.pathname === item.to
-                    ? "bg-blue-500/20 text-blue-400"
-                    : "text-yellow-300 hover:bg-blue-500/10 hover:text-blue-400"
-                    }`}
+                  className={`w-full text-left px-4 py-3 rounded-lg text-base font-medium transition-all duration-200 ${
+                    location.pathname === item.to
+                      ? "bg-blue-500/20 text-blue-400"
+                      : "text-yellow-300 hover:bg-blue-500/10 hover:text-blue-400"
+                  }`}
                 >
                   {item.label}
                 </button>
               )
-            ))}
+            )}
           </div>
-
         </div>
       </nav>
 
