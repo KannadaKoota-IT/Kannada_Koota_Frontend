@@ -180,8 +180,8 @@ export default function Navbar() {
               >
                 <div
                   className={`absolute top-1/2 -translate-y-1/2 w-5 h-5 rounded-full shadow-md transition-all duration-300 ${language === "en"
-                      ? "translate-x-[1.0rem] bg-gradient-to-br from-amber-200 to-red-300 shadow-[0_0_6px_rgba(255,255,255,0.4)]"
-                      : "translate-x-[-0.2rem] bg-gradient-to-br from-green-200 to-amber-200 shadow-[0_0_6px_rgba(251,191,36,0.8)]"
+                      ? "translate-x-[1.0rem] bg-gradient-to-br from-amber-200 to-red-300"
+                      : "translate-x-[-0.2rem] bg-gradient-to-br from-green-200 to-amber-200"
                     }`}
                 ></div>
               </button>
