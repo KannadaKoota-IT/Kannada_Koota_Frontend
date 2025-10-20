@@ -7,7 +7,7 @@ import bedagu from "./assets/bedagu.jpg";
 import alankara from "./assets/alankara.jpg";
 import balav from "./assets/balav.webp";
 import inchara from "./assets/inchara.jpg";
-import ranga from "./assets/ranga.jpg";
+// import ranga from "./assets/ranga.jpg";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -53,7 +53,7 @@ const CulturalTeams = () => {
       info: isKannada
         ? "ನವರಸವನು ಅರಗಿಸಿಹ ಅಭಿನಯ ಚತುರರ ರಂಗಸಜ್ಜಿಕೆ, ನಟನೆಯಿಂದ ಕಲಾರಸಿಕರ ಮನವ ನಾಟುವ ಕಥಾಶರ ಬತ್ತಳಿಕೆ!"
         : "A stage of skilled actors who evoke the nine emotions, captivating the minds of art lovers through performance!",
-      image: ranga,
+      image: inchara,
     },
   ];
 
