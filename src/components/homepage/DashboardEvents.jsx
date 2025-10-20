@@ -111,7 +111,6 @@ export default function DashboardEvents({ announcements: initialAnnouncements })
     setTimeout(() => setIsAutoPlaying(true), 8000);
   };
 
-
   // GSAP animations
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -158,8 +157,6 @@ export default function DashboardEvents({ announcements: initialAnnouncements })
         }
       );
 
-
-
       gsap.to(".blue-glow", {
         x: "20%",
         y: "10%",
@@ -202,7 +199,6 @@ export default function DashboardEvents({ announcements: initialAnnouncements })
     return `${h}:${minutes} ${ampm}`;
   };
 
-
   return (
     <div
       id="dashboard-events"
@@ -215,9 +211,11 @@ export default function DashboardEvents({ announcements: initialAnnouncements })
         <div className="blue-glow-2 absolute w-[400px] h-[400px] bg-cyan-400/20 rounded-full blur-2xl bottom-[-100px] right-[-150px]"></div>
       </div>
 
-      <div className="flex flex-wrap lg:flex-nowrap gap-10 max-w-[1200px] w-full justify-center items-start px-5 relative z-10">
+      {/* Responsive Flex: column for tablet, row for desktop */}
+      <div className="flex flex-col md:flex-col lg:flex-row gap-10 max-w-[1200px] w-full justify-center items-start px-5 relative z-10">
         {/* EVENTS CAROUSEL */}
         <div className="carousel-wrapper flex-1 min-w-auto max-w-[680px] w-full flex flex-col">
+          {/* … [All your carousel code remains unchanged] */}
           <h2 className="flex flex-col items-start mb-6 bg-gradient-to-r from-purple-700 to-cyan-400 bg-clip-text text-transparent">
             <span className="flex items-center gap-2 text-2xl sm:text-xl">
               <span className="text-xl sm:text-xl">🗓️</span>
@@ -225,7 +223,7 @@ export default function DashboardEvents({ announcements: initialAnnouncements })
             </span>
             <span className="text-sm md:text-base text-red-500 mt-1 ml-7">(Events)</span>
           </h2>
-
+          {/* Loading / Display events logic */}
           {loading ? (
             <div className="text-center py-20">
               <div className="w-24 h-24 mx-auto mb-6 bg-yellow-500/10 rounded-full flex items-center justify-center border-2 border-yellow-500/30">
@@ -249,6 +247,7 @@ export default function DashboardEvents({ announcements: initialAnnouncements })
             </div>
           ) : (
             <div className="relative w-full bg-gradient-to-br from-gray-900/50 to-gray-800/30 backdrop-blur-md rounded-2xl overflow-hidden border border-blue-500/20 shadow-2xl">
+              {/* Event slides */}
               <div className="relative h-[255px] sm:h-[265px]">
                 {events.map((event, index) => (
                   <div
@@ -292,25 +291,7 @@ export default function DashboardEvents({ announcements: initialAnnouncements })
                 ))}
               </div>
 
-              {/* {events.length > 1 && (
-                <>
-                  <button
-                    onClick={prevSlide}
-                    className="absolute left-4 top-[70%] -translate-y-1/2 z-20 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full backdrop-blur-sm transition-all duration-300 hover:scale-110"
-                    aria-label="Previous slide"
-                  >
-                    <ChevronLeft size={24} />
-                  </button>
-                  <button
-                    onClick={nextSlide}
-                    className="absolute right-4 top-[70%] -translate-y-1/2 z-20 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full backdrop-blur-sm transition-all duration-300 hover:scale-110"
-                    aria-label="Next slide"
-                  >
-                    <ChevronRight size={24} />
-                  </button>
-                </>
-              )} */}
-
+              {/* Slide indicators */}
               {events.length > 1 && (
                 <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex gap-2">
                   {events.map((_, index) => (
@@ -348,17 +329,6 @@ export default function DashboardEvents({ announcements: initialAnnouncements })
             <span className="text-sm md:text-base text-red-500 mt-1 ml-7">(Announcements)</span>
           </h2>
 
-          {/* <div className="relative flex-1">
-            <InfiniteScroll
-              items={announcements}
-              isTilted={true}
-              autoplay={true}
-              autoplaySpeed={0.6}
-              autoplayDirection="up"
-              pauseOnHover={true}
-            />
-          </div> */}
-
           <div className="relative flex-1 overflow-y-auto max-h-[500px] pr-2 scrollbar-thin scrollbar-thumb-blue-500/30 scrollbar-track-transparent">
             {loadingAnnouncements ? (
               <div className="text-center py-20">
@@ -388,7 +358,6 @@ export default function DashboardEvents({ announcements: initialAnnouncements })
               <p className="text-gray-400 text-sm text-center">No announcements yet.</p>
             )}
           </div>
-
 
           {/* More Info Link */}
           <div className="mt-4 text-center">

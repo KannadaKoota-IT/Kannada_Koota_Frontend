@@ -7,14 +7,13 @@ import { useLanguage } from "../context/LanguageContext";
 
 export default function Navbar() {
   const { language, toggleLanguage } = useLanguage();
-  const [menuOpen, setMenuOpen] = useState(false); // mobile full menu
-  const [dropdownOpen, setDropdownOpen] = useState(false); // desktop dropdown
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
   const router = useRouter();
   const location = { pathname: router.pathname };
   const navigate = router.push;
 
-  // Animate navbar on mount
   useEffect(() => {
     gsap.set(".navbar-container", { y: -80, opacity: 0 });
     gsap.to(".navbar-container", {
@@ -43,7 +42,6 @@ export default function Navbar() {
     return () => observer.disconnect();
   }, [location.pathname]);
 
-  // Smooth scroll
   const scrollToSection = (id) => {
     const el = document.getElementById(id);
     if (!el) return;
@@ -68,7 +66,6 @@ export default function Navbar() {
     { label: "Teams", to: "/teams" },
   ];
 
-  // Active state logic
   const isActive = (item) => {
     if (item.type === "scroll") {
       return location.pathname === "/" && activeSection === item.id;
@@ -76,7 +73,6 @@ export default function Navbar() {
     return location.pathname === item.to;
   };
 
-  // Navigation handler
   const handleNavClick = (item) => {
     if (item.type === "scroll") {
       if (location.pathname === "/") {
@@ -91,7 +87,6 @@ export default function Navbar() {
     }
   };
 
-  // Reusable NavItem
   const NavItem = ({ item, onClick }) => (
     <button
       onClick={() => onClick(item)}
@@ -125,7 +120,7 @@ export default function Navbar() {
             />
           </div>
 
-          {/* Right Section*/}
+          {/* Right Section */}
           <div className="flex items-center gap-4 md:gap-6">
             {/* Desktop Menu */}
             <div className="hidden md:flex items-center space-x-2">
@@ -181,8 +176,8 @@ export default function Navbar() {
               </div>
             </div>
 
-            {/* Language Toggle */}
-            <div className="hidden sm:flex items-center space-x-2">
+            {/* Language Toggle (Always Visible) */}
+            <div className="flex items-center space-x-2">
               <span className="text-sm font-bold text-yellow-400">KN</span>
               <button
                 onClick={toggleLanguage}
@@ -235,23 +230,6 @@ export default function Navbar() {
           }`}
         >
           <div className="px-4 pt-2 pb-4 space-y-2 bg-black/95 backdrop-blur-xl border-t border-blue-500/10 flex flex-col">
-            {/* Mobile Language Toggle */}
-            <div className="flex items-center justify-center space-x-2 py-2">
-              <span className="text-sm font-bold text-yellow-400">KN</span>
-              <button
-                onClick={toggleLanguage}
-                className="relative w-12 h-6 bg-gradient-to-r from-yellow-500 to-amber-600 rounded-full shadow-lg transition-all duration-300 hover:scale-105 focus:outline-none"
-                aria-label="Toggle language"
-              >
-                <div
-                  className={`absolute top-0.5 w-5 h-5 bg-black rounded-full shadow-md transition-all duration-300 ${
-                    language === "en" ? "left-[1.6rem]" : "left-[0.2rem]"
-                  }`}
-                ></div>
-              </button>
-              <span className="text-sm font-bold text-yellow-400">EN</span>
-            </div>
-
             {[...mainMenuItems, ...dropdownItems].map((item, i) =>
               item.type ? (
                 <NavItem key={i} item={item} onClick={handleNavClick} />

@@ -20,7 +20,7 @@ export default function Events({ initialEvents = [] }) {
     kn: {
       title: "ಮುಂಬರುವ ಕಾರ್ಯಕ್ರಮಗಳು",
       subtitle: "(Events)",
-      loading: "ಕಾರ್ಯಕ್ರಮಗಳನ್ನು ಲೋಡ್ ಮಾಡುತ್ತಿದೆ...",
+      loading: "ಕಾರ್ಯಕ್ರಮಗಳನ್ನು ಲೋಡ್ ಆಗುತ್ತಿದೆ...",
       noEvents: "ಇನ್ನೂ ಕಾರ್ಯಕ್ರಮಗಳಿಲ್ಲ",
       checkBack: "ಮುಂಬರುವ ಕಾರ್ಯಕ್ರಮಗಳಿಗಾಗಿ ನೋಡಿ!"
     }
