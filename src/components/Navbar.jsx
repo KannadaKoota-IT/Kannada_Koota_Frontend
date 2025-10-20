@@ -90,11 +90,10 @@ export default function Navbar() {
   const NavItem = ({ item, onClick }) => (
     <button
       onClick={() => onClick(item)}
-      className={`w-full text-left px-4 py-3 rounded-lg text-base font-medium transition-all duration-300 ${
-        isActive(item)
+      className={`w-full text-left px-4 py-3 rounded-lg text-base font-medium transition-all duration-300 ${isActive(item)
           ? "bg-blue-500/20 text-blue-400"
           : "text-yellow-300 hover:bg-blue-500/10 hover:text-blue-400"
-      }`}
+        }`}
     >
       {item.label}
     </button>
@@ -135,39 +134,34 @@ export default function Navbar() {
                   className="w-10 h-10 text-yellow-300 hover:text-blue-400 focus:outline-none flex flex-col justify-center items-center gap-1"
                 >
                   <span
-                    className={`block w-6 h-0.5 bg-current transition-all duration-300 ${
-                      dropdownOpen ? "rotate-45 translate-y-1.5" : ""
-                    }`}
+                    className={`block w-6 h-0.5 bg-current transition-all duration-300 ${dropdownOpen ? "rotate-45 translate-y-1.5" : ""
+                      }`}
                   ></span>
                   <span
-                    className={`block w-6 h-0.5 bg-current transition-all duration-300 ${
-                      dropdownOpen ? "opacity-0" : ""
-                    }`}
+                    className={`block w-6 h-0.5 bg-current transition-all duration-300 ${dropdownOpen ? "opacity-0" : ""
+                      }`}
                   ></span>
                   <span
-                    className={`block w-6 h-0.5 bg-current transition-all duration-300 ${
-                      dropdownOpen ? "-rotate-45 -translate-y-1.5" : ""
-                    }`}
+                    className={`block w-6 h-0.5 bg-current transition-all duration-300 ${dropdownOpen ? "-rotate-45 -translate-y-1.5" : ""
+                      }`}
                   ></span>
                 </button>
 
                 <div
-                  className={`absolute top-full right-0 mt-3 w-48 bg-black/95 backdrop-blur-xl border border-blue-500/20 rounded-lg shadow-2xl overflow-hidden transition-all duration-300 ${
-                    dropdownOpen
+                  className={`absolute top-full right-0 mt-3 w-48 bg-black/95 backdrop-blur-xl border border-blue-500/20 rounded-lg shadow-2xl overflow-hidden transition-all duration-300 ${dropdownOpen
                       ? "opacity-100 visible translate-y-0"
                       : "opacity-0 invisible -translate-y-2"
-                  }`}
+                    }`}
                 >
                   {dropdownItems.map((item, i) => (
                     <Link
                       key={i}
                       href={item.to}
                       onClick={() => setDropdownOpen(false)}
-                      className={`block px-4 py-3 text-sm font-medium transition-all duration-200 ${
-                        location.pathname === item.to
+                      className={`block px-4 py-3 text-sm font-medium transition-all duration-200 ${location.pathname === item.to
                           ? "text-blue-400 bg-blue-500/10"
                           : "text-yellow-300 hover:text-blue-400 hover:bg-blue-500/10"
-                      }`}
+                        }`}
                     >
                       {item.label}
                     </Link>
@@ -178,20 +172,22 @@ export default function Navbar() {
 
             {/* Language Toggle (Always Visible) */}
             <div className="flex items-center space-x-2">
-              <span className="text-sm font-bold text-yellow-400">KN</span>
+              <span className="text-m font-bold text-amber-500">ಕ</span>
               <button
                 onClick={toggleLanguage}
-                className="relative w-12 h-6 bg-gradient-to-r from-yellow-500 to-amber-600 rounded-full shadow-lg transition-all duration-300 hover:scale-105 focus:outline-none"
+                className="relative w-8 h-4 rounded-full bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-600 shadow-inner ring-1 ring-amber-300 transition-all duration-300 hover:shadow-[0_0_10px_rgba(251,191,36,0.7)] focus:outline-none"
                 aria-label="Toggle language"
               >
                 <div
-                  className={`absolute top-0.5 w-5 h-5 bg-black rounded-full shadow-md transition-all duration-300 ${
-                    language === "en" ? "left-[1.6rem]" : "left-[0.2rem]"
-                  }`}
+                  className={`absolute top-1/2 -translate-y-1/2 w-5 h-5 rounded-full shadow-md transition-all duration-300 ${language === "en"
+                      ? "translate-x-[1.0rem] bg-gradient-to-br from-amber-200 to-red-300 shadow-[0_0_6px_rgba(255,255,255,0.4)]"
+                      : "translate-x-[-0.2rem] bg-gradient-to-br from-green-200 to-amber-200 shadow-[0_0_6px_rgba(251,191,36,0.8)]"
+                    }`}
                 ></div>
               </button>
-              <span className="text-sm font-bold text-yellow-400">EN</span>
+              <span className="text-sm font-bold text-amber-500">EN</span>
             </div>
+
 
             {/* Mobile Hamburger */}
             <button
@@ -204,19 +200,16 @@ export default function Navbar() {
             >
               <div className="flex flex-col justify-center items-center">
                 <span
-                  className={`block w-6 h-0.5 bg-current mb-1.5 transition-all duration-300 ${
-                    menuOpen ? "rotate-45 translate-y-2" : ""
-                  }`}
+                  className={`block w-6 h-0.5 bg-current mb-1.5 transition-all duration-300 ${menuOpen ? "rotate-45 translate-y-2" : ""
+                    }`}
                 ></span>
                 <span
-                  className={`block w-6 h-0.5 bg-current mb-1.5 transition-all duration-300 ${
-                    menuOpen ? "opacity-0" : ""
-                  }`}
+                  className={`block w-6 h-0.5 bg-current mb-1.5 transition-all duration-300 ${menuOpen ? "opacity-0" : ""
+                    }`}
                 ></span>
                 <span
-                  className={`block w-6 h-0.5 bg-current transition-all duration-300 ${
-                    menuOpen ? "-rotate-45 -translate-y-2" : ""
-                  }`}
+                  className={`block w-6 h-0.5 bg-current transition-all duration-300 ${menuOpen ? "-rotate-45 -translate-y-2" : ""
+                    }`}
                 ></span>
               </div>
             </button>
@@ -225,9 +218,8 @@ export default function Navbar() {
 
         {/* Mobile Menu */}
         <div
-          className={`md:hidden overflow-hidden transition-all duration-500 ease-in-out ${
-            menuOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
-          }`}
+          className={`md:hidden overflow-hidden transition-all duration-500 ease-in-out ${menuOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
+            }`}
         >
           <div className="px-4 pt-2 pb-4 space-y-2 bg-black/95 backdrop-blur-xl border-t border-blue-500/10 flex flex-col">
             {[...mainMenuItems, ...dropdownItems].map((item, i) =>
@@ -240,11 +232,10 @@ export default function Navbar() {
                     navigate(item.to);
                     setMenuOpen(false);
                   }}
-                  className={`w-full text-left px-4 py-3 rounded-lg text-base font-medium transition-all duration-200 ${
-                    location.pathname === item.to
+                  className={`w-full text-left px-4 py-3 rounded-lg text-base font-medium transition-all duration-200 ${location.pathname === item.to
                       ? "bg-blue-500/20 text-blue-400"
                       : "text-yellow-300 hover:bg-blue-500/10 hover:text-blue-400"
-                  }`}
+                    }`}
                 >
                   {item.label}
                 </button>
