@@ -172,7 +172,7 @@ export default function Navbar() {
 
             {/* Language Toggle (Always Visible) */}
             <div className="flex items-center space-x-2">
-              <span className="text-m font-bold text-amber-500">KN</span>
+              <span className="text-m font-bold text-amber-500">ಕ</span>
               <button
                 onClick={toggleLanguage}
                 className="relative w-8 h-4 rounded-full bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-600 shadow-inner ring-1 ring-amber-300 transition-all duration-300 hover:shadow-[0_0_10px_rgba(251,191,36,0.7)] focus:outline-none"
