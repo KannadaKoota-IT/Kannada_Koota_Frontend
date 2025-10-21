@@ -4,11 +4,13 @@ import Link from "next/link";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { FaInstagram, FaYoutube, FaWhatsapp } from "react-icons/fa";
+import { useLanguage } from "../../context/LanguageContext";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function Footer() {
   const footerRef = useRef();
+  const { isKannada } = useLanguage();
 
   useEffect(() => {
     const el = footerRef.current;
@@ -29,17 +31,27 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer ref={footerRef} id="footer" className="bg-gray-900 text-gray-200 relative pt-6">
+    <footer
+      ref={footerRef}
+      id="footer"
+      className="bg-gray-900 text-gray-200 relative pt-6"
+    >
       {/* Golden top line */}
       <div className="absolute top-0 left-0 w-full h-1 bg-yellow-500"></div>
 
       <div className="max-w-7xl mx-auto px-6 md:px-12 flex flex-col md:flex-row justify-between gap-8 mt-6">
-        {/* Brand */}
+        {/* Brand (Dual Language Support) */}
         <div className="flex-1">
-          <h2 className="text-2xl font-bold mb-2">ಕನ್ನಡ ಕೂಟ</h2>
-          <p className="text-gray-400"
-            style={{ fontFamily: "'Noto Sans Kannada', sans-serif" }}>
-            ಸಂಸ್ಕೃತಿ, ಏಕತೆ ಮತ್ತು ಪಾರಂಪರೆ
+          <h2 className="text-2xl font-bold mb-2 text-yellow-400">
+            {isKannada ? "ಕನ್ನಡ ಕೂಟ" : "Kannada Koota"}
+          </h2>
+          <p
+            className="text-gray-400 text-sm sm:text-base"
+            style={{ fontFamily: "'Noto Sans Kannada', sans-serif" }}
+          >
+            {isKannada
+              ? "ಸಂಸ್ಕೃತಿ, ಏಕತೆ ಮತ್ತು ಪಾರಂಪರೆ"
+              : "Culture, Unity and Heritage"}
           </p>
         </div>
 
@@ -130,7 +142,6 @@ export default function Footer() {
         <p>&copy; {new Date().getFullYear()} Kannada Koota. All rights reserved.</p>
         <p>Designed and Developed by the I.T. Team</p>
       </div>
-
     </footer>
   );
 }
