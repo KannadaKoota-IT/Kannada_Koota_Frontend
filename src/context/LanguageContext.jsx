@@ -13,12 +13,10 @@ export const useLanguage = () => {
 export const LanguageProvider = ({ children }) => {
   const [language, setLanguage] = useState('kn'); // 'en' for English, 'kn' for Kannada
 
-  // Load language from localStorage on mount
+  // Always reset to Kannada on page reload
   useEffect(() => {
-    const savedLanguage = localStorage.getItem('language');
-    if (savedLanguage) {
-      setLanguage(savedLanguage);
-    }
+    setLanguage('kn');
+    localStorage.setItem('language', 'kn');
   }, []);
 
   // Save language to localStorage when it changes

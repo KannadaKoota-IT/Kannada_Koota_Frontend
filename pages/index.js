@@ -1,17 +1,7 @@
-import Head from "next/head";
 import HomePage from "../src/components/HomePage";
 
 export default function Home({ announcements }) {
-  return (
-    <>
-      <Head>
-        <title>Kannada Koota</title>
-        <link rel="icon" type="image/png" href="/fav-icon.png"/>
-      </Head>
-
-      <HomePage announcements={announcements} />
-    </>
-  );
+  return <HomePage announcements={announcements} />;
 }
 
 export async function getStaticProps() {
