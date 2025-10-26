@@ -3,11 +3,13 @@ import { useRouter } from "next/router";
 
 export default function TeamsPanel() {
   const [teams, setTeams] = useState([]);
-  const [formData, setFormData] = useState({ team_name: "", team_name_k: "" });
+  const [formData, setFormData] = useState({ team_name: "", team_name_k: "", order: 0 });
   const [teamPhoto, setTeamPhoto] = useState(null);
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState(null);
+  const [editingOrder, setEditingOrder] = useState(null);
+  const [orderValue, setOrderValue] = useState(0);
 
   const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL;
   const router = useRouter();
@@ -24,7 +26,12 @@ export default function TeamsPanel() {
     try {
       const res = await fetch(`${API_BASE}/api/teams`);
       const data = await res.json();
-      setTeams(data.teams || []);
+      const teamsData = data.teams || [];
+      setTeams(teamsData);
+
+      // Calculate max order and set default for new team
+      const maxOrder = teamsData.length > 0 ? Math.max(...teamsData.map(team => team.order || 0)) : 0;
+      setFormData(prev => ({ ...prev, order: maxOrder + 1 }));
     } catch (err) {
       console.error(err);
       setStatus({ type: "error", message: "Failed to load teams" });
@@ -53,6 +60,7 @@ export default function TeamsPanel() {
     const form = new FormData();
     form.append("team_name", formData.team_name);
     form.append("team_name_k", formData.team_name_k);
+    form.append("order", formData.order);
     if (teamPhoto) form.append("photo", teamPhoto);
 
     try {
@@ -64,7 +72,7 @@ export default function TeamsPanel() {
       const data = await res.json();
       if (data?.team) {
         setStatus({ type: "success", message: "Team added successfully!" });
-        setFormData({ team_name: "", team_name_k: "" }); // reset both fields
+        setFormData({ team_name: "", team_name_k: "", order: 0 }); // reset both fields
         setTeamPhoto(null);
         setPreview(null);
         fetchTeams();
@@ -84,9 +92,44 @@ export default function TeamsPanel() {
 
 
   const clearForm = () => {
-    setFormData({ team_name: "" });
+    setFormData({ team_name: "", team_name_k: "", order: 0 });
     setTeamPhoto(null);
     setPreview(null);
+  };
+
+  const handleEditOrder = (teamId, currentOrder) => {
+    setEditingOrder(teamId);
+    setOrderValue(currentOrder);
+  };
+
+  const handleSaveOrder = async (teamId) => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/api/teams/${teamId}/order`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ order: orderValue }),
+      });
+      const data = await res.json();
+      if (data?.message) {
+        setStatus({ type: "success", message: "Team order updated successfully!" });
+        setEditingOrder(null);
+        fetchTeams();
+        setTimeout(() => setStatus(""), 3000);
+      } else {
+        setStatus({ type: "error", message: data?.message || "Failed to update order" });
+        setTimeout(() => setStatus(""), 3000);
+      }
+    } catch (err) {
+      console.error(err);
+      setStatus({ type: "error", message: "Server error occurred" });
+      setTimeout(() => setStatus(""), 3000);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -153,6 +196,20 @@ export default function TeamsPanel() {
                   value={formData.team_name_k}
                   onChange={(e) => setFormData({ ...formData, team_name_k: e.target.value })}
                   required
+                  className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-300 text-lg"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-2">
+                  Display Order
+                </label>
+                <input
+                  type="number"
+                  placeholder="Enter display order (e.g., 1, 2, 3...)"
+                  value={formData.order}
+                  onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })}
+                  min="0"
                   className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-300 text-lg"
                 />
               </div>
@@ -260,14 +317,72 @@ export default function TeamsPanel() {
 
                   {/* Team Content */}
                   <div className="p-6">
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between mb-2">
                       <h3 className="text-xl font-bold text-white group-hover:text-cyan-300 transition-colors duration-300">
                         {team.team_name}
                       </h3>
-                      <div className="bg-cyan-500/20 text-cyan-300 p-2 rounded-full group-hover:bg-cyan-500/30 transition-colors duration-300">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
+                      <div className="flex items-center gap-2">
+                        {/* Order Edit */}
+                        {editingOrder === team._id ? (
+                          <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                            <input
+                              type="number"
+                              value={orderValue}
+                              onChange={(e) => {
+                                e.stopPropagation();
+                                setOrderValue(parseInt(e.target.value) || 0);
+                              }}
+                              onClick={(e) => e.stopPropagation()}
+                              min="0"
+                              className="w-16 bg-white/20 border border-white/30 rounded-lg px-2 py-1 text-white text-sm focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                              disabled={loading}
+                            />
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleSaveOrder(team._id);
+                              }}
+                              disabled={loading}
+                              className="bg-green-500/20 hover:bg-green-500/30 text-green-300 px-2 py-1 rounded-lg text-sm transition-colors duration-200"
+                            >
+                              ✓
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setEditingOrder(null);
+                              }}
+                              disabled={loading}
+                              className="bg-red-500/20 hover:bg-red-500/30 text-red-300 px-2 py-1 rounded-lg text-sm transition-colors duration-200"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2">
+                            <span className="bg-cyan-500/20 text-cyan-300 px-2 py-1 rounded-full text-xs font-medium">
+                              #{team.order || 0}
+                            </span>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleEditOrder(team._id, team.order || 0);
+                              }}
+                              disabled={loading}
+                              className="bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 p-1 rounded-full transition-colors duration-200"
+                              title="Edit order"
+                            >
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                              </svg>
+                            </button>
+                          </div>
+                        )}
+                        <div className="bg-cyan-500/20 text-cyan-300 p-2 rounded-full group-hover:bg-cyan-500/30 transition-colors duration-300">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </div>
                       </div>
                     </div>
 
