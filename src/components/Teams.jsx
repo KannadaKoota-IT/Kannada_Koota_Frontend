@@ -163,9 +163,9 @@ export default function Teams() {
                           }s both`,
                         }}
                       >
-                        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-black/80 to-yellow-900/20 border-2 border-yellow-500/30 transition-all duration-500 hover:border-yellow-400/60 hover:shadow-2xl hover:shadow-yellow-500/20 hover:-translate-y-2">
+                        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-black/80 to-yellow-900/20 border-2 border-yellow-500/30 transition-all duration-500 hover:border-yellow-400/60 hover:shadow-2xl hover:shadow-yellow-500/20 hover:-translate-y-2 h-full flex flex-col">
                           {/* Image Container */}
-                          <div className="relative aspect-[3/4] overflow-hidden">
+                          <div className="relative aspect-[5/6] overflow-hidden">
                             <img
                               src={head.image_url || "/default_img.jpg"}
                               alt={head.name}
@@ -197,8 +197,8 @@ export default function Teams() {
                           </div>
 
                           {/* Info Section */}
-                          <div className="relative p-5 bg-black/90">
-                            <h3 className="text-xl font-bold text-yellow-400 mb-1 group-hover/card:text-yellow-300 transition-colors duration-300">
+                          <div className="relative py-3 px-5 bg-black/90 flex-1 flex flex-col justify-end">
+                          <h3 className="text-xl font-bold text-yellow-400 mb-1 group-hover/card:text-yellow-300 transition-colors duration-300 min-h-[4rem] leading-relaxed line-clamp-3">
                               {head.name_k}
                             </h3>
                             <h5 className="text-xl font-bold !text-blue-400 mb-1 group-hover/card:text-blue-300 transition-colors duration-300">
