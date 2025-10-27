@@ -56,7 +56,7 @@ useEffect(() => {
   const fetchEvents = async () => {
     setLoading(true);
     try {
-      const res = await fetch(API);
+      const res = await fetch(`${API}?admin=true`);
       const data = await res.json();
       setEvents(data);
     } catch (err) {
@@ -129,9 +129,9 @@ useEffect(() => {
   const handleEdit = (event) => {
     setForm({
       title: event.title,
-      title_k: event.title_k,
+      title_k: event.title_k || "",
       description: event.description,
-      description_k: event.description_k,
+      description_k: event.description_k || "",
       date: event.date.split("T")[0],
       eventTime: event.eventTime || "",
       location: event.location || "",

@@ -100,12 +100,12 @@ export default function Footer() {
           <p className="mb-3">
             Email:{" "}
             <a
-              href="https://mail.google.com/mail/?view=cm&fs=1&to=kannadakoota.pesu@gmail.com"
+              href="https://mail.google.com/mail/?view=cm&fs=1&to=kannadakoota@pesu.edu"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-yellow-400 transition-colors duration-300"
             >
-              kannadakoota.pesu@gmail.com
+              kannadakoota@pesu.edu
             </a>
           </p>
           <div className="flex gap-4 text-xl">

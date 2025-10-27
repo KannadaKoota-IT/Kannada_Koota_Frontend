@@ -32,7 +32,7 @@ export default function DashboardEvents({ announcements: initialAnnouncements })
         headers: { 'Cache-Control': 'no-cache' },
       });
       const data = await res.json();
-      const formattedEvents = data.map((event) => ({
+      const formattedEvents = data.slice(0, 4).map((event) => ({
         title: event.title,
         description: event.description,
         date: new Date(event.date).toLocaleDateString(),
@@ -61,7 +61,7 @@ export default function DashboardEvents({ announcements: initialAnnouncements })
       });
       const data = await res.json();
       if (data && data.success) {
-        setAnnouncements(data.announcements.map((item) => ({
+        setAnnouncements(data.announcements.slice(0, 5).map((item) => ({
           title: item.title,
           message: item.message,
         })));
