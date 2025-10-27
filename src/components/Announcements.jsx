@@ -19,7 +19,7 @@ export default function Announcements({ initialAnnouncements = [] }) {
     kn: {
       title: "ಪ್ರಕಟಣೆಗಳು",
       subtitle: "(Announcements)",
-      loading: "ಪ್ರಕಟಣೆಗಳನ್ನು ಲೋಡ್ ಆಗುತ್ತಿದೆ...",
+      loading: "ಪ್ರಕಟಣೆಗಳು ಲೋಡ್ ಆಗುತ್ತಿದೆ...",
       noAnnouncements: "ಇನ್ನೂ ಪ್ರಕಟಣೆಗಳಿಲ್ಲ",
       checkBack: "ನವೀಕರಣಗಳಿಗಾಗಿ ನೋಡಿ!"
     }
