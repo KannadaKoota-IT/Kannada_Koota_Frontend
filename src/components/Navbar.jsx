@@ -105,18 +105,33 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-20">
           {/* Logo */}
           <div
-            className="flex-shrink-0 cursor-pointer group"
+            className="flex-shrink-0 cursor-pointer group flex items-center gap-2"
             onClick={() =>
               location.pathname === "/"
                 ? scrollToSection("home")
                 : navigate("/")
             }
           >
-            <img
-              src="/logo.png"
-              alt="Logo"
-              className="w-14 h-14 rounded-full object-cover ring-2 ring-yellow-500/50 group-hover:ring-yellow-400 transition-all duration-300 shadow-lg shadow-blue-500/30 group-hover:shadow-blue-400/50 group-hover:scale-105"
-            />
+            <div className="w-14 h-14 rounded-full relative">
+              <div className="absolute inset-0 w-full h-full rounded-full preserve-3d animate-rotate-3d">
+                
+                
+                <div className="absolute inset-0 w-full h-full rounded-full backface-hidden">
+                  <img
+                    src="/logo.png"
+                    alt="Kannada Koota Logo"
+                    className="w-full h-full object-cover rounded-full ring-2 ring-yellow-500/50 group-hover:ring-yellow-400 transition-all duration-300 shadow-lg shadow-blue-500/30 group-hover:shadow-blue-400/50 group-hover:scale-105"
+                  />
+                </div>
+                <div className="absolute inset-0 w-full h-full rounded-full backface-hidden" style={{ transform: 'rotateY(180deg)' }}>
+                  <img
+                    src="/pes_navbar.webp"
+                    alt="PES University"
+                    className="w-full h-full object-cover rounded-full ring-2 ring-orange-500/50 group-hover:ring-orange-400 transition-all duration-300 shadow-lg shadow-blue-500/30 group-hover:shadow-blue-400/50 group-hover:scale-105"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Right Section */}

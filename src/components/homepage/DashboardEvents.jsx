@@ -219,9 +219,10 @@ export default function DashboardEvents({ announcements: initialAnnouncements })
           <h2 className="flex flex-col items-start mb-6 bg-gradient-to-r from-purple-700 to-cyan-400 bg-clip-text text-transparent">
             <span className="flex items-center gap-2 text-2xl sm:text-xl">
               <span className="text-xl sm:text-xl">🗓️</span>
-              <span className="text-xl md:text-2xl font-semibold">ಮುಂ. ಕಾರ್ಯಕ್ರಮಗಳು</span>
+              <span className="text-xl md:text-2xl font-semibold">
+                {language === 'kn' ? 'ಮುಂ. ಕಾರ್ಯಕ್ರಮಗಳು' : 'Upcoming Events'}
+              </span>
             </span>
-            <span className="text-sm md:text-base text-red-500 mt-1 ml-7">(Events)</span>
           </h2>
           {/* Loading / Display events logic */}
           {loading ? (
@@ -324,9 +325,10 @@ export default function DashboardEvents({ announcements: initialAnnouncements })
           <h2 className="flex flex-col items-start mb-6 bg-gradient-to-r from-purple-700 to-cyan-400 bg-clip-text text-transparent">
             <span className="flex items-center gap-2 text-2xl sm:text-xl">
               <span className="text-2xl sm:text-xl">📢</span>
-              <span className="text-xl md:text-2xl font-semibold">ಪ್ರಕಟಣೆಗಳು</span>
+              <span className="text-xl md:text-2xl font-semibold">
+                {language === 'kn' ? 'ಪ್ರಕಟಣೆಗಳು' : 'Announcements'}
+              </span>
             </span>
-            <span className="text-sm md:text-base text-red-500 mt-1 ml-7">(Announcements)</span>
           </h2>
 
           <div className="relative flex-1 overflow-y-auto max-h-[500px] pr-2 scrollbar-thin scrollbar-thumb-blue-500/30 scrollbar-track-transparent">

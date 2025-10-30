@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useLanguage } from "../context/LanguageContext";
 
 export default function Gallery() {
@@ -8,6 +8,20 @@ export default function Gallery() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [filter, setFilter] = useState("all");
   const [showAll, setShowAll] = useState(false); // NEW STATE
+  const [rotation, setRotation] = useState(0);
+  const videoRef = useRef(null);
+
+  // Reset rotation when preview changes
+  useEffect(() => {
+    setRotation(0);
+  }, [preview]);
+
+  // Update video rotation when rotation state changes
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.style.transform = `rotate(${rotation}deg)`;
+    }
+  }, [rotation]);
 
   const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -183,16 +197,11 @@ export default function Gallery() {
                         </div>
                       </>
                     ) : (
-                      <>
-                        <div className="heritage-card group relative rounded-2xl overflow-hidden cursor-pointer">
-                          <img
-                            src={item.mediaUrl}
-                            alt={item.desc}
-                            className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300"></div>
-                        </div>
-                      </>
+                      <img
+                        src={item.mediaUrl}
+                        alt={item.desc}
+                        className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105"
+                      />
                     )}
 
                     {/* Corner Decorations */}
@@ -323,7 +332,7 @@ export default function Gallery() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="w-full max-h-[calc(100dvh-6rem)] overflow-y-auto">
-              <div className="modal-media-container relative rounded-xl overflow-hidden shadow-2xl max-h-[80vh] flex items-center justify-center">
+              <div className="modal-media-container relative rounded-xl overflow-hidden shadow-2xl max-h-[80vh] flex items-center justify-center group">
                 {/* Close button over media */}
                 <button
                   onClick={() => setPreview(null)}
@@ -346,19 +355,53 @@ export default function Gallery() {
                 </button>
 
                 {preview.mediaType === "video" ? (
-                  <video
-                    controls
-                    autoPlay
-                    src={preview.mediaUrl}
-                    className="max-h-[80vh] max-w-full w-auto h-auto"
-                  />
+                  <div className="relative">
+                    <video
+                      ref={videoRef}
+                      autoPlay
+                      // controls
+                      src={preview.mediaUrl}
+                      className="max-h-[80vh] max-w-full w-auto h-auto cursor-pointer"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (videoRef.current.paused) {
+                          videoRef.current.play();
+                        } else {
+                          videoRef.current.pause();
+                        }
+                      }}
+                    />
+                  </div>
                 ) : (
                   <img
                     src={preview.mediaUrl}
                     alt={preview.desc}
                     className="max-h-[80vh] max-w-full w-auto h-auto"
+                    style={{ transform: `rotate(${rotation}deg)` }}
                   />
                 )}
+
+                {/* Rotation Controls - shown on hover at bottom */}
+                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex gap-2">
+                  <button
+                    onClick={() => setRotation((prev) => prev - 90)}
+                    className="px-3 py-2 bg-black/70 text-yellow-300 rounded-lg hover:bg-black/80 transition-colors text-sm font-medium"
+                  >
+                    ↺ Left
+                  </button>
+                  <button
+                    onClick={() => setRotation((prev) => prev + 90)}
+                    className="px-3 py-2 bg-black/70 text-yellow-300 rounded-lg hover:bg-black/80 transition-colors text-sm font-medium"
+                  >
+                    ↻ Right
+                  </button>
+                  <button
+                    onClick={() => setRotation(0)}
+                    className="px-3 py-2 bg-black/70 text-gray-300 rounded-lg hover:bg-black/80 transition-colors text-sm font-medium"
+                  >
+                    Reset
+                  </button>
+                </div>
               </div>
 
               {/* Info Bar */}

@@ -197,7 +197,7 @@ export default function About() {
             ))}
 
             <blockquote className="mt-10 text-xl italic text-yellow-300 border-l-4 border-yellow-400 pl-5">
-              {isKannada ? "“ನಮ್ಮ ನಡೆಯಲ್ಲಿ, ನಮ್ಮ ನುಡಿಯಲ್ಲಿ” — ಕನ್ನಡ ಕೂಟ" : '"In our language, in our walk." — Kannada Koota'}
+              {isKannada ? "“ಕನ್ನಡ ಬರೀ ಪ್ರೀತಿ ಅಲ್ಲ, ನಮ್ಮ ಬದುಕಿನ ರೀತಿ!” — ಕನ್ನಡ ಕೂಟ" : '"In our language, in our walk." — Kannada Koota'}
             </blockquote>
 
             <button

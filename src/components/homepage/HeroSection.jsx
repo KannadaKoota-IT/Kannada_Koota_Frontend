@@ -99,9 +99,10 @@ const HeroSection = () => {
             ref={taglineRef}
             className="text-xl md:text-2xl font-semibold italic text-yellow-400 border-l-4 border-yellow-500 pl-5 mt-2 py-2 animate-pulse"
           >
-            {isKannada ? '"ನಮ್ಮ ನಡೆಯಲ್ಲಿ, ನಮ್ಮ ನುಡಿಯಲ್ಲಿ"' : '"In our language, in our walk"'}
+            {isKannada ? '“ಅಳಿಯದೀ ಕನ್ನಡಂ, ಅಳುಕದೀ ಕನ್ನಡಂ”' : '"In our language, in our walk"'}
           </h3>
         </div>
+        {/* ನಮ್ಮ ನಡೆಯಲ್ಲಿ, ನಮ್ಮ ನುಡಿಯಲ್ಲಿ */}
 
         {/* Image */}
         <div className="flex-1 flex justify-center items-center min-w-[260px]">
@@ -109,23 +110,29 @@ const HeroSection = () => {
             {/* Soft glow behind image */}
             <div className="absolute -inset-2 bg-gradient-to-br from-yellow-400/40 to-amber-300/15 rounded-full blur-3xl opacity-50 animate-pulse pointer-events-none"></div>
 
-            {/* Main image */}
-            <img
-              ref={imageRef}
-              src={"/logo.png"}
-              alt="Kannada Koota Illustration"
-              className="w-[260px] h-[260px] md:w-[340px] md:h-[340px] rounded-full object-cover shadow-[0_18px_38px_rgba(0,0,0,0.4)] border-4 border-yellow-400/30 transition-all duration-400 hover:scale-105 hover:border-amber-400"
-            />
+            {/* Rotating container with both logos */}
+            <div className="w-[260px] h-[260px] md:w-[340px] md:h-[340px] rounded-full shadow-[0_18px_38px_rgba(0,0,0,0.4)] transition-all duration-400 hover:scale-105 relative">
+              <div className="absolute inset-0 w-full h-full rounded-full preserve-3d animate-rotate-3d">
+                <div className="absolute inset-0 w-full h-full rounded-full backface-hidden">
+                  <img
+                    ref={imageRef}
+                    src="/logo.png"
+                    alt="Kannada Koota Logo"
+                    className="w-full h-full object-cover rounded-full"
+                  />
+                </div>
+                <div className="absolute inset-0 w-full h-full rounded-full backface-hidden" style={{ transform: 'rotateY(180deg)' }}>
+                  <img
+                    src="/pes.jpg"
+                    alt="PES University"
+                    className="w-full h-full object-cover rounded-full"
+                  />
+                </div>
+              </div>
+            </div>
 
             {/* Golden line (stationary) */}
             <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-yellow-400 to-transparent opacity-80 pointer-events-none" />
-
-            {/* Decorative ring (appears after animation) */}
-            <div
-              className={`absolute inset-0 rounded-full border-2 border-yellow-400/30 group-hover:border-amber-400 transition-all duration-700 pointer-events-none ${
-                showRing ? "opacity-100 scale-100" : "opacity-0 scale-125"
-              }`}
-            />
           </div>
         </div>
       </div>
@@ -165,6 +172,13 @@ const HeroSection = () => {
           50% {opacity:0.9;}
         }
         .animate-pulse { animation: pulse 3s cubic-bezier(.4,0,.6,1) infinite;}
+        @keyframes rotate-3d {
+          0% { transform: rotateY(0deg); }
+          100% { transform: rotateY(360deg); }
+        }
+        .animate-rotate-3d { animation: rotate-3d 20s linear infinite; }
+        .preserve-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; }
       `}</style>
     </section>
   );
