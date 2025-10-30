@@ -381,23 +381,23 @@ export default function Gallery() {
                   />
                 )}
 
-                {/* Rotation Controls - shown on hover at bottom */}
-                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex gap-2">
+                {/* Rotation Controls - always visible on mobile/tablet, shown on hover at bottom for desktop */}
+                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 flex gap-2 z-10">
                   <button
                     onClick={() => setRotation((prev) => prev - 90)}
-                    className="px-3 py-2 bg-black/70 text-yellow-300 rounded-lg hover:bg-black/80 transition-colors text-sm font-medium"
+                    className="px-3 py-2 bg-gray-800/80 text-yellow-300 rounded-lg hover:bg-gray-700/90 transition-colors text-sm font-medium border border-yellow-500/30"
                   >
                     ↺ Left
                   </button>
                   <button
                     onClick={() => setRotation((prev) => prev + 90)}
-                    className="px-3 py-2 bg-black/70 text-yellow-300 rounded-lg hover:bg-black/80 transition-colors text-sm font-medium"
+                    className="px-3 py-2 bg-gray-800/80 text-yellow-300 rounded-lg hover:bg-gray-700/90 transition-colors text-sm font-medium border border-yellow-500/30"
                   >
                     ↻ Right
                   </button>
                   <button
                     onClick={() => setRotation(0)}
-                    className="px-3 py-2 bg-black/70 text-gray-300 rounded-lg hover:bg-black/80 transition-colors text-sm font-medium"
+                    className="px-3 py-2 bg-gray-800/80 text-gray-300 rounded-lg hover:bg-gray-700/90 transition-colors text-sm font-medium border border-gray-500/30"
                   >
                     Reset
                   </button>
