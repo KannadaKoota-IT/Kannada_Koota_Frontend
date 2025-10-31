@@ -11,6 +11,7 @@ function AdminEvents() {
     date: "",
     eventTime: "",
     location: "",
+    link: "",
   });
 
   const [imageFile, setImageFile] = useState(null);
@@ -91,6 +92,7 @@ useEffect(() => {
     formData.append("date", form.date);
     formData.append("eventTime", form.eventTime);
     formData.append("location", form.location);
+    if (form.link) formData.append("link", form.link);
     if (imageFile) {
       formData.append("image", imageFile);
     }
@@ -135,6 +137,7 @@ useEffect(() => {
       date: event.date.split("T")[0],
       eventTime: event.eventTime || "",
       location: event.location || "",
+      link: event.link || "",
     });
     setImageFile(null);
     setPreview(null);
@@ -164,7 +167,7 @@ useEffect(() => {
   };
 
   const clearForm = () => {
-    setForm({ title: "", title_k: "", description: "", description_k: "", date: "", eventTime: "", location: "" });
+    setForm({ title: "", title_k: "", description: "", description_k: "", date: "", eventTime: "", location: "", link: "" });
     setImageFile(null);
     setPreview(null);
     setEditingId(null);
@@ -308,6 +311,19 @@ useEffect(() => {
             />
           </div>
 
+          {/* Link (Full width) */}
+          <div className="mt-8">
+            <label className="block mb-2 text-slate-300 font-medium">Event Link (Optional)</label>
+            <input
+              type="url"
+              name="link"
+              placeholder="https://example.com"
+              value={form.link}
+              onChange={handleChange}
+              className="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 placeholder-slate-400 focus:ring-2 focus:ring-orange-500 outline-none"
+            />
+          </div>
+
           {/* Image Upload (Full width) */}
           <div className="mt-8">
             <label className="block mb-2 text-slate-300 font-medium">Upload Event Image</label>
@@ -380,6 +396,11 @@ useEffect(() => {
                   {event.location && (
                     <p className="text-sm text-slate-400 mb-4">📍 {event.location}</p>
                   )}
+                  {event.link && (
+                    <p className="text-sm text-blue-400 mb-4">
+                      🔗 <a href={event.link} target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-300">Event Link</a>
+                    </p>
+                  )}
                   <div className="flex gap-3">
                     <button
                       onClick={(e) => { e.stopPropagation(); handleEdit(event); }}
@@ -436,6 +457,12 @@ useEffect(() => {
 
               {selectedEvent.location && (
                 <p className="text-sm text-slate-400">📍 {selectedEvent.location}</p>
+              )}
+
+              {selectedEvent.link && (
+                <p className="text-sm text-blue-400">
+                  🔗 <a href={selectedEvent.link} target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-300">Event Link</a>
+                </p>
               )}
 
               <div className="border-t border-white/10 pt-4 space-y-3">

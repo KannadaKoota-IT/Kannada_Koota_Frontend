@@ -99,7 +99,7 @@ const HeroSection = () => {
             ref={taglineRef}
             className="text-xl md:text-2xl font-semibold italic text-yellow-400 border-l-4 border-yellow-500 pl-5 mt-2 py-2 animate-pulse"
           >
-            {isKannada ? '“ಅಳಿಯದೀ ಕನ್ನಡಂ, ಅಳುಕದೀ ಕನ್ನಡಂ”' : '"In our language, in our walk"'}
+            {isKannada ? '“ಅಳಿಯದೀ ಕನ್ನಡಂ, ಅಳುಕದೀ ಕನ್ನಡಂ”' : '"Golden fields and crimson skies, Karnataka’s spirit never dies!"'}
           </h3>
         </div>
         {/* ನಮ್ಮ ನಡೆಯಲ್ಲಿ, ನಮ್ಮ ನುಡಿಯಲ್ಲಿ */}

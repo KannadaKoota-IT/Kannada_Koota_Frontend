@@ -4,9 +4,13 @@ export default function AdminGallery() {
   const [mediaList, setMediaList] = useState([]);
   const [file, setFile] = useState(null);
   const [desc, setDesc] = useState("");
+  const [link, setLink] = useState("");
   const [status, setStatus] = useState("");
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [editingItem, setEditingItem] = useState(null);
+  const [editDesc, setEditDesc] = useState("");
+  const [editLink, setEditLink] = useState("");
 
   const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -34,6 +38,7 @@ export default function AdminGallery() {
 
     const formData = new FormData();
     formData.append("desc", desc);
+    formData.append("link", link);
     formData.append("media", file);
 
     try {
@@ -47,6 +52,7 @@ export default function AdminGallery() {
       if (data.success) {
         setStatus("✅ Media uploaded successfully!");
         setDesc("");
+        setLink("");
         setFile(null);
         fetchMedia();
       } else {
@@ -83,8 +89,56 @@ export default function AdminGallery() {
 
   const handleCancelForm = () => {
     setDesc("");
+    setLink("");
     setFile(null);
     setStatus("⚪ Form cleared.");
+  };
+
+  const handleEdit = (item) => {
+    setEditingItem(item);
+    setEditDesc(item.desc);
+    setEditLink(item.link || "");
+  };
+
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    if (!editDesc.trim()) {
+      setStatus("⚠️ Description cannot be empty.");
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}/api/gallery/${editingItem._id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          desc: editDesc,
+          link: editLink,
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setStatus("✅ Media updated successfully!");
+        setEditingItem(null);
+        setEditDesc("");
+        setEditLink("");
+        fetchMedia();
+      } else {
+        setStatus("❌ Update failed.");
+      }
+    } catch (err) {
+      console.error(err);
+      setStatus("❌ Server error during update.");
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingItem(null);
+    setEditDesc("");
+    setEditLink("");
   };
 
   const getStatusColor = () => {
@@ -138,6 +192,17 @@ export default function AdminGallery() {
                   value={desc}
                   onChange={(e) => setDesc(e.target.value)}
                   required
+                  className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-slate-300">Link (Optional)</label>
+                <input
+                  type="url"
+                  placeholder="Enter media link (e.g., YouTube, external URL)..."
+                  value={link}
+                  onChange={(e) => setLink(e.target.value)}
                   className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                 />
               </div>
@@ -250,15 +315,29 @@ export default function AdminGallery() {
                       {item.desc}
                     </h3>
                     
-                    <div className="flex justify-center">
+                    <div className="flex justify-center space-x-2">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEdit(item);
+                        }}
+                        className="px-3 py-2 bg-blue-600/80 hover:bg-blue-600 text-white rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        <div className="flex items-center space-x-1">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
+                          <span>Edit</span>
+                        </div>
+                      </button>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           handleDelete(item._id);
                         }}
-                        className="px-4 py-2 bg-red-600/80 hover:bg-red-600 text-white rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500"
+                        className="px-3 py-2 bg-red-600/80 hover:bg-red-600 text-white rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500"
                       >
-                        <div className="flex items-center space-x-2">
+                        <div className="flex items-center space-x-1">
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                           </svg>
@@ -273,7 +352,66 @@ export default function AdminGallery() {
           )}
         </div>
 
-        {/* Modal */}
+        {/* Edit Modal */}
+        {editingItem && (
+          <div
+            className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fadeIn"
+            onClick={() => handleCancelEdit()}
+          >
+            <div
+              className="relative bg-slate-900/50 backdrop-blur-md rounded-2xl border border-slate-700/50 shadow-2xl p-8 max-w-md w-full animate-scaleIn"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center space-x-3 mb-6">
+                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                <h2 className="text-xl font-semibold text-slate-200">Edit Media</h2>
+              </div>
+
+              <form onSubmit={handleUpdate} className="space-y-6">
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-slate-300">Description</label>
+                  <input
+                    type="text"
+                    placeholder="Enter media description..."
+                    value={editDesc}
+                    onChange={(e) => setEditDesc(e.target.value)}
+                    required
+                    className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-slate-300">Link (Optional)</label>
+                  <input
+                    type="url"
+                    placeholder="Enter media link (e.g., YouTube, external URL)..."
+                    value={editLink}
+                    onChange={(e) => setEditLink(e.target.value)}
+                    className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  />
+                </div>
+
+                <div className="flex gap-4 pt-4">
+                  <button
+                    type="button"
+                    onClick={handleCancelEdit}
+                    className="flex-1 px-6 py-3 bg-slate-600 hover:bg-slate-700 text-white rounded-xl font-semibold transition-all duration-200 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-slate-500"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl font-semibold transition-all duration-200 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-lg hover:shadow-xl"
+                  >
+                    Update
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Preview Modal */}
         {preview && (
           <div
             className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fadeIn"
@@ -298,7 +436,7 @@ export default function AdminGallery() {
                     className="max-h-[80vh] w-auto rounded-xl"
                   />
                 )}
-                
+
                 <button
                   onClick={() => setPreview(null)}
                   className="absolute top-4 right-4 bg-red-600/80 hover:bg-red-600 backdrop-blur-sm text-white p-2 rounded-xl transition-all duration-200 transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-red-500"
@@ -308,7 +446,7 @@ export default function AdminGallery() {
                   </svg>
                 </button>
               </div>
-              
+
               <div className="mt-4 text-center">
                 <p className="text-slate-300 font-medium">{preview.desc}</p>
               </div>

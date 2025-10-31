@@ -38,7 +38,7 @@ const Missions = () => {
         "ಕನ್ನಡದ ಪರವಾಗಬೇಕು, ಕನ್ನಡದ ಕಾಯಕಕ್ಕೆ ಕೈ ಜೋಡಿಸುವ ಕರವಾಗಬೇಕು, ಮಾತೆಯ ಕೊರಳಲ್ಲಿನ ಸರವಾಗಬೇಕು, ಕನ್ನಡದ ಉದ್ಯಾನದಲ್ಲೊಂದು ಮರವಾಗಬೇಕು ಎಂಬುದೇ ನಮ್ಮ ಆಶಯ!",
       ] : [
         "To create a vibrant, inclusive space that celebrates the heart and heritage of Karnataka. Through culture, language, art, and community, we bring together students who share a love for Kannada or are curious to explore it.",
-        "We exist to keep traditions alive, nurture identity, and inspire pride in who we are and where we come from.",
+        "We strive to keep traditions alive, nurture identity, and inspire pride in who we are and where we come from.",
       ],
     },
     {

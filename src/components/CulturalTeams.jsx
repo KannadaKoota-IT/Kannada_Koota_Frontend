@@ -6,7 +6,7 @@ import { useLanguage } from "../context/LanguageContext";
 import bedagu from "./assets/bedagu.jpg";
 import alankara from "./assets/alankara.jpg";
 import balav from "./assets/balav.webp";
-import inchara from "./assets/inchara.jpg";
+import inchara from "./assets/inchara.jpeg";
 import ranga from "./assets/ranga.jpg";
 
 gsap.registerPlugin(ScrollTrigger);

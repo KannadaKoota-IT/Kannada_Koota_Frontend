@@ -171,7 +171,7 @@ export default function About() {
                 title: isKannada ? "ನಮ್ಮ ಬಗ್ಗೆ" : "Who We Are",
                 text: isKannada
                   ? "ಪಿ.ಇ.ಎಸ್ ವಿಶ್ವವಿದ್ಯಾಲಯದಲ್ಲಿನ ಕನ್ನಡದ ಮನಸ್ಸುಗಳನ್ನು ಅಭಿಮಾನದ ಬೆಸುಗೆಯಿಂದ ಬಂಧಿಸುವ ಕೊಂಡಿ ನಮ್ಮ ಕೂಟ. ಕನ್ನಡದ ಮಣಿಹಾರಕ್ಕೆ ಕೂಟ ಒಂದು ದಾರ. ಕನ್ನಡವೇ ನಮ್ಮ ಸಾರ, ಕನ್ನಡವೇ ನಮ್ಮ ವಿಚಾರ!"
-                  : "Kannada Koota is a cultural club at PES University dedicated to preserving and celebrating the richness of Kannada language, traditions, and heritage.",
+                  : "Kannada Koota is a Techno-Cultural club at PES University dedicated to preserving and celebrating the richness of Kannada language, traditions, and heritage.",
               },
               {
                 title: isKannada ? "ನಮ್ಮ ಕೆಲಸದ ಬಗ್ಗೆ" : "What We Do",
@@ -197,7 +197,7 @@ export default function About() {
             ))}
 
             <blockquote className="mt-10 text-xl italic text-yellow-300 border-l-4 border-yellow-400 pl-5">
-              {isKannada ? "“ಕನ್ನಡ ಬರೀ ಪ್ರೀತಿ ಅಲ್ಲ, ನಮ್ಮ ಬದುಕಿನ ರೀತಿ!” — ಕನ್ನಡ ಕೂಟ" : '"In our language, in our walk." — Kannada Koota'}
+              {isKannada ? "“ಕನ್ನಡ ಬರೀ ಪ್ರೀತಿ ಅಲ್ಲ, ನಮ್ಮ ಬದುಕಿನ ರೀತಿ!” — ಕನ್ನಡ ಕೂಟ" : '"Kannada we speak, pride we seek!" — Kannada Koota'}
             </blockquote>
 
             <button
