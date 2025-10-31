@@ -8,6 +8,7 @@ export default function Gallery() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [filter, setFilter] = useState("all");
   const [showAll, setShowAll] = useState(false); // NEW STATE
+  const [sortBy, setSortBy] = useState("latest"); // NEW STATE: latest or oldest
   const [rotation, setRotation] = useState(0);
   const videoRef = useRef(null);
 
@@ -39,10 +40,18 @@ export default function Gallery() {
     fetchMedia();
   }, []);
 
-  const filteredMedia = mediaList.filter((item) => {
-    if (filter === "all") return true;
-    return item.mediaType === filter;
-  });
+  const filteredMedia = mediaList
+    .filter((item) => {
+      if (filter === "all") return true;
+      return item.mediaType === filter;
+    })
+    .sort((a, b) => {
+      if (sortBy === "latest") {
+        return new Date(b.uploadedAt) - new Date(a.uploadedAt);
+      } else {
+        return new Date(a.uploadedAt) - new Date(b.uploadedAt);
+      }
+    });
 
   const displayedMedia = showAll ? filteredMedia : filteredMedia.slice(0, 4); // LIMIT TO 4
 
@@ -126,6 +135,31 @@ export default function Gallery() {
                 }`}
             >
               {isKannada ? "ವೀಡಿಯೊ" : "Videos"}
+            </button>
+          </div>
+
+          {/* Sort Options */}
+          <div className="flex justify-center items-center gap-2 mt-4">
+            <span className="text-yellow-400 text-sm font-medium">
+              {isKannada ? "ವಿಂಗಡಿಸಿ:" : "Sort by:"}
+            </span>
+            <button
+              onClick={() => setSortBy("latest")}
+              className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${sortBy === "latest"
+                  ? "bg-gradient-to-r from-yellow-500 to-amber-600 text-black shadow-lg shadow-yellow-500/50"
+                  : "bg-slate-700/50 text-yellow-400 hover:bg-yellow-500/10 border border-yellow-500/30"
+                }`}
+            >
+              {isKannada ? "ಇತ್ತೀಚಿನ" : "Latest"}
+            </button>
+            <button
+              onClick={() => setSortBy("oldest")}
+              className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${sortBy === "oldest"
+                  ? "bg-gradient-to-r from-yellow-500 to-amber-600 text-black shadow-lg shadow-yellow-500/50"
+                  : "bg-slate-700/50 text-yellow-400 hover:bg-yellow-500/10 border border-yellow-500/30"
+                }`}
+            >
+              {isKannada ? "ಹಳೆಯ" : "Oldest"}
             </button>
           </div>
         </div>

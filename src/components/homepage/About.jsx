@@ -157,7 +157,7 @@ export default function About() {
           </h2>
           <p className="mt-4 text-xl md:text-2xl text-gray-300 font-light"
           style={{ fontFamily: isKannada ? "'Noto Sans Kannada', sans-serif" : "inherit" }}>
-            {isKannada ? "ಸಂಸ್ಕೃತಿ, ಏಕತೆ ಮತ್ತು ಪಾರಂಪರೆ" : "Culture, Unity and Tradition"}
+            {isKannada ? "ಸಂಸ್ಕೃತಿ, ಏಕತೆ ಮತ್ತು ಪಾರಂಪರೆ" : "Culture, Unity and Heritage"}
           </p>
         </div>
 

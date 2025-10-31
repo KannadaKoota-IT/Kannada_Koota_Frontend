@@ -11,6 +11,8 @@ export default function AdminGallery() {
   const [editingItem, setEditingItem] = useState(null);
   const [editDesc, setEditDesc] = useState("");
   const [editLink, setEditLink] = useState("");
+  const [editingOrder, setEditingOrder] = useState(null);
+  const [orderValue, setOrderValue] = useState(0);
 
   const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -139,6 +141,40 @@ export default function AdminGallery() {
     setEditingItem(null);
     setEditDesc("");
     setEditLink("");
+  };
+
+  const handleEditOrder = (itemId, currentOrder) => {
+    setEditingOrder(itemId);
+    setOrderValue(currentOrder);
+  };
+
+  const handleSaveOrder = async (itemId) => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/api/gallery/${itemId}/order`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ order: orderValue }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setStatus("✅ Gallery order updated successfully!");
+        setEditingOrder(null);
+        fetchMedia();
+        setTimeout(() => setStatus(""), 3000);
+      } else {
+        setStatus("❌ Failed to update order.");
+        setTimeout(() => setStatus(""), 3000);
+      }
+    } catch (err) {
+      console.error(err);
+      setStatus("❌ Server error during order update.");
+      setTimeout(() => setStatus(""), 3000);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const getStatusColor = () => {
@@ -311,10 +347,66 @@ export default function AdminGallery() {
                   </div>
 
                   <div className="p-5 space-y-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="bg-cyan-500/20 text-cyan-300 px-2 py-1 rounded-full text-xs font-medium">
+                        #{item.order || 0}
+                      </span>
+                      {editingOrder === item._id ? (
+                        <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                          <input
+                            type="number"
+                            value={orderValue}
+                            onChange={(e) => {
+                              e.stopPropagation();
+                              setOrderValue(parseInt(e.target.value) || 0);
+                            }}
+                            onClick={(e) => e.stopPropagation()}
+                            min="0"
+                            className="w-16 bg-white/20 border border-white/30 rounded-lg px-2 py-1 text-white text-sm focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                            disabled={loading}
+                          />
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleSaveOrder(item._id);
+                            }}
+                            disabled={loading}
+                            className="bg-green-500/20 hover:bg-green-500/30 text-green-300 px-2 py-1 rounded-lg text-sm transition-colors duration-200"
+                          >
+                            ✓
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setEditingOrder(null);
+                            }}
+                            disabled={loading}
+                            className="bg-red-500/20 hover:bg-red-500/30 text-red-300 px-2 py-1 rounded-lg text-sm transition-colors duration-200"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEditOrder(item._id, item.order || 0);
+                          }}
+                          disabled={loading}
+                          className="bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 p-1 rounded-full transition-colors duration-200"
+                          title="Edit order"
+                        >
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
+                        </button>
+                      )}
+                    </div>
+
                     <h3 className="font-semibold text-slate-200 text-center line-clamp-2 group-hover:text-emerald-400 transition-colors duration-300">
                       {item.desc}
                     </h3>
-                    
+
                     <div className="flex justify-center space-x-2">
                       <button
                         onClick={(e) => {

@@ -123,7 +123,7 @@ const HeroSection = () => {
                 </div>
                 <div className="absolute inset-0 w-full h-full rounded-full backface-hidden" style={{ transform: 'rotateY(180deg)' }}>
                   <img
-                    src="/pes.jpg"
+                    src="/PESU.png"
                     alt="PES University"
                     className="w-full h-full object-cover rounded-full"
                   />
