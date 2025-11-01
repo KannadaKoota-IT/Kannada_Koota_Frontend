@@ -50,7 +50,7 @@ export default function Footer() {
             style={{ fontFamily: "'Noto Sans Kannada', sans-serif" }}
           >
             {isKannada
-              ? "ಸಂಸ್ಕೃತಿ, ಏಕತೆ ಮತ್ತು ಪಾರಂಪರೆ"
+              ? "ಸಂಸ್ಕೃತಿ, ಏಕತೆ ಮತ್ತು ಪರಂಪರೆ"
               : "Culture, Unity and Heritage"}
           </p>
         </div>

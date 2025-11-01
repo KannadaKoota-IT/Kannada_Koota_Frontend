@@ -191,9 +191,9 @@ export default function Teams() {
                             <div className="absolute bottom-3 right-3 w-8 h-8 border-b-2 border-r-2 border-yellow-400/50 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300"></div>
 
                             {/* Role Badge */}
-                            <div className="absolute top-4 right-4 px-3 py-1 bg-gradient-to-r from-yellow-500 to-amber-600 text-black text-xs font-bold rounded-full shadow-lg transform group-hover/card:scale-110 transition-transform duration-300">
-                              HEAD
-                            </div>
+                            {/* <div className="absolute top-4 right-4 px-3 py-1 bg-gradient-to-r from-yellow-500 to-amber-600 text-black text-xs font-bold rounded-full shadow-lg transform group-hover/card:scale-110 transition-transform duration-300">
+                              {head.role || 'HEAD'}
+                            </div> */}
                           </div>
 
                           {/* Info Section */}

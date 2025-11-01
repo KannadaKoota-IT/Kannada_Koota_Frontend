@@ -90,7 +90,7 @@ export default function Announcements({ initialAnnouncements = [] }) {
         <div className="glow-orb-3"></div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10" style={{ margin: '0 auto', textAlign: 'center' }}>
         {/* Header Section */}
         <div className="mb-12">
           <div className="text-center mb-8">

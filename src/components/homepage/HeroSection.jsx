@@ -9,8 +9,13 @@ const HeroSection = () => {
   const taglineRef = useRef(null);
   const imageRef = useRef(null);
   const [showRing, setShowRing] = useState(false);
+  const [pesLogoSrc, setPesLogoSrc] = useState('/PESU.png');
 
   useEffect(() => {
+    // Detect browser
+    const isFirefox = navigator.userAgent.toLowerCase().includes('firefox');
+    setPesLogoSrc(isFirefox ? '/PES.png' : '/PESU.png');
+
     const titleDelay = 0.3;
     const subtitleDelay = titleDelay + 1.2;
     const taglineDelay = subtitleDelay + 1.2;
@@ -83,7 +88,7 @@ const HeroSection = () => {
             ref={titleRef}
             className="text-4xl md:text-5xl lg:text-6xl font-extrabold bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600 bg-clip-text text-transparent mb-5 drop-shadow-xl animate-gradient"
           >
-            {isKannada ? "ಕನ್ನಡ ಕೂಟಕ್ಕೆ ಸುಸ್ವಾಗತ" : "Welcome to Kannada Koota – PES University’s Techno-Cultural Club"}
+            {isKannada ? "ಪಿ.ಇ.ಎಸ್ ವಿಶ್ವವಿದ್ಯಾಲಯದ ಕನ್ನಡ ಕೂಟಕ್ಕೆ ಸುಸ್ವಾಗತ" : "Welcome to Kannada Koota – PES University’s Techno-Cultural Club"}
           </h1>
           <p
             ref={subtitleRef}
@@ -123,9 +128,9 @@ const HeroSection = () => {
                 </div>
                 <div className="absolute inset-0 w-full h-full rounded-full backface-hidden" style={{ transform: 'rotateY(180deg)' }}>
                   <img
-                    src="/PESU.png"
+                    src={pesLogoSrc}
                     alt="PES University"
-                    className="w-full h-full object-cover rounded-full"
+                    className="w-full h-full object-cover rounded-full border border-black"
                   />
                 </div>
               </div>
