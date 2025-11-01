@@ -130,7 +130,7 @@ const HeroSection = () => {
                   <img
                     src={pesLogoSrc}
                     alt="PES University"
-                    className="w-full h-full object-cover rounded-full border border-black"
+                    className="w-full h-full object-cover rounded-full"
                   />
                 </div>
               </div>
