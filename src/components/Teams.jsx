@@ -149,73 +149,76 @@ export default function Teams() {
                   </div>
                 </div>
 
-                {/* Team Heads Grid */}
+                {/* Team Heads Grid - Centered with proper spacing */}
                 {Array.isArray(teamHeads[team._id]) &&
                 teamHeads[team._id].length > 0 ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                    {teamHeads[team._id].map((head, headIndex) => (
-                      <div
-                        key={head._id}
-                        className="group/card relative"
-                        style={{
-                          animation: `fadeInUp 0.6s ease-out ${
-                            headIndex * 0.1
-                          }s both`,
-                        }}
-                      >
-                        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-black/80 to-yellow-900/20 border-2 border-yellow-500/30 transition-all duration-500 hover:border-yellow-400/60 hover:shadow-2xl hover:shadow-yellow-500/20 hover:-translate-y-2 h-full flex flex-col">
-                          {/* Image Container */}
-                          <div className="relative aspect-[5/6] overflow-hidden">
-                            <img
-                              src={head.image_url || "/default_img.jpg"}
-                              alt={head.name}
-                              className="w-full h-full object-cover transition-transform duration-700 group-hover/card:scale-110"
-                            />
+                  <div className="flex justify-center w-full">
+                    <div className="inline-flex flex-wrap justify-center gap-8 max-w-full">
+                      {teamHeads[team._id].map((head, headIndex) => (
+                        <div
+                          key={head._id}
+                          className="group/card relative flex-shrink-0"
+                          style={{
+                            animation: `fadeInUp 0.6s ease-out ${
+                              headIndex * 0.1
+                            }s both`,
+                            width: '300px',
+                          }}
+                        >
+                          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-black/80 to-yellow-900/20 border-2 border-yellow-500/30 transition-all duration-500 hover:border-yellow-400/60 hover:shadow-2xl hover:shadow-yellow-500/20 hover:-translate-y-2 h-full flex flex-col">
+                            {/* Image Container */}
+                            <div className="relative aspect-[5/6] overflow-hidden">
+                              <img
+                                src={head.image_url || "/default_img.jpg"}
+                                alt={head.name}
+                                className="w-full h-full object-cover transition-transform duration-700 group-hover/card:scale-110"
+                              />
 
-                            {/* Gradient Overlay */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent opacity-60 group-hover/card:opacity-80 transition-opacity duration-300"></div>
+                              {/* Gradient Overlay */}
+                              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent opacity-60 group-hover/card:opacity-80 transition-opacity duration-300"></div>
 
-                            {/* Animated Border Effect */}
-                            <div className="absolute inset-0 opacity-0 group-hover/card:opacity-100 transition-opacity duration-500">
-                              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-yellow-400 to-transparent animate-shimmer"></div>
-                              <div
-                                className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-yellow-400 to-transparent animate-shimmer"
-                                style={{ animationDelay: "0.5s" }}
-                              ></div>
+                              {/* Animated Border Effect */}
+                              <div className="absolute inset-0 opacity-0 group-hover/card:opacity-100 transition-opacity duration-500">
+                                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-yellow-400 to-transparent animate-shimmer"></div>
+                                <div
+                                  className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-yellow-400 to-transparent animate-shimmer"
+                                  style={{ animationDelay: "0.5s" }}
+                                ></div>
+                              </div>
+
+                              {/* Corner Decorations */}
+                              <div className="absolute top-3 left-3 w-8 h-8 border-t-2 border-l-2 border-yellow-400/50 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300"></div>
+                              <div className="absolute top-3 right-3 w-8 h-8 border-t-2 border-r-2 border-yellow-400/50 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300"></div>
+                              <div className="absolute bottom-3 left-3 w-8 h-8 border-b-2 border-l-2 border-yellow-400/50 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300"></div>
+                              <div className="absolute bottom-3 right-3 w-8 h-8 border-b-2 border-r-2 border-yellow-400/50 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300"></div>
+
+                              {/* Role Badge */}
+                              {/* <div className="absolute top-4 right-4 px-3 py-1 bg-gradient-to-r from-yellow-500 to-amber-600 text-black text-xs font-bold rounded-full shadow-lg transform group-hover/card:scale-110 transition-transform duration-300">
+                                {head.role || 'HEAD'}
+                              </div> */}
                             </div>
 
-                            {/* Corner Decorations */}
-                            <div className="absolute top-3 left-3 w-8 h-8 border-t-2 border-l-2 border-yellow-400/50 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300"></div>
-                            <div className="absolute top-3 right-3 w-8 h-8 border-t-2 border-r-2 border-yellow-400/50 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300"></div>
-                            <div className="absolute bottom-3 left-3 w-8 h-8 border-b-2 border-l-2 border-yellow-400/50 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300"></div>
-                            <div className="absolute bottom-3 right-3 w-8 h-8 border-b-2 border-r-2 border-yellow-400/50 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300"></div>
+                            {/* Info Section */}
+                            <div className="relative py-3 px-5 bg-black/90 flex-1 flex flex-col justify-end">
+                              <h3 className="text-base font-bold text-yellow-400 mb-1 group-hover/card:text-yellow-300 transition-colors duration-300 min-h-[3rem] leading-relaxed line-clamp-3">
+                                {head.name_k}
+                              </h3>
+                              <h5 className="text-base font-bold !text-blue-400 mb-1 group-hover/card:text-blue-300 transition-colors duration-300">
+                                {head.name}
+                              </h5>
 
-                            {/* Role Badge */}
-                            {/* <div className="absolute top-4 right-4 px-3 py-1 bg-gradient-to-r from-yellow-500 to-amber-600 text-black text-xs font-bold rounded-full shadow-lg transform group-hover/card:scale-110 transition-transform duration-300">
-                              {head.role || 'HEAD'}
-                            </div> */}
-                          </div>
+                              {/* Hover Glow Effect */}
+                              <div className="absolute inset-0 bg-gradient-radial from-yellow-500/10 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                            </div>
 
-                          {/* Info Section */}
-                          <div className="relative py-3 px-5 bg-black/90 flex-1 flex flex-col justify-end">
-                          <h3 className="text-xl font-bold text-yellow-400 mb-1 group-hover/card:text-yellow-300 transition-colors duration-300 min-h-[4rem] leading-relaxed line-clamp-3">
-                              {head.name_k}
-                            </h3>
-                            <h5 className="text-xl font-bold !text-blue-400 mb-1 group-hover/card:text-blue-300 transition-colors duration-300">
-                              {head.name}
-                            </h5>
-
-                            {/* Hover Glow Effect */}
-                            <div className="absolute inset-0 bg-gradient-radial from-yellow-500/10 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-                          </div>
-
-                          {/* Shine Effect */}
-                          <div className="absolute inset-0 opacity-0 group-hover/card:opacity-100 transition-opacity duration-700 pointer-events-none">
-                            <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent transform -translate-x-full group-hover/card:translate-x-full transition-transform duration-1000"></div>
+                            {/* Shine Effect */}
+                            <div className="absolute inset-0 opacity-0 group-hover/card:opacity-100 transition-opacity duration-700 pointer-events-none">
+                              <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent transform -translate-x-full group-hover/card:translate-x-full transition-transform duration-1000"></div>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
                 ) : (
                   <div className="flex items-center justify-center py-16 px-6 rounded-2xl bg-gradient-to-br from-yellow-900/10 to-amber-900/10 border-2 border-dashed border-yellow-500/30">
