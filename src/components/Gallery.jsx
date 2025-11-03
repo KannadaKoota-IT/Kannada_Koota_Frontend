@@ -46,6 +46,11 @@ export default function Gallery() {
       return item.mediaType === filter;
     })
     .sort((a, b) => {
+      // First, sort by order descending (higher order numbers first)
+      if (a.order !== b.order) {
+        return b.order - a.order;
+      }
+      // Then, sort by uploadedAt based on sortBy
       if (sortBy === "latest") {
         return new Date(b.uploadedAt) - new Date(a.uploadedAt);
       } else {
@@ -139,7 +144,7 @@ export default function Gallery() {
           </div>
 
           {/* Sort Options */}
-          <div className="flex justify-center items-center gap-2 mt-4">
+          {/* <div className="flex justify-center items-center gap-2 mt-4">
             <span className="text-yellow-400 text-sm font-medium">
               {isKannada ? "ವಿಂಗಡಿಸಿ:" : "Sort by:"}
             </span>
@@ -161,7 +166,7 @@ export default function Gallery() {
             >
               {isKannada ? "ಹಳೆಯ" : "Oldest"}
             </button>
-          </div>
+          </div>*/}
         </div>
 
         {/* Media Grid */}
