@@ -7,24 +7,39 @@ const HeroSection = () => {
   const titleRef = useRef(null);
   const subtitleRef = useRef(null);
   const taglineRef = useRef(null);
-  const pesImageRef = useRef(null);
-  const kkImageRef = useRef(null);
-  const [pesLogoSrc, setPesLogoSrc] = useState("/PESU.png");
+  const imageRef = useRef(null);
+  const [showRing, setShowRing] = useState(false);
+  const [pesLogoSrc, setPesLogoSrc] = useState('/PESU.png');
 
   useEffect(() => {
     // Detect browser
-    const isFirefox = navigator.userAgent.toLowerCase().includes("firefox");
-    setPesLogoSrc(isFirefox ? "/PES.png" : "/PESU.png");
+    const isFirefox = navigator.userAgent.toLowerCase().includes('firefox');
+    setPesLogoSrc(isFirefox ? '/PES.png' : '/PESU.png');
 
     const titleDelay = 0.3;
     const subtitleDelay = titleDelay + 1.2;
     const taglineDelay = subtitleDelay + 1.2;
 
-    // Animate title and texts
+    // Animate title
     gsap.fromTo(
       titleRef.current,
       { opacity: 0, y: 100 },
       { opacity: 1, y: 0, duration: 1.2, delay: titleDelay, ease: "power3.out" }
+    );
+
+    gsap.fromTo(
+      imageRef.current,
+      { opacity: 0, x: 100 },
+      {
+        opacity: 1,
+        x: 0,
+        duration: 0.8,
+        delay: titleDelay,
+        ease: "power3.out",
+        onComplete: () => {
+          setTimeout(() => setShowRing(true), 200);
+        },
+      }
     );
 
     gsap.fromTo(
@@ -51,33 +66,6 @@ const HeroSection = () => {
         ease: "power3.out",
       }
     );
-
-    // Animate images (fade-in + gentle float)
-    gsap.fromTo(
-      pesImageRef.current,
-      { opacity: 0, x: 100, scale: 0.8 },
-      {
-        opacity: 1,
-        x: 0,
-        scale: 1,
-        duration: 1.2,
-        delay: 1.2,
-        ease: "power3.out",
-      }
-    );
-
-    gsap.fromTo(
-      kkImageRef.current,
-      { opacity: 0, x: -100, scale: 0.8 },
-      {
-        opacity: 1,
-        x: 0,
-        scale: 1,
-        duration: 1.2,
-        delay: 1.2,
-        ease: "power3.out",
-      }
-    );
   }, []);
 
   return (
@@ -100,58 +88,56 @@ const HeroSection = () => {
             ref={titleRef}
             className="text-4xl md:text-5xl lg:text-6xl font-extrabold bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600 bg-clip-text text-transparent mb-5 drop-shadow-xl animate-gradient"
           >
-            {isKannada
-              ? "ಪಿ.ಇ.ಎಸ್ ವಿಶ್ವವಿದ್ಯಾಲಯದ ಕನ್ನಡ ಕೂಟಕ್ಕೆ ಸುಸ್ವಾಗತ"
-              : "Welcome to Kannada Koota – PES University’s Techno-Cultural Club"}
+            {isKannada ? "ಪಿ.ಇ.ಎಸ್ ವಿಶ್ವವಿದ್ಯಾಲಯದ ಕನ್ನಡ ಕೂಟಕ್ಕೆ ಸುಸ್ವಾಗತ" : "Welcome to Kannada Koota – PES University’s Techno-Cultural Club"}
           </h1>
           <p
             ref={subtitleRef}
             className="text-lg md:text-xl text-gray-300/80 leading-relaxed font-medium"
-            style={{
-              fontFamily: isKannada
-                ? "'Noto Sans Kannada', sans-serif"
-                : "inherit",
-            }}
+            style={{ fontFamily: isKannada ? "'Noto Sans Kannada', sans-serif" : "inherit" }}
           >
             {isKannada
               ? "ಪಿ.ಇ.ಎಸ್ ವಿಶ್ವವಿದ್ಯಾಲಯದಲ್ಲಿ ಕರುನಾಡ ಕಲೆ-ಸಂಸ್ಕೃತಿಯ ಹೆಜ್ಜೆಯೊಡನೆ ತಾಂತ್ರಿಕತೆಯ ಕೊಂಡಿ ಬೆಸೆಯುವ ಹಂಬಲದ ಮನಸುಗಳಿಗೆ ಸದಾ ತೆರೆದ ಬಾಗಿಲು ನಮ್ಮೀ ‘ ಕನ್ನಡ ಕೂಟ ’. ಇಲ್ಲಿಂದ ಶುರುವಾಗಲಿ ನಮ್ಮ-ನಿಮ್ಮ ಹೊಸ ಒಡನಾಟ 💛❤️."
-              : "Promoting harmony through language, literature, and heritage. We celebrate and preserve Kannada culture, inspiring pride in the next generation. 💛❤️."}
+              : "Promoting harmony through language, literature, and heritage. We celebrate and preserve Kannada culture, inspiring pride in the next generation. 💛❤️."
+            }
           </p>
           <h3
             ref={taglineRef}
             className="text-xl md:text-2xl font-semibold italic text-yellow-400 border-l-4 border-yellow-500 pl-5 mt-2 py-2 animate-pulse"
           >
-            {isKannada
-              ? "“ಅಳಿಯದೀ ಕನ್ನಡಂ, ಅಳುಕದೀ ಕನ್ನಡಂ”"
-              : '"Golden fields and crimson skies, Karnataka’s spirit never dies!"'}
+            {isKannada ? '“ಅಳಿಯದೀ ಕನ್ನಡಂ, ಅಳುಕದೀ ಕನ್ನಡಂ”' : '"Golden fields and crimson skies, Karnataka’s spirit never dies!"'}
           </h3>
         </div>
+        {/* ನಮ್ಮ ನಡೆಯಲ್ಲಿ, ನಮ್ಮ ನುಡಿಯಲ್ಲಿ */}
 
-        {/* Image Section – Two Logos Side by Side */}
-        <div className="flex-1 flex justify-center items-center gap-10 flex-wrap">
-          {/* PES University Logo */}
-          <div
-            ref={pesImageRef}
-            className="relative group w-[220px] h-[220px] md:w-[280px] md:h-[280px] rounded-full shadow-[0_18px_38px_rgba(0,0,0,0.4)] transition-all duration-400 hover:scale-105"
-          >
-            <div className="absolute -inset-2 bg-gradient-to-br from-amber-400/40 to-yellow-300/15 rounded-full blur-3xl opacity-50 animate-pulse pointer-events-none"></div>
-            <img
-              src={pesLogoSrc}
-              alt="PES University Logo"
-              className="w-full h-full object-cover rounded-full animate-float-slow"
-            />
-          </div>
-          {/* Kannada Koota Logo */}
-          <div
-            ref={kkImageRef}
-            className="relative group w-[220px] h-[220px] md:w-[280px] md:h-[280px] rounded-full shadow-[0_18px_38px_rgba(0,0,0,0.4)] transition-all duration-400 hover:scale-105"
-          >
+        {/* Image */}
+        <div className="flex-1 flex justify-center items-center min-w-[260px]">
+          <div className="relative group">
+            {/* Soft glow behind image */}
             <div className="absolute -inset-2 bg-gradient-to-br from-yellow-400/40 to-amber-300/15 rounded-full blur-3xl opacity-50 animate-pulse pointer-events-none"></div>
-            <img
-              src="/logo.png"
-              alt="Kannada Koota Logo"
-              className="w-full h-full object-cover rounded-full animate-float-slow"
-            />
+
+            {/* Rotating container with both logos */}
+            <div className="w-[260px] h-[260px] md:w-[340px] md:h-[340px] rounded-full shadow-[0_18px_38px_rgba(0,0,0,0.4)] transition-all duration-400 hover:scale-105 relative">
+              <div className="absolute inset-0 w-full h-full rounded-full preserve-3d animate-rotate-3d">
+                <div className="absolute inset-0 w-full h-full rounded-full backface-hidden">
+                  <img
+                    ref={imageRef}
+                    src="/logo.png"
+                    alt="Kannada Koota Logo"
+                    className="w-full h-full object-cover rounded-full"
+                  />
+                </div>
+                <div className="absolute inset-0 w-full h-full rounded-full backface-hidden" style={{ transform: 'rotateY(180deg)' }}>
+                  <img
+                    src={pesLogoSrc}
+                    alt="PES University"
+                    className="w-full h-full object-cover rounded-full"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Golden line (stationary) */}
+            <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-yellow-400 to-transparent opacity-80 pointer-events-none" />
           </div>
         </div>
       </div>
@@ -174,7 +160,6 @@ const HeroSection = () => {
         }
         .animate-float { animation: float 23s ease-in-out infinite;}
         .animate-float-delayed { animation: float 30s ease-in-out infinite; animation-delay: 10s;}
-        .animate-float-slow { animation: float 20s ease-in-out infinite;}
         @keyframes gradient {
           0%,100% { background-position: 0% 50%;}
           50% { background-position: 100% 50%;}
@@ -183,6 +168,7 @@ const HeroSection = () => {
           background-size: 200% 200%;
           animation: gradient 4.5s ease infinite;
         }
+        /* Stationary golden line — shimmer removed */
         .bg-gradient-radial {
           background: radial-gradient(circle at center, var(--tw-gradient-stops));
         }
@@ -191,6 +177,13 @@ const HeroSection = () => {
           50% {opacity:0.9;}
         }
         .animate-pulse { animation: pulse 3s cubic-bezier(.4,0,.6,1) infinite;}
+        @keyframes rotate-3d {
+          0% { transform: rotateY(0deg); }
+          100% { transform: rotateY(360deg); }
+        }
+        .animate-rotate-3d { animation: rotate-3d 20s linear infinite; }
+        .preserve-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; }
       `}</style>
     </section>
   );
