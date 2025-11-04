@@ -157,10 +157,10 @@ export default function Teams() {
                     <div className="flex-1 h-px bg-gradient-to-r from-yellow-500/50 to-transparent"></div>
                     <div className="relative">
                       <span className="text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 transition-all duration-300 relative group/link">
-                        {team.team_name_k} 
+                        {team.team_name_k}
                       </span>
                       <span className="text-xl md:text-2xl text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-amber-500 hover:from-red-300 hover:to-amber-400 transition-all duration-300 relative group/link ml-2">
-                        ({team.team_name}) 
+                        ({team.team_name})
                       </span>
 
                       {/* Decorative corner elements */}
@@ -368,33 +368,10 @@ export default function Teams() {
                         {/* Expanded Full View */}
                         {isExpanded && (
                           <div className="relative">
-                            {/* Collapse Button */}
-                            <div className="flex justify-center mb-4">
-                              <button
-                                onClick={() => toggleTeamExpansion(team._id)}
-                                className="px-4 py-2 bg-gradient-to-r from-gray-700 to-gray-800 text-yellow-400 font-semibold rounded-full border-2 border-yellow-500/50 hover:border-yellow-400 hover:text-yellow-300 transition-all duration-300 shadow-lg hover:shadow-yellow-500/25 flex items-center gap-2"
-                              >
-                                <svg
-                                  className="w-5 h-5"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M5 15l7-7 7 7"
-                                  />
-                                </svg>
-                                Collapse
-                              </button>
-                            </div>
-
                             {/* Full Team Display */}
                             <div className="relative group">
                               {/* Team Header */}
-                              <div className="mb-12">
+                              <div className="mb-6">
                                 <div className="flex items-center gap-4 mb-4">
                                   <div className="flex-1 h-px bg-gradient-to-r from-yellow-500/50 to-transparent"></div>
                                   <div className="relative">
@@ -410,6 +387,29 @@ export default function Teams() {
                                     <div className="absolute -bottom-3 -right-3 w-6 h-6 border-b-2 border-r-2 border-yellow-500/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                                   </div>
                                   <div className="flex-1 h-px bg-gradient-to-l from-yellow-500/50 to-transparent"></div>
+                                </div>
+
+                                {/* Collapse Button */}
+                                <div className="flex justify-center">
+                                  <button
+                                    onClick={() => toggleTeamExpansion(team._id)}
+                                    className="px-4 py-2 bg-gradient-to-r from-gray-700 to-gray-800 text-yellow-400 font-semibold rounded-full border-2 border-yellow-500/50 hover:border-yellow-400 hover:text-yellow-300 transition-all duration-300 shadow-lg hover:shadow-yellow-500/25 flex items-center gap-2"
+                                  >
+                                    <svg
+                                      className="w-5 h-5"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M5 15l7-7 7 7"
+                                      />
+                                    </svg>
+                                    Collapse
+                                  </button>
                                 </div>
                               </div>
 
