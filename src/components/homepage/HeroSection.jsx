@@ -83,7 +83,7 @@ const HeroSection = () => {
   return (
     <section
       id="home"
-      className="relative min-h-screen flex items-center justify-center bg-black overflow-hidden"
+      className="relative min-h-screen flex items-center justify-center bg-black overflow-hidden pt-24 md:pt-32"
     >
       {/* Animated Gradient/Orb Backgrounds */}
       <div className="absolute inset-0 pointer-events-none z-0">
@@ -141,6 +141,7 @@ const HeroSection = () => {
               className="w-full h-full object-cover rounded-full animate-float-slow"
             />
           </div>
+
           {/* Kannada Koota Logo */}
           <div
             ref={kkImageRef}
