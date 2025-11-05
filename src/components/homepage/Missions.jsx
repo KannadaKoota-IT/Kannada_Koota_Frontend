@@ -72,7 +72,7 @@ const Missions = () => {
       </div>
 
       <h2 className="text-center text-4xl md:text-5xl font-bold mb-16 bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(255,215,0,0.6)]">
-        {isKannada ? "ಧ್ಯೇಯ ಮತ್ತು ದಾರಿ" : "Vision and Path"}
+        {isKannada ? "ಗುರಿ ಮತ್ತು ದಾರಿ" : "Vision and Path"}
       </h2>
 
       <div className="flex flex-col gap-12 max-w-6xl mx-auto">
