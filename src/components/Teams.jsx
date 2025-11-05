@@ -23,7 +23,7 @@ export default function Teams() {
   };
 
   const expandAllTeams = () => {
-    setExpandedTeams(new Set(teams.slice(7).map(team => team._id)));
+    setExpandedTeams(new Set(teams.slice(8).map(team => team._id)));
   };
 
   const collapseAllTeams = () => {
@@ -144,7 +144,7 @@ export default function Teams() {
         ) : (
           <div className="space-y-20">
             {/* Top 7 Teams - Always Expanded */}
-            {teams.slice(0, 7).map((team, teamIndex) => (
+            {teams.slice(0, 8).map((team, teamIndex) => (
               <div
                 key={team._id}
                 className="relative group"
@@ -288,7 +288,7 @@ export default function Teams() {
 
                 {/* Accordion Teams */}
                 <div className="space-y-8">
-                  {teams.slice(7).map((team, teamIndex) => {
+                  {teams.slice(8).map((team, teamIndex) => {
                     const isExpanded = expandedTeams.has(team._id);
                     return (
                       <div
