@@ -6,7 +6,7 @@ import { useLanguage } from "../context/LanguageContext";
 import bedagu from "./assets/bedagu.jpg";
 import alankara from "./assets/alankara.jpg";
 import balav from "./assets/balav.webp";
-import inchara from "./assets/inchara.jpeg";
+import inchara from "./assets/inchara.jpg";
 import ranga from "./assets/ranga.jpg";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -27,7 +27,7 @@ const CulturalTeams = () => {
       team: isKannada ? "ಅಲಂಕಾರ" : "Alankara",
       art: isKannada ? "ಫ್ಯಾಷನ್ ತಂಡ" : "Fashion Team",
       info: isKannada
-        ? "ಬಿಂಕು–ಬಿನ್ನಾಣದೊಂದಿಗೆ ನಮ್ಮ ನಾಡಿನ ಸೊಬಗನ್ನು ಮೆರೆಸುವ ಕಲಾವೃಂದ, ವಿವಿಧ ಶೈಲಿಯ ಉಡುಪು ಧಾರಣೆಯೊಂದಿಗೆ ವೇದಿಕೆಯನ್ನು ಶೃಂಗರಿಸುವ ಕಲಾರವಿಂದ!"
+        ? "ಬಿಂಕ–ಬಿನ್ನಾಣದೊಂದಿಗೆ ನಮ್ಮ ನಾಡಿನ ಸೊಬಗನ್ನು ಮೆರೆಸುವ ಕಲಾವೃಂದ, ವಿವಿಧ ಶೈಲಿಯ ಉಡುಪು ಧಾರಣೆಯೊಂದಿಗೆ ವೇದಿಕೆಯನ್ನು ಶೃಂಗರಿಸುವ ಕಲಾರವಿಂದ!"
         : "Alankara is the fashion and styling squad of the Kannada Club, reflecting regional elegance and contemporary flair through costume and design.",
       image: alankara,
     },
