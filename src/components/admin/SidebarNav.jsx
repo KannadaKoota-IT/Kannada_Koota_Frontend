@@ -22,7 +22,9 @@ export default function SidebarNav() {
         <Link
           href="/admin/announcement"
           className={`block px-3 py-2 rounded-md transition ${
-            isActive("/admin/announcement") ? "bg-blue-600 text-white" : "text-gray-300 hover:bg-gray-800 hover:text-white"
+            isActive("/admin/announcement")
+              ? "bg-blue-600 text-white"
+              : "text-gray-300 hover:bg-gray-800 hover:text-white"
           }`}
         >
           Announcements
@@ -30,7 +32,9 @@ export default function SidebarNav() {
         <Link
           href="/admin/events"
           className={`block px-3 py-2 rounded-md transition ${
-            isActive("/admin/events") ? "bg-blue-600 text-white" : "text-gray-300 hover:bg-gray-800 hover:text-white"
+            isActive("/admin/events")
+              ? "bg-blue-600 text-white"
+              : "text-gray-300 hover:bg-gray-800 hover:text-white"
           }`}
         >
           Events
@@ -38,7 +42,9 @@ export default function SidebarNav() {
         <Link
           href="/admin/teams"
           className={`block px-3 py-2 rounded-md transition ${
-            isActive("/admin/teams") ? "bg-blue-600 text-white" : "text-gray-300 hover:bg-gray-800 hover:text-white"
+            isActive("/admin/teams")
+              ? "bg-blue-600 text-white"
+              : "text-gray-300 hover:bg-gray-800 hover:text-white"
           }`}
         >
           Domains
@@ -46,10 +52,22 @@ export default function SidebarNav() {
         <Link
           href="/admin/gallery"
           className={`block px-3 py-2 rounded-md transition ${
-            isActive("/admin/gallery") ? "bg-blue-600 text-white" : "text-gray-300 hover:bg-gray-800 hover:text-white"
+            isActive("/admin/gallery")
+              ? "bg-blue-600 text-white"
+              : "text-gray-300 hover:bg-gray-800 hover:text-white"
           }`}
         >
           Gallery
+        </Link>
+        <Link
+          href="/admin/blogs"
+          className={`block px-3 py-2 rounded-md transition ${
+            isActive("/admin/blogs")
+              ? "bg-blue-600 text-white"
+              : "text-gray-300 hover:bg-gray-800 hover:text-white"
+          }`}
+        >
+          Blogs
         </Link>
       </nav>
 
