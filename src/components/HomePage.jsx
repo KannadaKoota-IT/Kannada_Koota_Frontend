@@ -4,6 +4,7 @@ import About from "./homepage/About";
 import Missions from "./homepage/Missions";
 import Footer from "./homepage/Footer";
 import DashboardEvents from "./homepage/DashboardEvents";
+import BlogSection from "./homepage/BlogSection";
 import CulturalTeams from "./CulturalTeams";
 
 const HomePage = ({ announcements }) => {
@@ -11,6 +12,7 @@ const HomePage = ({ announcements }) => {
     <>
       <HeroSection />
       <DashboardEvents announcements={announcements} />
+      <BlogSection />
       <About />
       <Missions />
       <CulturalTeams />
