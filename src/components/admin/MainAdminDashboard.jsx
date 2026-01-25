@@ -1,27 +1,27 @@
 import React, { useEffect } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { useRouter } from "next/router";
 import SidebarNav from "./SidebarNav";
 
 export default function MainAdminDashboard() {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   useEffect(() => {
     const token = localStorage.getItem("adminToken");
     if (!token) {
-      navigate("/admin-login");
+      router.push("/admin-login");
     } else {
       try {
         const payload = JSON.parse(atob(token.split(".")[1]));
         if (payload.exp * 1000 < Date.now()) {
           localStorage.removeItem("adminToken");
-          navigate("/admin-login");
+          router.push("/admin-login");
         }
       } catch (err) {
         localStorage.removeItem("adminToken");
-        navigate("/admin-login");
+        router.push("/admin-login");
       }
     }
-  }, [navigate]);
+  }, [router]);
 
   return (
     <div className="flex min-h-screen font-['Segoe_UI',sans-serif]">
@@ -32,7 +32,10 @@ export default function MainAdminDashboard() {
 
       {/* Main content */}
       <div className="ml-56 flex-grow p-8 bg-black min-h-screen overflow-y-auto">
-        <Outlet />
+        <div className="text-white">
+          <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
+          <p>Welcome to the admin panel. Use the sidebar to navigate to different sections.</p>
+        </div>
       </div>
     </div>
   );

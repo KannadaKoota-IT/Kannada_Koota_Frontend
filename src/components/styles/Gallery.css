@@ -1,0 +1,31 @@
+.gallery-root h2,
+.gallery-root h4,
+.gallery-root h5,
+.gallery-root h6 {
+  color: #ffd700 !important;
+  font-weight: 700 !important;
+}
+
+.gallery-title{
+  font-size: 3rem;
+  font-weight: 800;
+  color: #ffd700;
+  text-shadow: 0 6px 22px rgba(255, 214, 64, 0.08);
+  margin: 0;
+}
+
+.gallery-root p {
+  color: #e5e7eb !important;
+  font-weight: 400 !important;
+}
+
+.gallery-card h3 {
+  color: white !important;
+  font-weight: 700 !important;
+  font-size: 1.5rem !important;
+}
+
+.gallery-modal p {
+  color: white !important;
+  font-weight: 300 !important;
+}

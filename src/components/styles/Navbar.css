@@ -14,31 +14,45 @@
   left: 0;
   width: 100%;
   max-width: 100vw;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(10, 10, 10, 0.85);
   padding: 15px 20px;
   z-index: 1000;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
-  backdrop-filter: blur(8px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(12px);
+  border-bottom: 2px solid #222;
+  transition: background-color 0.3s ease;
 }
 
 /* --- LOGO --- */
 .logo {
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   object-fit: cover;
   cursor: pointer;
+  box-shadow: 0 0 8px #ffd700aa;
+  transition: box-shadow 0.3s ease;
 }
+
+.logo:hover {
+  box-shadow: 0 0 15px #ffd700ff;
+}
+
 
 /* --- MENU ICON (MOBILE) --- */
 .menu-icon {
   font-size: 28px;
-  color: white;
+  color: #ffd700;
   display: none;
   cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.menu-icon:hover {
+  color: #fff200;
 }
 
 /* --- NAV LIST --- */
@@ -52,6 +66,7 @@
 
 /* --- NAV LINK --- */
 .nav-link {
+  display: inline-block;
   background: none;
   border: none;
   font: inherit;
@@ -60,18 +75,19 @@
   text-decoration: none;
   position: relative;
   padding: 4px 8px;
+  font-weight: 400;
+  font-size: 1.1rem;
+  letter-spacing: 0.03em;
   transition: all 0.3s ease;
   outline: none;
+  text-shadow: 0 0 5px #ffd700aa;
 }
 
 /* --- HOVER / FOCUS --- */
 .nav-link:hover,
+.nav-link:focus,
 .nav-link:focus-visible {
-  color: #cde20f;
-  animation: pop 0.4s ease;
-  background: rgba(21, 55, 224, 0.1);
-  box-shadow: 0 0 8px rgba(37, 122, 226, 0.6);
-  border-radius: 4px;
+  transform: scale(1.07);
 }
 
 /* --- DIAGONAL UNDERLINE --- */
@@ -82,7 +98,7 @@
   bottom: -5px;
   width: 100%;
   height: 2px;
-  background: #350de6;
+  background: #ffd700;
   transform: scaleX(0) skewX(-20deg);
   transform-origin: left;
   transition: transform 0.4s ease-in-out;

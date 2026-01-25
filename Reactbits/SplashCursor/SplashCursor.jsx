@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef } from "react";
+import "./SplashCursor.css";
 
 function SplashCursor({
   SIM_RESOLUTION = 128,

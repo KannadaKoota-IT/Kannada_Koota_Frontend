@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Outlet } from "react-router-dom";
 import "./App.css";
 
 import Navbar from "./components/Navbar";
@@ -19,11 +19,12 @@ import AdminEvents from "./components/admin/AdminEvents";
 import TeamsPanel from "./components/admin/TeamsPanel";
 import AdminGallery from "./components/admin/AdminGallery";
 import TeamDetails from "./components/admin/TeamDetails";
+import Footer from "./components/homepage/Footer";
 
 const App = () => {
   return (
     <Router>
-      {/* <SplashCursor /> */}
+
       <Routes>
         {/* Admin login */}
         <Route path="/admin-login" element={<AdminLogin />} />
@@ -53,6 +54,7 @@ const App = () => {
           <Route path="gallery" element={<Gallery />} />
           <Route path="events" element={<Events />} />
           <Route path="announcements" element={<Announcements />} />
+          <Route path="footer" element={<Footer/>}/>
         </Route>
 
       </Routes>

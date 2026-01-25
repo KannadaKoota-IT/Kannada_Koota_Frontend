@@ -6,7 +6,7 @@ export default function ContactUs() {
   const [submitted, setSubmitted] = useState(null); // null | "success" | "error"
   const [loading, setLoading] = useState(false);
 
-  const API_BASE = import.meta.env.VITE_BACKEND_URL;
+  const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   const handleSubmit = async (e) => {
     e.preventDefault();

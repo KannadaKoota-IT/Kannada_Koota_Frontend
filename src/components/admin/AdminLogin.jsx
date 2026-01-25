@@ -1,12 +1,13 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import Link from "next/link";
+import { useRouter } from "next/router";
 
 export default function AdminLogin() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
-  const navigate = useNavigate();
+  const router = useRouter();
 
-  const API_BASE = import.meta.env.VITE_BACKEND_URL;
+  const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -26,7 +27,7 @@ export default function AdminLogin() {
       const data = await res.json();
       if (data.success) {
         localStorage.setItem("adminToken", data.token);
-        navigate("/admin");
+        router.push("/admin");
       } else {
         setError(data.message || "Login failed");
       }
@@ -72,7 +73,7 @@ export default function AdminLogin() {
             </button>
 
             <Link
-              to="/"
+              href="/"
               className="w-1/3 text-center py-2 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition-colors duration-200"
             >
               Back

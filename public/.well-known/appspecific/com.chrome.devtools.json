@@ -1,0 +1,15 @@
+{
+  "version": "1.0",
+  "name": "Kannada Koota",
+  "description": "Kannada Koota - Cultural Club Website",
+  "manifest_url": "/manifest.json",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#fbbf24",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "categories": ["education", "lifestyle"],
+  "lang": "en",
+  "dir": "ltr"
+}
