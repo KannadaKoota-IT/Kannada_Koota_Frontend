@@ -238,7 +238,7 @@ const BlogSection = () => {
       {/* --- HEADER --- */}
       <div className="blog-header text-center mb-12 z-10 relative px-4">
         <h2 className="text-5xl md:text-6xl font-bold mb-3 tracking-wide drop-shadow-lg text-[#fbbf24]">
-          {language === "kn" ? "ಬರಹಗಳು" : "Announcements"}
+          {language === "kn" ? "ಬರಹಗಳು" : "Articles"}
         </h2>
         <div className="flex flex-col items-center justify-center gap-1 opacity-90">
           <div className="flex items-center gap-3">
@@ -247,7 +247,8 @@ const BlogSection = () => {
             <div className="h-[1px] w-16 md:w-24 bg-gradient-to-l from-transparent via-[#fbbf24] to-transparent"></div>
           </div>
           <p className="text-[#fbbf24] text-lg md:text-xl font-light tracking-wide mt-1">
-            {language === "kn" ? "(ನಮ್ಮ ಕಥೆಗಳು)" : "(ಪ್ರಕಟಣೆಗಳು)"}
+            {language === "kn" ? "ಇಲ್ಲಿ ಮೂಡುವ ಬರಹಗಳು ಕೇವಲ ಕಲ್ಪನೆಗಳಲ್ಲ, ನಮ್ಮ ಮನಸಿನ ಮಾತುಗಳು, ನಮ್ಮ ಊರಿನ ಸುಗಂಧ, ನಮ್ಮ ಜನರ ಬದುಕಿನ ಸ್ಪಂದನ." 
+            : "The writings that emerge here are not mere imaginations; they are the voices of our hearts, the fragrance of our village, and the pulse of our people’s lives."}
           </p>
         </div>
       </div>
@@ -309,7 +310,7 @@ const BlogSection = () => {
         {!loading && processedBlogs.length === 0 && (
           <div className="text-center bg-black/40 p-10 rounded-2xl border border-[#fbbf24]/20 backdrop-blur-md max-w-lg mx-auto">
             <p className="text-2xl text-[#fbbf24] font-serif mb-2">
-              No Announcements
+              No Articles Available
             </p>
             <p className="text-stone-400">Check back later for updates.</p>
           </div>
