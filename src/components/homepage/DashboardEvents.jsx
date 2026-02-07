@@ -504,8 +504,8 @@ export default function DashboardEvents({
           </div>
         </div>
 
-        {/* Bottom Section: Greatest Kannada Quotes/Lines */}
-        <div className="w-full px-5 mt-12 relative">
+        {/* Bottom Section: Greatest Kannada Quotes/Lines - HIDDEN ON MOBILE */}
+        <div className="hidden md:block w-full px-5 mt-12 relative">
           {/* Decorative Line Above */}
           <div className="flex items-center justify-center gap-4 mb-10">
             <div className="h-[1px] w-full max-w-[200px] bg-gradient-to-r from-transparent via-cyan-500/30 to-transparent"></div>
@@ -513,7 +513,7 @@ export default function DashboardEvents({
             <div className="h-[1px] w-full max-w-[200px] bg-gradient-to-l from-transparent via-cyan-500/30 to-transparent"></div>
           </div>
 
-          {/* Quotes Grid - Replacing Stats */}
+          {/* Quotes Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-[1200px] mx-auto">
             {quotes.map((quote, idx) => (
               <div
