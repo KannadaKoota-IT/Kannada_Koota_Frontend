@@ -265,7 +265,7 @@ const BlogSection = () => {
 
         {!loading && processedBlogs.length > 0 && (
           <div className="relative group/carousel">
-            {/* Left Button */}
+            {/* Left Button (Desktop) */}
             <button
               onClick={() => scroll("left")}
               className="absolute -left-4 md:-left-8 top-1/2 -translate-y-1/2 z-20 
@@ -292,7 +292,7 @@ const BlogSection = () => {
               ))}
             </div>
 
-            {/* Right Button */}
+            {/* Right Button (Desktop) */}
             <button
               onClick={() => scroll("right")}
               className="absolute -right-4 md:-right-8 top-1/2 -translate-y-1/2 z-20 
@@ -303,6 +303,26 @@ const BlogSection = () => {
             >
               <ChevronRight size={24} />
             </button>
+
+            {/* --- MOBILE NAVIGATION BUTTONS (Visible only on small screens) --- */}
+            <div className="flex md:hidden items-center justify-center gap-6 mt-4">
+              <button
+                onClick={() => scroll("left")}
+                className="bg-[#0a0500] border border-[#fbbf24]/50 text-[#fbbf24] p-4 rounded-full 
+                  active:scale-95 active:bg-[#fbbf24] active:text-black transition-all duration-200"
+                aria-label="Scroll Left"
+              >
+                <ChevronLeft size={28} />
+              </button>
+              <button
+                onClick={() => scroll("right")}
+                className="bg-[#0a0500] border border-[#fbbf24]/50 text-[#fbbf24] p-4 rounded-full 
+                  active:scale-95 active:bg-[#fbbf24] active:text-black transition-all duration-200"
+                aria-label="Scroll Right"
+              >
+                <ChevronRight size={28} />
+              </button>
+            </div>
           </div>
         )}
 
