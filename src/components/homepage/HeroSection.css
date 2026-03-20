@@ -136,7 +136,7 @@
   line-height: 1.2;
   cursor: default;
   font-family: "Libertinus Math", serif;
-  text-shadow: 0 0 20px rgba(203, 174, 10, 0.5);
+  text-shadow: 0 0 18px rgba(251, 191, 36, 0.38);
   letter-spacing: -0.02em;
 }
 
@@ -155,11 +155,11 @@
   font-size: 1.5rem;
   font-weight: 600;
   font-style: italic;
-  color: #ffd900d8;
+  color: rgba(251, 191, 36, 0.92);
   cursor: default;
   margin-bottom: 15px;
   /* text-shadow: 0 0 10px rgba(255, 215, 0, 0.8); */
-  border-left: 4px solid #ffd700;
+  border-left: 4px solid var(--accent);
   padding-left: 15px;
   padding-top: 15px;
 }
@@ -187,13 +187,13 @@
   object-position: center;
   background-color: #fff;
   margin: 0;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 215, 0, 0.3);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(251, 191, 36, 0.25);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .hero-image:hover {
   transform: scale(1.05);
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(255, 215, 0, 0.5);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(251, 191, 36, 0.48);
 }
 
 

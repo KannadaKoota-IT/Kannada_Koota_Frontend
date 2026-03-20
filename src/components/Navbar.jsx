@@ -92,7 +92,7 @@ export default function Navbar() {
       onClick={() => onClick(item)}
       className={`w-full text-left px-4 py-3 rounded-lg text-base font-medium transition-all duration-300 ${isActive(item)
           ? "bg-blue-500/20 text-blue-400"
-          : "text-yellow-300 hover:bg-blue-500/10 hover:text-blue-400"
+          : "text-cyan-300 hover:bg-cyan-500/10 hover:text-cyan-300"
         }`}
     >
       {item.label}
@@ -115,17 +115,17 @@ export default function Navbar() {
             <img
               src="/pes_navbar.webp"
               alt="PES University"
-              className="w-10 h-10 object-cover rounded-full transition-all duration-300 shadow-lg shadow-yellow-500/30 group-hover:shadow-yellow-400/50 group-hover:scale-105"
+              className="w-10 h-10 object-cover rounded-full transition-all duration-300 shadow-lg shadow-cyan-500/25 group-hover:shadow-cyan-400/45 group-hover:scale-105"
             />
             <img
               src="/flag.png"
               alt="Flag"
-              className="w-13 h-10 object-cover rounded-md transition-all duration-300 shadow-lg shadow-yellow-500/30 group-hover:shadow-yellow-400/50 group-hover:scale-105"
+              className="w-13 h-10 object-cover rounded-md transition-all duration-300 shadow-lg shadow-cyan-500/25 group-hover:shadow-cyan-400/45 group-hover:scale-105"
             />
             <img
               src="/logo.png"
               alt="Kannada Koota Logo"
-              className="w-10 h-10 object-cover rounded-full transition-all duration-300 shadow-lg shadow-yellow-500/30 group-hover:shadow-yellow-400/50 group-hover:scale-105"
+              className="w-10 h-10 object-cover rounded-full transition-all duration-300 shadow-lg shadow-cyan-500/25 group-hover:shadow-cyan-400/45 group-hover:scale-105"
             />
           </div>
 
@@ -141,7 +141,7 @@ export default function Navbar() {
               <div className="relative">
                 <button
                   onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="w-10 h-10 text-yellow-300 hover:text-blue-400 focus:outline-none flex flex-col justify-center items-center gap-1"
+                  className="w-10 h-10 text-cyan-300 hover:text-cyan-200 focus:outline-none flex flex-col justify-center items-center gap-1"
                 >
                   <span
                     className={`block w-6 h-0.5 bg-current transition-all duration-300 ${dropdownOpen ? "rotate-45 translate-y-1.5" : ""
@@ -170,7 +170,7 @@ export default function Navbar() {
                       onClick={() => setDropdownOpen(false)}
                       className={`block px-4 py-3 text-sm font-medium transition-all duration-200 ${location.pathname === item.to
                           ? "text-blue-400 bg-blue-500/10"
-                          : "text-yellow-300 hover:text-blue-400 hover:bg-blue-500/10"
+                          : "text-cyan-300 hover:text-cyan-200 hover:bg-cyan-500/10"
                         }`}
                     >
                       {item.label}
@@ -182,20 +182,20 @@ export default function Navbar() {
 
             {/* Language Toggle (Always Visible) */}
             <div className="flex items-center space-x-2">
-              <span className="text-m font-bold text-amber-500">ಕ</span>
+              <span className="text-m font-bold text-cyan-300">ಕ</span>
               <button
                 onClick={toggleLanguage}
-                className="relative w-8 h-4 rounded-full bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-600 shadow-inner ring-1 ring-amber-300 transition-all duration-300 hover:shadow-[0_0_10px_rgba(251,191,36,0.7)] focus:outline-none"
+                className="relative w-8 h-4 rounded-full bg-gradient-to-r from-cyan-400 via-sky-500 to-blue-600 shadow-inner ring-1 ring-cyan-300 transition-all duration-300 hover:shadow-[0_0_10px_rgba(34,211,238,0.55)] focus:outline-none"
                 aria-label="Toggle language"
               >
                 <div
                   className={`absolute top-1/2 -translate-y-1/2 w-5 h-5 rounded-full shadow-md transition-all duration-300 ${language === "en"
-                      ? "translate-x-[1.0rem] bg-gradient-to-br from-amber-200 to-red-300"
-                      : "translate-x-[-0.2rem] bg-gradient-to-br from-green-200 to-amber-200"
+                      ? "translate-x-[1.0rem] bg-gradient-to-br from-cyan-200 to-blue-300"
+                      : "translate-x-[-0.2rem] bg-gradient-to-br from-emerald-200 to-cyan-200"
                     }`}
                 ></div>
               </button>
-              <span className="text-sm font-bold text-amber-500">EN</span>
+              <span className="text-sm font-bold text-cyan-300">EN</span>
             </div>
 
 
@@ -244,7 +244,7 @@ export default function Navbar() {
                   }}
                   className={`w-full text-left px-4 py-3 rounded-lg text-base font-medium transition-all duration-200 ${location.pathname === item.to
                       ? "bg-blue-500/20 text-blue-400"
-                      : "text-yellow-300 hover:bg-blue-500/10 hover:text-blue-400"
+                      : "text-cyan-300 hover:bg-cyan-500/10 hover:text-cyan-200"
                     }`}
                 >
                   {item.label}
