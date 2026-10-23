@@ -1,7 +1,21 @@
 import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import { 
+  Users, 
+  ArrowLeft, 
+  Plus, 
+  Edit2, 
+  Trash2, 
+  Shield, 
+  UserCheck, 
+  CheckCircle2, 
+  AlertCircle,
+  Mail,
+  Phone
+} from "lucide-react";
+import { getMediaUrl, handleImageError, DEFAULT_PERSON_IMAGE } from "../../utils/mediaUtils";
 
 export default function TeamDetails({ teamId }) {
-
   const [heads, setHeads] = useState([]);
   const [members, setMembers] = useState([]);
   const [teamName, setTeamName] = useState("");
@@ -16,12 +30,11 @@ export default function TeamDetails({ teamId }) {
   const [photo, setPhoto] = useState(null);
   const [editingId, setEditingId] = useState(null);
   const [status, setStatus] = useState("");
-  const [modalImg, setModalImg] = useState(null);
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState(null);
 
   const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL;
-  const token = localStorage.getItem("adminToken");
+  const token = typeof window !== "undefined" ? localStorage.getItem("adminToken") : null;
 
   const fetchMembers = async () => {
     setLoading(true);
@@ -30,8 +43,8 @@ export default function TeamDetails({ teamId }) {
       const data = await res.json();
       setMembers(data.members || []);
       setHeads(data.heads || []);
-      setTeamName(data.team_name);
-      setTeamPhoto(data.team_photo);
+      setTeamName(data.team_name || "");
+      setTeamPhoto(data.team_photo || "");
     } catch (err) {
       console.error(err);
       setStatus({ type: "error", message: "Failed to load members" });
@@ -81,12 +94,9 @@ export default function TeamDetails({ teamId }) {
       if (data?.member) {
         setStatus({
           type: "success",
-          message: editingId ? "Member updated successfully!" : "Member added successfully!"
+          message: editingId ? "Member updated successfully!" : "Member added successfully!",
         });
-        setFormData({ name: "", name_k: "", email: "", phone: "", role: "member" });
-        setPhoto(null);
-        setPreview(null);
-        setEditingId(null);
+        clearForm();
         fetchMembers();
         setTimeout(() => setStatus(""), 3000);
       } else {
@@ -103,7 +113,7 @@ export default function TeamDetails({ teamId }) {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this member?")) return;
+    if (!window.confirm("Are you sure you want to remove this member?")) return;
 
     setLoading(true);
     try {
@@ -111,7 +121,7 @@ export default function TeamDetails({ teamId }) {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
-      setStatus({ type: "success", message: "Member deleted successfully" });
+      setStatus({ type: "success", message: "Member removed successfully" });
       fetchMembers();
       setTimeout(() => setStatus(""), 3000);
     } catch (err) {
@@ -127,15 +137,14 @@ export default function TeamDetails({ teamId }) {
     setEditingId(mem._id);
     setFormData({
       name: mem.name,
-      name_k: mem.name_k,
-      email: mem.email,
-      phone: mem.phone,
-      role: mem.role,
+      name_k: mem.name_k || "",
+      email: mem.email || "",
+      phone: mem.phone || "",
+      role: mem.role || "member",
     });
     setPhoto(null);
-    setPreview(null);
-    // Scroll to form
-    window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
+    setPreview(mem.image_url || null);
+    window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "smooth" });
   };
 
   const clearForm = () => {
@@ -145,363 +154,281 @@ export default function TeamDetails({ teamId }) {
     setEditingId(null);
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
-        {/* Team Header */}
-        <div className="text-center mb-12">
-          <div className="flex flex-col items-center">
-            {teamPhoto && (
-              <div className="relative mb-6">
-                <img
-                  src={teamPhoto}
-                  alt="Team"
-                  className="w-32 h-32 object-cover rounded-full border-4 border-emerald-400 shadow-2xl"
-                />
-                <div className="absolute inset-0 rounded-full bg-gradient-to-t from-black/20 to-transparent"></div>
-              </div>
-            )}
-            <h1 className="text-5xl font-bold text-lime-400 mb-4 bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
-              {teamName}
-            </h1>
-          </div>
-        </div>
-
-        {/* Status Alert */}
-        {status && (
-          <div className={`rounded-2xl px-6 py-4 mb-8 text-center font-semibold text-lg shadow-xl border backdrop-blur-lg transition-all duration-500 transform ${status.type === "success"
-            ? "bg-green-500/20 text-green-300 border-green-400/30"
-            : "bg-red-500/20 text-red-300 border-red-400/30"
-            }`}>
-            <div className="flex items-center justify-center gap-3">
-              <span className="text-2xl">{status.type === "success" ? "✅" : "❌"}</span>
-              {status.message}
-            </div>
-          </div>
-        )}
-
-        {/* Heads Section */}
-        <div className="mb-12">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full p-3">
-              <span className="text-2xl">👑</span>
-            </div>
-            <h2 className="text-3xl font-bold text-white">Team Heads</h2>
-            <span className="bg-yellow-500/20 text-yellow-300 px-3 py-1 rounded-full text-sm font-medium">
-              {heads.length} {heads.length === 1 ? 'Head' : 'Heads'}
-            </span>
-          </div>
-
-          {heads.length === 0 ? (
-            <div className="text-center py-12 bg-white/5 rounded-2xl border border-white/10">
-              <div className="text-6xl mb-4">👑</div>
-              <p className="text-slate-300 text-lg">No team heads yet</p>
-              <p className="text-slate-400">Add a member with 'Head' role below</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {heads.map((member) => (
-                <div
-                  key={member._id}
-                  className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 transform hover:scale-105 hover:bg-white/15"
-                >
-                  {/* Member Image */}
-                  {member.image_url && (
-                    <div className="relative h-48 overflow-hidden">
-                      <img
-                        src={member.image_url}
-                        alt={member.name}
-                        onClick={() => setModalImg(member.image_url)}
-                        className="w-full h-full object-cover cursor-pointer transition-transform duration-300 hover:scale-110"
-                      />
-                      <div className="absolute top-4 right-4 bg-yellow-500/20 backdrop-blur-sm text-yellow-300 px-3 py-1 rounded-full text-xs font-medium border border-yellow-400/30">
-                        👑 HEAD
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Member Info */}
-                  <div className="p-6">
-                    <h4 className="text-xl font-bold text-white mb-2">{member.name_k}</h4>
-                    <h5 className="text-sm font-bold !text-white mb-2">{member.name}</h5>
-                    <div className="space-y-2 mb-4">
-                      <p className="text-slate-300 text-sm flex items-center gap-2">
-                        <span>📧</span> {member.email}
-                      </p>
-                      <p className="text-slate-300 text-sm flex items-center gap-2">
-                        <span>📱</span> {member.phone}
-                      </p>
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="flex gap-3">
-                      <button
-                        className="flex-1 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 font-medium px-4 py-2 rounded-xl transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                        onClick={() => handleEdit(member)}
-                        disabled={loading}
-                      >
-                        ✏️ Edit
-                      </button>
-                      <button
-                        className="flex-1 bg-red-500/20 hover:bg-red-500/30 text-red-300 font-medium px-4 py-2 rounded-xl transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-400"
-                        onClick={() => handleDelete(member._id)}
-                        disabled={loading}
-                      >
-                        🗑️ Delete
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Members Section */}
-        <div className="mb-12">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="bg-gradient-to-r from-teal-400 to-cyan-500 rounded-full p-3">
-              <span className="text-2xl">👥</span>
-            </div>
-            <h2 className="text-3xl font-bold text-white">Team Members</h2>
-            <span className="bg-teal-500/20 text-teal-300 px-3 py-1 rounded-full text-sm font-medium">
-              {members.length} {members.length === 1 ? 'Member' : 'Members'}
-            </span>
-          </div>
-
-          {members.length === 0 ? (
-            <div className="text-center py-12 bg-white/5 rounded-2xl border border-white/10">
-              <div className="text-6xl mb-4">👥</div>
-              <p className="text-slate-300 text-lg">No team members yet</p>
-              <p className="text-slate-400">Add members using the form below</p>
-            </div>
-          ) : (
-            <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl overflow-hidden shadow-2xl">
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-white/10 border-b border-white/20">
-                    <tr>
-                      <th className="px-6 py-4 text-left text-sm font-medium text-slate-300">Photo</th>
-                      <th className="px-6 py-4 text-left text-sm font-medium text-slate-300">Name</th>
-                      <th className="px-6 py-4 text-left text-sm font-medium text-slate-300">Email</th>
-                      <th className="px-6 py-4 text-left text-sm font-medium text-slate-300">Phone</th>
-                      <th className="px-6 py-4 text-left text-sm font-medium text-slate-300">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-white/10">
-                    {members.map((member) => (
-                      <tr key={member._id} className="hover:bg-white/5 transition-colors duration-200">
-                        <td className="px-6 py-4">
-                          <img
-                            src={member.image_url || "/default_img.jpg"}
-                            alt={member.name}
-                            onClick={() => setModalImg(member.image_url || "/default_img.jpg")}
-                            className="w-12 h-12 rounded-full object-cover cursor-pointer border-2 border-white/20 hover:border-teal-400 transition-colors duration-200"
-                          />
-                        </td>
-                        <td className="px-6 py-4 text-white font-medium">{member.name}</td>
-                        <td className="px-6 py-4 text-slate-300">{member.email}</td>
-                        <td className="px-6 py-4 text-slate-300">{member.phone}</td>
-                        <td className="px-6 py-4">
-                          <div className="flex gap-2">
-                            <button
-                              className="bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 font-medium px-3 py-1 rounded-lg text-sm transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                              onClick={() => handleEdit(member)}
-                              disabled={loading}
-                            >
-                              ✏️ Edit
-                            </button>
-                            <button
-                              className="bg-red-500/20 hover:bg-red-500/30 text-red-300 font-medium px-3 py-1 rounded-lg text-sm transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-400"
-                              onClick={() => handleDelete(member._id)}
-                              disabled={loading}
-                            >
-                              🗑️ Delete
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Image Modal */}
-        {modalImg && (
-          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <button
-              onClick={() => setModalImg(null)}
-              className="absolute top-6 right-8 bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-xl font-semibold text-lg transition-all duration-200 transform hover:scale-105 shadow-lg z-50"
+  const renderPersonCard = (person, isLead = false) => (
+    <div
+      key={person._id}
+      className="bg-white rounded-2xl border border-[#EFEBE4] overflow-hidden elevation-1 flex flex-col justify-between"
+    >
+      <div>
+        <div className="relative aspect-[4/5] overflow-hidden bg-[#F6F3F2]">
+          <img
+            src={getMediaUrl(person.image_url, DEFAULT_PERSON_IMAGE)}
+            alt={person.name}
+            onError={(e) => handleImageError(e, DEFAULT_PERSON_IMAGE)}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute top-2.5 right-2.5">
+            <span
+              className={`text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm flex items-center gap-1 ${
+                isLead
+                  ? "bg-[#FFF8E1] text-[#7C5800] border border-[#F5B000]/40"
+                  : "bg-white/95 text-[#5C403D] border border-[#EFEBE4]"
+              }`}
             >
-              ✕ Close
-            </button>
-
-            <div className="relative">
-              <img
-                src={modalImg}
-                alt="Enlarged"
-                className="max-w-[90vw] max-h-[90vh] rounded-2xl shadow-2xl border-4 border-white/20 object-contain"
-              />
-            </div>
+              {isLead ? <Shield className="w-3 h-3 text-[#9B000E]" /> : <UserCheck className="w-3 h-3" />}
+              <span>{isLead ? "LEAD / HEAD" : "MEMBER"}</span>
+            </span>
           </div>
-        )}
+        </div>
 
-        {/* Add/Update Member Form */}
-        <div className="mb-8">
-          <form
-            onSubmit={handleSubmit}
-            encType="multipart/form-data"
-            className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl"
-          >
-            <h2 className="text-3xl font-bold text-white mb-8 text-center">
-              {editingId ? "✏️ Update Member" : "➕ Add New Member"}
-            </h2>
+        <div className="p-4 space-y-1">
+          <h4 className="text-base font-bold text-[#1C1B1B] font-kannada line-clamp-1">
+            {person.name_k || person.name}
+          </h4>
+          {person.name_k && person.name && (
+            <p className="text-xs text-[#5C403D] truncate">{person.name}</p>
+          )}
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Left Column */}
-              <div className="space-y-6">
-                {/* Name Input */}
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
-                    Full Name
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Enter full name..."
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    required
-                    className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
-                    Name in Kannada
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Enter name in Kannada..."
-                    value={formData.name_k}
-                    onChange={(e) => setFormData({ ...formData, name_k: e.target.value })}
-                    required
-                    className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300"
-                  />
-                </div>
-
-
-                {/* Email Input */}
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    placeholder="Enter email address..."
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    required
-                    className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300"
-                  />
-                </div>
-
-                {/* Phone and Role Row */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">
-                      Phone Number
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Enter phone number..."
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      required
-                      className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">
-                      Role
-                    </label>
-                    <select
-                      value={formData.role}
-                      onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                      className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300"
-                    >
-                      <option value="member" className="bg-gray-800">👥 Member</option>
-                      <option value="head" className="bg-gray-800">👑 Head</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              {/* Right Column - Photo Upload */}
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
-                    Profile Photo
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handlePhotoChange}
-                      className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300"
-                    />
-                  </div>
-                </div>
-
-                {/* Image Preview */}
-                {preview && (
-                  <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
-                    <p className="text-sm text-slate-300 mb-3 font-medium">Preview:</p>
-                    <img
-                      src={preview}
-                      alt="preview"
-                      className="w-full h-48 object-cover rounded-xl shadow-lg border border-white/20"
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Form Actions */}
-            <div className="flex flex-col sm:flex-row gap-4 mt-8">
-              <button
-                type="submit"
-                disabled={loading}
-                className={`flex-1 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-semibold px-8 py-4 rounded-xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-emerald-300 shadow-xl ${loading ? "opacity-70 cursor-not-allowed" : ""
-                  }`}
-              >
-                {loading ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <div className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></div>
-                    {editingId ? "Updating..." : "Adding..."}
-                  </span>
-                ) : (
-                  <span className="flex items-center justify-center gap-2">
-                    {editingId ? "✏️ Update Member" : "➕ Add Member"}
-                  </span>
-                )}
-              </button>
-
-              <button
-                type="button"
-                onClick={clearForm}
-                disabled={loading}
-                className="flex-1 sm:flex-none bg-slate-600 hover:bg-slate-700 text-white font-semibold px-8 py-4 rounded-xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-slate-300 shadow-xl"
-              >
-                🗑️ Clear Form
-              </button>
-            </div>
-          </form>
+          {person.email && (
+            <p className="text-xs text-[#916F6B] flex items-center gap-1 pt-1 truncate">
+              <Mail className="w-3 h-3 text-[#9B000E] shrink-0" />
+              <span className="truncate">{person.email}</span>
+            </p>
+          )}
+          {person.phone && (
+            <p className="text-xs text-[#916F6B] flex items-center gap-1 truncate">
+              <Phone className="w-3 h-3 text-[#916F6B] shrink-0" />
+              <span>{person.phone}</span>
+            </p>
+          )}
         </div>
       </div>
+
+      <div className="p-4 pt-0 flex items-center gap-2">
+        <button
+          onClick={() => handleEdit(person)}
+          className="flex-1 py-1.5 rounded-lg border border-[#EFEBE4] bg-[#FCF9F8] hover:bg-[#F6F3F2] text-xs font-semibold text-[#1C1B1B] flex items-center justify-center gap-1"
+        >
+          <Edit2 className="w-3.5 h-3.5 text-[#9B000E]" />
+          <span>Edit</span>
+        </button>
+        <button
+          onClick={() => handleDelete(person._id)}
+          className="py-1.5 px-3 rounded-lg border border-red-200 bg-red-50 hover:bg-red-100 text-xs font-semibold text-red-700 flex items-center justify-center gap-1"
+        >
+          <Trash2 className="w-3.5 h-3.5" />
+          <span>Delete</span>
+        </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#EFEBE4]">
+        <div>
+          <Link
+            href="/admin/teams"
+            className="inline-flex items-center gap-1 text-xs font-bold text-[#9B000E] mb-2 hover:underline"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>Back to All Domains</span>
+          </Link>
+          <h1 className="text-2xl sm:text-3xl font-bold text-[#1C1B1B] font-kannada">
+            {teamName} Domain Team
+          </h1>
+          <p className="text-xs sm:text-sm text-[#5C403D]">
+            Manage domain coordinators, lead members, and core contributors.
+          </p>
+        </div>
+      </div>
+
+      {/* Status Notice */}
+      {status && (
+        <div
+          className={`p-4 rounded-xl text-sm font-medium flex items-center gap-2 border ${
+            status.type === "success"
+              ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+              : "bg-red-50 text-red-800 border-red-200"
+          }`}
+        >
+          {status.type === "success" ? (
+            <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+          ) : (
+            <AlertCircle className="w-5 h-5 text-red-600" />
+          )}
+          <span>{status.message}</span>
+        </div>
+      )}
+
+      {/* Team Leads Section */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-2 pb-2 border-b border-[#EFEBE4]">
+          <Shield className="w-5 h-5 text-[#9B000E]" />
+          <h2 className="text-lg font-bold text-[#1C1B1B] font-kannada">
+            ತಂಡದ ನಾಯಕರು / ಮುಖ್ಯಸ್ಥರು (Domain Leads) ({heads.length})
+          </h2>
+        </div>
+
+        {heads.length === 0 ? (
+          <div className="p-6 text-center bg-white rounded-2xl border border-[#EFEBE4] text-xs text-[#5C403D]">
+            No domain leads designated yet. Add one using the form below with role "Lead / Head".
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+            {heads.map((h) => renderPersonCard(h, true))}
+          </div>
+        )}
+      </div>
+
+      {/* General Members Section */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-2 pb-2 border-b border-[#EFEBE4]">
+          <Users className="w-5 h-5 text-[#5C403D]" />
+          <h2 className="text-lg font-bold text-[#1C1B1B] font-kannada">
+            ಸದಸ್ಯರು (Team Members) ({members.length})
+          </h2>
+        </div>
+
+        {members.length === 0 ? (
+          <div className="p-6 text-center bg-white rounded-2xl border border-[#EFEBE4] text-xs text-[#5C403D]">
+            No members registered yet in this domain.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+            {members.map((m) => renderPersonCard(m, false))}
+          </div>
+        )}
+      </div>
+
+      {/* Member Form */}
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white rounded-3xl border border-[#EFEBE4] p-6 sm:p-8 elevation-1 space-y-6"
+      >
+        <div className="flex items-center justify-between pb-4 border-b border-[#EFEBE4]">
+          <h2 className="text-lg sm:text-xl font-bold text-[#1C1B1B] font-kannada flex items-center gap-2">
+            <Plus className="w-5 h-5 text-[#9B000E]" />
+            <span>{editingId ? "ಸದಸ್ಯರ ವಿವರ ಬದಲಿಸಿ (Edit Member)" : "ಹೊಸ ಸದಸ್ಯರನ್ನು ಸೇರಿಸಿ (Add New Member)"}</span>
+          </h2>
+          {editingId && (
+            <button
+              type="button"
+              onClick={clearForm}
+              className="text-xs text-[#9B000E] font-semibold hover:underline"
+            >
+              Cancel Edit
+            </button>
+          )}
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div>
+            <label className="block text-xs font-bold text-[#1C1B1B] uppercase tracking-wider mb-1.5">
+              Full Name (English) *
+            </label>
+            <input
+              type="text"
+              placeholder="e.g. Ramesh Gowda"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              required
+              className="w-full px-4 py-2.5 rounded-xl border border-[#EFEBE4] bg-[#FCF9F8] focus:bg-white text-sm text-[#1C1B1B] focus:outline-none focus:ring-2 focus:ring-[#9B000E]"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-[#1C1B1B] uppercase tracking-wider mb-1.5">
+              ಹೆಸರು (ಕನ್ನಡದಲ್ಲಿ) *
+            </label>
+            <input
+              type="text"
+              placeholder="ಉದಾ: ರಮೇಶ್ ಗೌಡ"
+              value={formData.name_k}
+              onChange={(e) => setFormData({ ...formData, name_k: e.target.value })}
+              required
+              className="w-full px-4 py-2.5 rounded-xl border border-[#EFEBE4] bg-[#FCF9F8] focus:bg-white text-sm text-[#1C1B1B] focus:outline-none focus:ring-2 focus:ring-[#9B000E] font-kannada"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-[#1C1B1B] uppercase tracking-wider mb-1.5">
+              Role in Domain *
+            </label>
+            <select
+              value={formData.role}
+              onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+              className="w-full px-4 py-2.5 rounded-xl border border-[#EFEBE4] bg-[#FCF9F8] focus:bg-white text-sm text-[#1C1B1B] focus:outline-none focus:ring-2 focus:ring-[#9B000E]"
+            >
+              <option value="member">Team Member</option>
+              <option value="head">Lead / Head (ಮುಖ್ಯಸ್ಥರು)</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-[#1C1B1B] uppercase tracking-wider mb-1.5">
+              Email Address (Optional)
+            </label>
+            <input
+              type="email"
+              placeholder="student@pes.edu"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              className="w-full px-4 py-2.5 rounded-xl border border-[#EFEBE4] bg-[#FCF9F8] focus:bg-white text-sm text-[#1C1B1B] focus:outline-none focus:ring-2 focus:ring-[#9B000E]"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-[#1C1B1B] uppercase tracking-wider mb-1.5">
+              Phone Number (Optional)
+            </label>
+            <input
+              type="tel"
+              placeholder="+91 9876543210"
+              value={formData.phone}
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              className="w-full px-4 py-2.5 rounded-xl border border-[#EFEBE4] bg-[#FCF9F8] focus:bg-white text-sm text-[#1C1B1B] focus:outline-none focus:ring-2 focus:ring-[#9B000E]"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-[#1C1B1B] uppercase tracking-wider mb-1.5">
+              Member Portrait Photo
+            </label>
+            <div className="flex items-center gap-3">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handlePhotoChange}
+                className="text-xs text-[#5C403D] file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border file:border-[#EFEBE4] file:bg-[#FCF9F8] file:text-xs file:font-semibold"
+              />
+              {preview && (
+                <div className="w-10 h-10 rounded-full overflow-hidden border border-[#EFEBE4] shrink-0">
+                  <img src={preview} alt="preview" className="w-full h-full object-cover" />
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3 pt-4 border-t border-[#EFEBE4]">
+          <button
+            type="submit"
+            disabled={loading}
+            className="px-6 py-2.5 rounded-xl bg-[#9B000E] hover:bg-[#7D000B] text-white font-bold text-sm shadow-sm transition-all flex items-center gap-2 cursor-pointer disabled:opacity-60"
+          >
+            {loading ? "Saving..." : editingId ? "Save Member Details" : "Add Member to Domain"}
+          </button>
+          <button
+            type="button"
+            onClick={clearForm}
+            className="px-5 py-2.5 rounded-xl border border-[#EFEBE4] bg-white text-[#5C403D] hover:bg-[#F6F3F2] font-semibold text-sm transition-colors cursor-pointer"
+          >
+            Clear Form
+          </button>
+        </div>
+      </form>
     </div>
   );
 }

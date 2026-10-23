@@ -1,6 +1,5 @@
-import React, { useEffect, useRef } from "react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import React from "react";
+import { Sparkles, Users } from "lucide-react";
 import { useLanguage } from "../context/LanguageContext";
 
 import bedagu from "./assets/bedagu.jpg";
@@ -9,186 +8,129 @@ import balav from "./assets/balav.webp";
 import inchara from "./assets/inchara.jpg";
 import ranga from "./assets/ranga.jpg";
 
-gsap.registerPlugin(ScrollTrigger);
-
-const CulturalTeams = () => {
+export default function CulturalTeams() {
   const { isKannada } = useLanguage();
 
   const teams = [
     {
       team: isKannada ? "ಬೆಡಗು" : "Bedagu",
-      art: isKannada ? "ಸಾಂಸ್ಕೃತಿಕ ನೃತ್ಯ ತಂಡ" : "Cultural Dance Team",
+      art: isKannada ? "ಸಾಂಸ್ಕೃತಿಕ ನೃತ್ಯ ತಂಡ" : "Cultural Folk Dance",
+      tag: "TRADITION",
       info: isKannada
         ? "ಕನ್ನಡ ನಾಡಿನ ಸಂಸ್ಕೃತಿಯ ಬಿತ್ತರಿಸುವ ನೃತ್ಯ ಸಿರಿ, ಧೀಮಂತ ಪರಂಪರೆಗಳ ಒಡಲೊಳು ಹರಿಯುವ ನಾಟ್ಯ ಝರಿ, ಜಾನಪದ ನೃತ್ಯಗಳ ಬೆಡಗನ್ನು ಬಿಂಬಿಸುವ ನಾಟ್ಯಗರಿ!"
-        : "Bedagu is our vibrant cultural dance team that celebrates the traditional folk dances of Karnataka, bringing our rich heritage to life through movement.",
+        : "Bedagu celebrates the traditional folk dances of Karnataka (Veeragase, Dollu Kunitha, Yakshagana), bringing vibrant heritage to stage.",
       image: bedagu,
     },
     {
       team: isKannada ? "ಅಲಂಕಾರ" : "Alankara",
-      art: isKannada ? "ಫ್ಯಾಷನ್ ತಂಡ" : "Fashion Team",
+      art: isKannada ? "ಫ್ಯಾಷನ್ ತಂಡ" : "Ethnic Fashion & Styling",
+      tag: "FASHION",
       info: isKannada
         ? "ಬಿಂಕ–ಬಿನ್ನಾಣದೊಂದಿಗೆ ನಮ್ಮ ನಾಡಿನ ಸೊಬಗನ್ನು ಮೆರೆಸುವ ಕಲಾವೃಂದ, ವಿವಿಧ ಶೈಲಿಯ ಉಡುಪು ಧಾರಣೆಯೊಂದಿಗೆ ವೇದಿಕೆಯನ್ನು ಶೃಂಗರಿಸುವ ಕಲಾರವಿಂದ!"
-        : "Alankara is the fashion and styling squad of the Kannada Club, reflecting regional elegance and contemporary flair through costume and design.",
+        : "Alankara is the styling and traditional attire squad reflecting regional elegance, handlooms, and contemporary aesthetics.",
       image: alankara,
     },
     {
       team: isKannada ? "ಬಲವ್" : "Balav",
-      art: isKannada ? "ಪಾಶ್ಚಾತ್ಯ ನೃತ್ಯ ತಂಡ" : "Western Dance Team",
+      art: isKannada ? "ಪಾಶ್ಚಾತ್ಯ ನೃತ್ಯ ತಂಡ" : "Western & Fusion Dance",
+      tag: "FUSION",
       info: isKannada
         ? "ಹುರುಪಿನ ಹೆಜ್ಜೆಗಳೊಂದಿಗೆ ಸಾಂಸ್ಕೃತಿಕ ಲಯವ ಬೆಸೆವ ಚೈತನ್ಯ ಲಹರಿ, ಉತ್ಸಾಹ ಭರಿತ ಭರ್ಜರಿ ಪ್ರದರ್ಶನಗಳೊಂದಿಗೆ ತನು ಮನವ ಕುಣಿಸುವ ನಾಟ್ಯಮಂಜರಿ!"
-        : "Balav is our energetic western dance team that blends contemporary styles with cultural rhythm, adding a dynamic twist to our events.",
+        : "Balav blends contemporary hip-hop and lyrical styles with Kannada musical rhythms, adding an energetic youth spark to our festivals.",
       image: balav,
     },
     {
       team: isKannada ? "ಇಂಚರ" : "Inchara",
-      art: isKannada ? "ಗಾಯನ ತಂಡ" : "Singing Team",
+      art: isKannada ? "ಗಾಯನ ತಂಡ" : "Music & Classical Vocal",
+      tag: "VOCALS",
       info: isKannada
         ? "ಗಾಯನದ ಇಂಪಲ್ಲಿ, ಕನ್ನಡದ ಕಂಪನ್ನು ಚೆಲ್ಲುವ ಸವಿಗಾನದಂಗಳ, ಭಾವ ಸ್ವರಗಳನುಲಿದು, ಸಾಹಿತ್ಯಮಾಧುರ್ಯವ ಮೆರೆಸುವ ಸಂಗೀತದಳ!"
-        : "Inchara is the musical team that brings Kannada melodies to life with soul-touching performances and traditional tunes.",
+        : "Inchara brings soul-touching Bhavageethe, classical Karnatak melodies, and modern Kannada retro compositions to stage.",
       image: inchara,
     },
     {
       team: isKannada ? "ರಂಗತರಂಗ" : "Rangataranga",
-      art: isKannada ? "ನಾಟಕ ವೃಂದ" : "Drama Group",
+      art: isKannada ? "ನಾಟಕ ವೃಂದ" : "Theatre & Drama Ensemble",
+      tag: "THEATRE",
       info: isKannada
         ? "ನವರಸವನು ಅರಗಿಸಿಹ ಅಭಿನಯ ಚತುರರ ರಂಗಸಜ್ಜಿಕೆ, ನಟನೆಯಿಂದ ಕಲಾರಸಿಕರ ಮನವ ನಾಟುವ ಕಥಾಶರ ಬತ್ತಳಿಕೆ!"
-        : "A stage of skilled actors who evoke the nine emotions, captivating the minds of art lovers through performance!",
+        : "Our award-winning theatre team brings legendary Kannada plays, street plays, and original social satire to life with passionate acting.",
       image: ranga,
     },
   ];
 
-  const cardsRef = useRef([]);
-  const titleRef = useRef();
-
-  const glowConfigs = [
-    { width: 350, height: 250, top: 20, left: 10, bgAlpha: 0.18 },
-    { width: 400, height: 300, top: 50, left: 70, bgAlpha: 0.22 },
-    { width: 280, height: 220, top: 80, left: 30, bgAlpha: 0.16 },
-    { width: 450, height: 320, top: 30, left: 80, bgAlpha: 0.2 },
-    { width: 320, height: 280, top: 70, left: 50, bgAlpha: 0.19 },
-  ];
-
-  useEffect(() => {
-    gsap.set(titleRef.current, { opacity: 0, y: 40 });
-    cardsRef.current.forEach((card) => gsap.set(card, { opacity: 0, y: 40 }));
-
-    gsap.to(titleRef.current, {
-      opacity: 1,
-      y: 0,
-      duration: 1,
-      ease: "power3.out",
-    });
-
-    cardsRef.current.forEach((card, i) => {
-      gsap.to(card, {
-        opacity: 1,
-        y: 0,
-        duration: 0.8,
-        delay: i * 0.1,
-        ease: "power3.out",
-      });
-
-      const inner = card.querySelector(".flip-card-inner");
-      card.addEventListener("mouseenter", () => {
-        gsap.to(inner, { rotateY: 180, duration: 0.3 });
-      });
-      card.addEventListener("mouseleave", () => {
-        gsap.to(inner, { rotateY: 0, duration: 0.3 });
-      });
-    });
-  }, []);
-
   return (
-    <section className="relative bg-black text-white py-20 px-6 md:px-12 overflow-hidden">
-      {/* Background Glows */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {glowConfigs.map((c, i) => (
-          <div
-            key={i}
-            className="purple-glow-spot absolute rounded-full blur-3xl"
-            style={{
-              width: `${c.width}px`,
-              height: `${c.height}px`,
-              top: `${c.top}%`,
-              left: `${c.left}%`,
-              backgroundColor: `rgba(168,85,247,${c.bgAlpha})`,
-            }}
-          />
-        ))}
+    <section className="py-16 sm:py-20 border-t border-[#EFEBE4]">
+      {/* Header */}
+      <div className="text-center max-w-2xl mx-auto space-y-2 mb-12">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FFF8E1] text-[#7C5800] border border-[#F5B000]/40 text-xs font-semibold">
+          <Sparkles className="w-3.5 h-3.5 text-[#C4151C]" />
+          <span className="font-kannada">ಕಲಾ ವಿಭಾಗಗಳು • ARTISTIC WINGS</span>
+        </div>
+        <h2 className="text-3xl sm:text-4xl font-bold text-[#1C1B1B] font-kannada">
+          {isKannada
+            ? "ನಮ್ಮ ಸಾಂಸ್ಕೃತಿಕ ಕಲಾ ತಂಡಗಳು"
+            : "The Cultural Wings of Kannada Koota"}
+        </h2>
+        <p className="text-xs sm:text-sm text-[#5C403D]">
+          Five powerhouse artistic wings driving every performance, audition,
+          and campus fest.
+        </p>
       </div>
 
-      {/* Title */}
-      <h2
-        ref={titleRef}
-        className="relative z-10 text-4xl md:text-5xl font-bold text-center mb-16 text-yellow-400 drop-shadow-[0_0_15px_rgba(255,215,0,0.6)]"
-      >
-        {isKannada ? "ನಮ್ಮ ಸಾಂಸ್ಕೃತಿಕ ತಂಡಗಳು" : "Our Cultural Teams"}
-      </h2>
-
-      {/* Cards Layout */}
-      <div className="relative z-10 flex flex-wrap justify-center gap-10">
-        {teams.map((team, i) => (
+      {/* Grid of Wings */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {teams.map((item, idx) => (
           <div
-            key={i}
-            ref={(el) => (cardsRef.current[i] = el)}
-            className="flip-card w-[90%] sm:w-[320px] md:w-[280px] lg:w-[260px] h-[360px] perspective-[1000px]"
+            key={idx}
+            className="group bg-white rounded-2xl border border-[#EFEBE4] overflow-hidden elevation-1 hover:elevation-2 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
           >
-            <div className="flip-card-inner relative w-full h-full transition-transform duration-500 [transform-style:preserve-3d] rounded-2xl border border-purple-500/30 shadow-[0_0_20px_rgba(168,85,247,0.4)] hover:shadow-[0_0_30px_rgba(168,85,247,0.6)] hover:scale-105">
-              {/* Front */}
-              <div
-                className="absolute w-full h-full rounded-2xl backface-hidden bg-cover bg-center flex items-end justify-center overflow-hidden"
-                style={{
-                  backgroundImage: `url(${team.image.src})`,
-                }}
-              >
-                <div className="w-full bg-gradient-to-t from-black/80 to-transparent p-4 text-center">
-                  <h3 className="text-lg font-semibold text-yellow-400">
-                    {team.team}
-                  </h3>
+            {/* Top gradient highlight bar */}
+            <div className="h-0.5 w-full bg-transparent group-hover:gold-crimson-bar transition-all duration-300" />
+
+            <div>
+              {/* Image Preview Container */}
+              <div className="relative aspect-video w-full overflow-hidden bg-[#F6F3F2]">
+                <img
+                  src={item.image.src || item.image}
+                  alt={item.team}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+
+                {/* Floating Tag */}
+                <div className="absolute top-3 left-3">
+                  <span className="px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider bg-white/95 text-[#1C1B1B] shadow-xs backdrop-blur-xs uppercase">
+                    {item.tag}
+                  </span>
+                </div>
+
+                <div className="absolute bottom-3 left-3 right-3 text-white">
+                  <div className="text-xl font-bold font-kannada leading-tight">
+                    {item.team}
+                  </div>
+                  <div className="text-xs text-amber-200 font-medium">
+                    {item.art}
+                  </div>
                 </div>
               </div>
 
-              {/* Back */}
-              <div className="absolute w-full h-full rounded-2xl backface-hidden bg-gradient-to-br from-black via-purple-950 to-purple-800 p-5 flex flex-col justify-center items-center rotate-y-180">
-                <h3 className="text-lg font-semibold text-yellow-400 mb-3">
-                  {team.art}
-                </h3>
-                <p
-                  className="text-sm text-gray-300 leading-relaxed text-center"
-                  style={{ fontFamily: "'Noto Sans Kannada', sans-serif" }}
-                >
-                  {team.info}
+              {/* Body */}
+              <div className="p-5 space-y-2">
+                <p className="text-xs sm:text-sm text-[#5C403D] leading-relaxed">
+                  {item.info}
                 </p>
               </div>
+            </div>
+
+            {/* Card Footer */}
+            <div className="px-5 py-3 bg-[#FCF9F8] border-t border-[#EFEBE4] flex items-center justify-between text-xs text-[#9B000E] font-semibold">
+              <span className="font-kannada">ಕನ್ನಡ ಕೂಟ ವಿಭಾಗ</span>
+              <span>PES University SAC</span>
             </div>
           </div>
         ))}
       </div>
-
-      {/* Center the rows manually for 3+2 layout */}
-      <style jsx>{`
-        @media (min-width: 768px) {
-          #teams .flip-card:nth-child(1),
-          #teams .flip-card:nth-child(2),
-          #teams .flip-card:nth-child(3) {
-            margin-bottom: 2.5rem;
-          }
-          #teams .flip-card:nth-child(4),
-          #teams .flip-card:nth-child(5) {
-            margin-left: 5rem;
-            margin-right: 5rem;
-          }
-        }
-        @media (min-width: 1024px) {
-          #teams .flip-card:nth-child(4),
-          #teams .flip-card:nth-child(5) {
-            margin-left: 6rem;
-            margin-right: 6rem;
-          }
-        }
-      `}</style>
     </section>
   );
-};
-
-export default CulturalTeams;
+}

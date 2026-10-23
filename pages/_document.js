@@ -6,30 +6,19 @@ export default function Document() {
       <Head>
         <meta
           name="description"
-          content="Kannada Koota - Cultural Club Website"
+          content="Kannada Koota — PES University Collegiate Cultural Hub celebrating Karnataka's living heritage, literature, theatre, arts, and vibrant student community."
         />
         <link rel="icon" type="image/png" href="/fav-icon.png" />
         <link rel="manifest" href="/manifest.json" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Noto+Sans+Kannada:wght@400;500;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Noto+Sans+Kannada:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap"
           rel="stylesheet"
         />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Baloo+Tamma+2:wght@600&display=swap"
-          rel="stylesheet"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Libertinus+Math&display=swap"
-          rel="stylesheet"
-        />
-        <meta
-          name="google-site-verification"
-          content="your-verification-code"
-        />
-        <meta name="theme-color" content="#fbbf24" />
-        <meta name="msapplication-TileColor" content="#000000" />
+        <meta name="theme-color" content="#9B000E" />
       </Head>
-      <body>
+      <body className="bg-[#FCF9F8] text-[#1C1B1B] antialiased selection:bg-[#F5B000]/30 selection:text-[#8A0E14]">
         <Main />
         <NextScript />
       </body>

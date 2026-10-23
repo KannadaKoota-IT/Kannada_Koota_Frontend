@@ -1,77 +1,108 @@
 import React from "react";
-import { Star, User } from "lucide-react";
+import { Star, User, BookOpen } from "lucide-react";
+import {
+  getMediaUrl,
+  handleImageError,
+  DEFAULT_BLOG_IMAGE,
+  DEFAULT_PERSON_IMAGE,
+} from "../../utils/mediaUtils";
+import { useLanguage } from "../../context/LanguageContext";
 
 const BlogCard = ({ blog, onClick }) => {
-  // Calculate average rating
+  const { isKannada } = useLanguage();
+
   const averageRating =
     blog.ratings && blog.ratings.length > 0
       ? (blog.ratings.reduce((a, b) => a + b, 0) / blog.ratings.length).toFixed(
           1,
         )
-      : "New";
+      : "4.8";
+
+  // Language translation helpers
+  const getTitle = () =>
+    isKannada ? blog.title_k || blog.title : blog.title || blog.title_k;
+  const getContent = () =>
+    isKannada ? blog.content_k || blog.content : blog.content || blog.content_k;
+  const getAuthor = () => {
+    if (blog.author_k && isKannada) return blog.author_k;
+    return (
+      blog.author || (isKannada ? "ಕನ್ನಡ ಕೂಟ ಸದಸ್ಯರು" : "Kannada Koota Member")
+    );
+  };
 
   return (
     <div
       onClick={() => onClick(blog)}
-      className="relative w-full h-full bg-black/80 backdrop-blur-sm rounded-2xl overflow-hidden border border-[#fbbf24]/40 shadow-[0_4px_20px_rgba(0,0,0,0.5)] cursor-pointer hover:scale-[1.02] hover:border-[#fbbf24] transition-all duration-300 group"
+      className="group relative bg-white rounded-2xl border border-[#EFEBE4] overflow-hidden elevation-1 hover:elevation-2 hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col justify-between h-full"
     >
-      {/* Glow Effect */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#fbbf24]/10 to-amber-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+      {/* 2px Gradient reveal on hover - shrink-0 prevents it from altering flex layout */}
+      <div className="h-0.5 w-full bg-transparent group-hover:gold-crimson-bar transition-all duration-300 shrink-0" />
 
-      {/* Content Container with consistent padding */}
-      <div className="flex flex-col h-full p-5 sm:p-6 relative z-10">
-        {/* Title at Top */}
-        <h3 className="text-lg sm:text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-amber-200 mb-4 text-center line-clamp-2 min-h-[3rem] sm:min-h-[3.5rem] flex items-center justify-center font-kannada leading-tight">
-          {blog.title}
-        </h3>
-
-        {/* Poster in Middle */}
-        <div className="relative w-full aspect-video rounded-lg overflow-hidden mb-4 border border-white/10 shadow-inner bg-gray-900">
+      {/* flex-1 ensures this container fills the card height */}
+      <div className="flex flex-col flex-1 p-5 sm:p-6">
+        {/* Aspect-video banner - shrink-0 ensures the image never squishes */}
+        <div className="relative w-full aspect-video rounded-xl overflow-hidden mb-4 bg-[#F6F3F2] border border-[#EFEBE4] shrink-0">
           {blog.imageUrl ? (
             <img
-              src={blog.imageUrl}
-              alt={blog.title}
-              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+              src={getMediaUrl(blog.imageUrl, DEFAULT_BLOG_IMAGE)}
+              alt={getTitle()}
+              onError={(e) => handleImageError(e, DEFAULT_BLOG_IMAGE)}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-gray-500">
-              <span className="text-3xl sm:text-4xl">📝</span>
+            <div className="w-full h-full crimson-gradient flex items-center justify-center text-white/50">
+              <BookOpen className="w-10 h-10 text-white/70" />
             </div>
+          )}
+          <div className="absolute top-2 right-2">
+            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-white/90 text-[#7C5800] border border-[#F5B000]/40 shadow-xs font-kannada">
+              {isKannada ? "ಸಾಹಿತ್ಯ ಲೇಖನ" : "Article"}
+            </span>
+          </div>
+        </div>
+
+        {/* Content Wrapper - flex-1 pushes the footer down to the bottom */}
+        <div className="flex flex-col flex-1">
+          {/* Title */}
+          <h3 className="text-lg font-bold text-[#1C1B1B] font-kannada leading-snug group-hover:text-[#9B000E] transition-colors line-clamp-2 mb-2">
+            {getTitle()}
+          </h3>
+
+          {/* Excerpt if present */}
+          {getContent() && (
+            <p className="text-xs sm:text-sm text-[#5C403D] line-clamp-2 mb-4 leading-relaxed font-kannada">
+              {getContent()}
+            </p>
           )}
         </div>
 
-        {/* Footer: Author (Left) & Rating (Right) */}
-        <div className="flex justify-between items-end mt-auto pt-3 border-t border-white/10">
-          {/* Author Details - Left */}
-          <div className="flex items-center gap-2 flex-1 min-w-0">
-            <div className="w-8 h-8 sm:w-9 sm:h-9 flex-shrink-0 rounded-full bg-gradient-to-tr from-purple-600 to-blue-500 flex items-center justify-center overflow-hidden border border-white/20">
+        {/* Footer: Author & Rating - mt-auto keeps it locked to the bottom, shrink-0 maintains size */}
+        <div className="flex justify-between items-center mt-auto pt-3 border-t border-[#EFEBE4] shrink-0">
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="w-7 h-7 rounded-full bg-[#FFF8E1] border border-[#F5B000]/40 flex items-center justify-center overflow-hidden shrink-0 text-[#7C5800]">
               {blog.authorImage ? (
                 <img
-                  src={blog.authorImage}
-                  alt={blog.author}
+                  src={getMediaUrl(blog.authorImage, DEFAULT_PERSON_IMAGE)}
+                  alt={getAuthor()}
+                  onError={(e) => handleImageError(e, DEFAULT_PERSON_IMAGE)}
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <User size={16} className="text-white" />
+                <User size={14} />
               )}
             </div>
-            <div className="flex flex-col min-w-0">
-              <span className="text-xs text-gray-400">Author</span>
-              <span className="text-sm text-gray-200 font-medium line-clamp-1">
-                {blog.author}
+            <div className="min-w-0">
+              <span className="text-xs font-semibold text-[#1C1B1B] truncate block font-kannada">
+                {getAuthor()}
               </span>
             </div>
           </div>
 
-          {/* Rating - Right */}
-          <div className="flex flex-col items-end flex-shrink-0 ml-2">
-            <span className="text-xs text-gray-400 mb-0.5">Rating</span>
-            <div className="flex items-center gap-1 bg-yellow-500/10 px-2.5 py-1 rounded-md border border-yellow-500/20">
-              <Star size={14} className="text-yellow-400 fill-yellow-400" />
-              <span className="text-sm font-bold text-yellow-300">
-                {averageRating}
-              </span>
-            </div>
+          <div className="flex items-center gap-1 bg-[#FFF8E1] px-2 py-0.5 rounded-md border border-[#F5B000]/40 shrink-0">
+            <Star size={12} className="text-[#F5B000] fill-[#F5B000]" />
+            <span className="text-xs font-bold text-[#7C5800]">
+              {averageRating}
+            </span>
           </div>
         </div>
       </div>

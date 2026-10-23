@@ -8,21 +8,27 @@ import {
   MessageSquare,
   ChevronDown,
   ChevronUp,
+  FileText,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "../../context/LanguageContext";
+import {
+  getMediaUrl,
+  handleImageError,
+  DEFAULT_BLOG_IMAGE,
+} from "../../utils/mediaUtils";
 
 const BlogDetail = ({ blog, onClose, onReviewSubmit }) => {
-  const { language } = useLanguage();
+  const { language, isKannada } = useLanguage();
   const [name, setName] = useState("");
   const [comment, setComment] = useState("");
   const [rating, setRating] = useState(5);
   const [submitting, setSubmitting] = useState(false);
 
-  // --- New State for Reviews Toggle ---
+  // --- Reviews Toggle ---
   const [showAllReviews, setShowAllReviews] = useState(false);
 
-  // --- 1. Lock Body Scroll ---
+  // --- Lock Body Scroll ---
   useEffect(() => {
     document.body.style.overflow = "hidden";
     return () => {
@@ -36,7 +42,7 @@ const BlogDetail = ({ blog, onClose, onReviewSubmit }) => {
       language === "kn" ? "kn-IN" : "en-US",
       {
         year: "numeric",
-        month: "long",
+        month: "short",
         day: "numeric",
       },
     );
@@ -52,7 +58,6 @@ const BlogDetail = ({ blog, onClose, onReviewSubmit }) => {
     setComment("");
     setName("");
     setRating(5);
-    // Optionally open the list to show the new review
     setShowAllReviews(true);
   };
 
@@ -61,8 +66,8 @@ const BlogDetail = ({ blog, onClose, onReviewSubmit }) => {
     writeReview: language === "kn" ? "ವಿಮರ್ಶೆ ಬರೆಯಿರಿ" : "Write a Review",
     shareExp:
       language === "kn"
-        ? "ನಿಮ್ಮ ಅನುಭವವನ್ನು ಹಂಚಿಕೊಳ್ಳಿ."
-        : "Share your experience with the community.",
+        ? "ನಿಮ್ಮ ಅನಿಸಿಕೆಯನ್ನು ಹಂಚಿಕೊಳ್ಳಿ."
+        : "Share your thoughts with the community.",
     nameLabel: language === "kn" ? "ಹೆಸರು" : "Name",
     namePlaceholder:
       language === "kn" ? "ನಿಮ್ಮ ಹೆಸರು (ಐಚ್ಛಿಕ)" : "Your name (optional)",
@@ -75,18 +80,31 @@ const BlogDetail = ({ blog, onClose, onReviewSubmit }) => {
       language === "kn" ? "ಸಮುದಾಯದ ಅಭಿಪ್ರಾಯಗಳು" : "Community Thoughts",
     reviewsCount: language === "kn" ? "ವಿಮರ್ಶೆಗಳು" : "REVIEWS",
     noReviewsTitle:
-      language === "kn"
-        ? "ಇನ್ನೂ ಯಾವುದೇ ವಿಮರ್ಶೆಗಳಿಲ್ಲ."
-        : "The scroll is yet to be written.",
+      language === "kn" ? "ಇನ್ನೂ ಯಾವುದೇ ವಿಮರ್ಶೆಗಳಿಲ್ಲ." : "No reviews yet.",
     noReviewsSub:
       language === "kn"
         ? "ಮೊದಲಿಗರಾಗಿ ನಿಮ್ಮ ಅಭಿಪ್ರಾಯ ತಿಳಿಸಿ."
         : "Be the first to share your wisdom.",
-    anonymous: language === "kn" ? "ಅನಾಮಧೇಯ" : "Anonymous User",
+    anonymous: language === "kn" ? "ಅನಾಮಧೇಯ" : "Anonymous",
     admin: language === "kn" ? "ನಿರ್ವಾಹಕ" : "Admin",
     viewAll:
       language === "kn" ? "ಎಲ್ಲಾ ವಿಮರ್ಶೆಗಳನ್ನು ನೋಡಿ" : "View all reviews",
     viewLess: language === "kn" ? "ಕಡಿಮೆ ನೋಡಿ" : "Show less",
+    blogCategory: language === "kn" ? "ಲೇಖನ" : "Article",
+  };
+
+  // Language translation helpers
+  const getTitle = () =>
+    isKannada ? blog.title_k || blog.title : blog.title || blog.title_k;
+  const getContent = () => {
+    const content = isKannada
+      ? blog.content_k || blog.content
+      : blog.content || blog.content_k;
+    return content || "";
+  };
+  const getAuthor = () => {
+    if (blog.author_k && isKannada) return blog.author_k;
+    return blog.author || t.admin;
   };
 
   // Prepare Reviews List (Latest First)
@@ -94,125 +112,144 @@ const BlogDetail = ({ blog, onClose, onReviewSubmit }) => {
   const visibleReviews = showAllReviews ? allReviews : allReviews.slice(0, 3);
 
   return (
-    // Outer Container: Z-Index 9999 to cover navbar
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 md:p-6 font-sans">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 font-sans">
       {/* 1. Backdrop */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="absolute inset-0 bg-black/95 backdrop-blur-md"
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         onClick={onClose}
       />
 
       {/* 2. Modal Card */}
       <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 30 }}
+        initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95, y: 30 }}
+        exit={{ opacity: 0, scale: 0.95, y: 20 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
-        className="relative w-full max-w-6xl bg-[#0a0500] border border-yellow-500/30 rounded-lg sm:rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[95vh] sm:max-h-[90vh]"
+        className="relative w-full max-w-5xl bg-[#FCF9F8] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[95vh] sm:max-h-[90vh] border border-[#EFEBE4]"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Close Button */}
+        {/* Floating Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 sm:top-4 sm:right-4 bg-black/80 hover:bg-red-600 text-white p-2 sm:p-2.5 rounded-full transition-all duration-200 z-50 border border-white/20 hover:border-red-500 shadow-lg"
+          className="absolute top-4 right-4 z-50 p-2.5 bg-black/40 hover:bg-black/80 text-white rounded-full backdrop-blur-sm shadow-md transition-all duration-200 cursor-pointer"
+          aria-label="Close"
         >
-          <X size={18} className="sm:hidden" />
-          <X size={20} className="hidden sm:block" />
+          <X className="w-5 h-5" />
         </button>
 
-        {/* --- Scrollable Content Body (INCLUDES IMAGE) --- */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar relative z-10 bg-[#0a0500]">
-          {/* Hero Image Section - Now Inside Scrollable Area */}
-          <div className="relative h-56 sm:h-72 md:h-80 lg:h-96 flex-shrink-0 group">
+        {/* --- Scrollable Content Body --- */}
+        <div className="flex-1 overflow-y-auto custom-light-scrollbar bg-[#FCF9F8]">
+          {/* Hero Image Section - Fixed cropping using atmospheric background + object-contain */}
+          <div className="relative h-64 sm:h-80 md:h-[26rem] w-full bg-[#1A1A1A] shrink-0 overflow-hidden flex items-center justify-center">
             {blog.imageUrl ? (
-              <img
-                src={blog.imageUrl}
-                alt={blog.title}
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-              />
+              <>
+                {/* Atmospheric blurred background */}
+                <img
+                  src={getMediaUrl(blog.imageUrl, DEFAULT_BLOG_IMAGE)}
+                  alt=""
+                  aria-hidden="true"
+                  className="absolute inset-0 w-full h-full object-cover blur-xl opacity-40 scale-110"
+                />
+                {/* Uncropped main image */}
+                <img
+                  src={getMediaUrl(blog.imageUrl, DEFAULT_BLOG_IMAGE)}
+                  alt={getTitle()}
+                  onError={(e) => handleImageError(e, DEFAULT_BLOG_IMAGE)}
+                  className="relative z-10 w-full h-full object-contain"
+                />
+              </>
             ) : (
-              <div className="w-full h-full bg-gradient-to-br from-yellow-900/20 via-[#0a0500] to-black flex items-center justify-center">
-                <span className="text-4xl sm:text-6xl opacity-20 text-yellow-500">
-                  ✤
-                </span>
+              <div className="w-full h-full crimson-gradient flex flex-col items-center justify-center text-white/50 relative z-10">
+                <FileText className="w-16 h-16 mb-2 opacity-80" />
+                <span className="font-kannada text-lg">{t.blogCategory}</span>
               </div>
             )}
+            {/* Subtle bottom gradient to blend image smoothly into the content below */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent pointer-events-none z-10" />
+          </div>
 
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0a0500] via-[#0a0500]/50 to-transparent" />
+          {/* Main Article Content */}
+          <div className="px-5 sm:px-10 lg:px-14 pt-8 pb-12 bg-white rounded-t-3xl -mt-6 relative z-20 border-t border-[#EFEBE4]">
+            {/* Title & Meta */}
+            <div className="mb-8">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFF8E1] text-[#7C5800] border border-[#F5B000]/40 text-xs font-semibold mb-4">
+                <FileText className="w-3.5 h-3.5 text-[#C4151C]" />
+                <span className="font-kannada uppercase tracking-wider">
+                  {t.blogCategory}
+                </span>
+              </div>
 
-            <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 md:p-8 z-10">
-              <div className="mb-2 w-8 sm:w-12 h-0.5 sm:h-1 bg-yellow-500 rounded-full shadow-[0_0_10px_rgba(234,179,8,0.5)]" />
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#1C1B1B] font-kannada leading-tight mb-6">
+                {getTitle()}
+              </h1>
 
-              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-yellow-400 mb-2 sm:mb-3 font-serif drop-shadow-lg leading-tight">
-                {blog.title}
-              </h2>
-
-              <div className="flex flex-wrap items-center gap-3 sm:gap-4 md:gap-6 text-amber-100/80 text-xs sm:text-sm font-medium tracking-wide">
-                <div className="flex items-center gap-1.5 sm:gap-2">
-                  <User size={14} className="text-yellow-500 sm:w-4 sm:h-4" />
-                  <span className="uppercase tracking-wider text-[10px] sm:text-xs">
-                    {blog.author || t.admin}
+              <div className="flex flex-wrap items-center gap-4 text-xs sm:text-sm text-[#5C403D] border-y border-[#EFEBE4] py-3">
+                <div className="flex items-center gap-1.5 font-medium">
+                  <User className="w-4 h-4 text-[#9B000E]" />
+                  <span className="font-kannada uppercase tracking-wide">
+                    {getAuthor()}
                   </span>
                 </div>
-                <div className="flex items-center gap-1.5 sm:gap-2">
-                  <Calendar
-                    size={14}
-                    className="text-yellow-500 sm:w-4 sm:h-4"
-                  />
-                  <span className="uppercase tracking-wider text-[10px] sm:text-xs">
-                    {formatDate(blog.createdAt)}
-                  </span>
+                <div className="w-1 h-1 rounded-full bg-[#D1C8C6] hidden sm:block" />
+                <div className="flex items-center gap-1.5 font-medium">
+                  <Calendar className="w-4 h-4 text-[#9B000E]" />
+                  <span>{formatDate(blog.createdAt)}</span>
                 </div>
               </div>
+            </div>
+
+            {/* Article Text */}
+            <div className="prose max-w-none text-base sm:text-lg text-[#1C1B1B] leading-relaxed space-y-6 font-kannada font-medium">
+              {getContent()
+                .split("\n")
+                .map((paragraph, idx) => {
+                  if (!paragraph.trim()) return null;
+                  return (
+                    <p
+                      key={idx}
+                      className={
+                        idx === 0
+                          ? "first-letter:text-4xl sm:first-letter:text-5xl first-letter:font-bold first-letter:text-[#9B000E] first-letter:mr-2 first-letter:float-left first-letter:leading-none"
+                          : ""
+                      }
+                    >
+                      {paragraph}
+                    </p>
+                  );
+                })}
             </div>
           </div>
 
-          {/* Content Area */}
-          <div className="p-4 sm:p-6 md:p-8 lg:p-10">
-            {/* 1. Article Text */}
-            <div className="prose prose-invert max-w-none mb-8 sm:mb-10 md:mb-12">
-              <div className="text-base sm:text-lg md:text-xl leading-relaxed text-amber-100/90 font-light space-y-4 sm:space-y-5 md:space-y-6">
-                {blog.content.split("\n").map((paragraph, idx) => (
-                  <p
-                    key={idx}
-                    className={`${idx === 0 ? "first-letter:text-3xl sm:first-letter:text-4xl md:first-letter:text-5xl first-letter:font-serif first-letter:text-yellow-400 first-letter:mr-1 sm:first-letter:mr-2 first-letter:float-left" : ""}`}
-                  >
-                    {paragraph}
-                  </p>
-                ))}
-              </div>
+          {/* Divider */}
+          <div className="relative h-px w-full bg-[#EFEBE4]">
+            <div className="absolute left-1/2 -translate-x-1/2 -top-2.5 bg-[#FCF9F8] px-4 text-[#9B000E]">
+              <MessageSquare className="w-5 h-5 opacity-40" />
             </div>
+          </div>
 
-            {/* Decorative Divider */}
-            <div className="flex items-center justify-center gap-3 sm:gap-4 opacity-50 my-8 sm:my-10">
-              <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-yellow-500 to-transparent" />
-              <div className="text-yellow-500 text-lg sm:text-xl">♦</div>
-              <div className="h-[1px] w-full bg-gradient-to-l from-transparent via-yellow-500 to-transparent" />
-            </div>
-
-            {/* 2. Reviews Section */}
-            <div className="grid lg:grid-cols-5 gap-6 sm:gap-8 lg:gap-10">
+          {/* Comments & Reviews Section */}
+          <div className="px-5 sm:px-10 lg:px-14 py-12 bg-[#FCF9F8]">
+            <div className="grid lg:grid-cols-12 gap-8 lg:gap-12">
               {/* Left Column: Form */}
-              <div className="lg:col-span-2 order-2 lg:order-1">
-                <div className="bg-white/[0.03] p-4 sm:p-5 md:p-6 rounded-lg sm:rounded-xl border border-yellow-500/20 lg:sticky lg:top-4">
-                  <h3 className="text-lg sm:text-xl font-serif text-yellow-400 mb-1 flex items-center gap-2">
-                    <MessageSquare size={18} className="sm:w-5 sm:h-5" />{" "}
+              <div className="lg:col-span-5 order-2 lg:order-1">
+                <div className="bg-white p-6 sm:p-8 rounded-2xl border border-[#EFEBE4] elevation-1 lg:sticky lg:top-6">
+                  <h3 className="text-xl font-bold text-[#1C1B1B] font-kannada mb-1 flex items-center gap-2">
                     {t.writeReview}
                   </h3>
-                  <p className="text-[10px] sm:text-xs text-stone-500 mb-4 sm:mb-6">
+                  <p className="text-xs text-[#5C403D] font-kannada mb-6">
                     {t.shareExp}
                   </p>
 
                   <form
                     onSubmit={handleSubmit}
-                    className="space-y-4 sm:space-y-5"
+                    className="space-y-5 font-kannada"
                   >
                     {/* Name Input */}
                     <div>
-                      <label className="block text-[10px] sm:text-xs uppercase tracking-widest text-yellow-500/80 mb-2">
+                      <label className="block text-xs uppercase font-bold tracking-wider text-[#916F6B] mb-2">
                         {t.nameLabel}
                       </label>
                       <input
@@ -220,29 +257,28 @@ const BlogDetail = ({ blog, onClose, onReviewSubmit }) => {
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         placeholder={t.namePlaceholder}
-                        className="w-full bg-black/40 border border-white/10 rounded-lg px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base text-stone-200 placeholder:text-stone-600 focus:outline-none focus:border-yellow-500 transition-colors"
+                        className="w-full bg-[#F6F3F2] border border-[#EFEBE4] rounded-xl px-4 py-3 text-sm text-[#1C1B1B] placeholder:text-[#916F6B] focus:outline-none focus:border-[#9B000E] focus:ring-1 focus:ring-[#9B000E] transition-all"
                       />
                     </div>
 
                     {/* Rating Input */}
                     <div>
-                      <label className="block text-[10px] sm:text-xs uppercase tracking-widest text-yellow-500/80 mb-2">
+                      <label className="block text-xs uppercase font-bold tracking-wider text-[#916F6B] mb-2">
                         {t.ratingLabel}
                       </label>
-                      <div className="flex gap-1.5 sm:gap-2">
+                      <div className="flex gap-1.5">
                         {[1, 2, 3, 4, 5].map((star) => (
                           <button
                             key={star}
                             type="button"
                             onClick={() => setRating(star)}
-                            className="group p-0.5 sm:p-1 transition-transform active:scale-95"
+                            className="group p-1 transition-transform active:scale-90"
                           >
                             <Star
-                              size={20}
-                              className={`sm:w-[22px] sm:h-[22px] transition-all ${
+                              className={`w-6 h-6 transition-colors ${
                                 rating >= star
-                                  ? "fill-yellow-500 text-yellow-500 shadow-[0_0_10px_rgba(234,179,8,0.5)]"
-                                  : "text-stone-700 fill-none group-hover:text-stone-500"
+                                  ? "fill-[#F5B000] text-[#F5B000]"
+                                  : "text-[#EFEBE4] fill-[#EFEBE4] group-hover:fill-[#F5B000]/40"
                               }`}
                             />
                           </button>
@@ -252,7 +288,7 @@ const BlogDetail = ({ blog, onClose, onReviewSubmit }) => {
 
                     {/* Comment Input */}
                     <div>
-                      <label className="block text-[10px] sm:text-xs uppercase tracking-widest text-yellow-500/80 mb-2">
+                      <label className="block text-xs uppercase font-bold tracking-wider text-[#916F6B] mb-2">
                         {t.thoughtsLabel}
                       </label>
                       <textarea
@@ -261,7 +297,7 @@ const BlogDetail = ({ blog, onClose, onReviewSubmit }) => {
                         required
                         rows="4"
                         placeholder={t.thoughtsPlaceholder}
-                        className="w-full bg-black/40 border border-white/10 rounded-lg px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base text-stone-200 placeholder:text-stone-600 focus:outline-none focus:border-yellow-500 transition-colors resize-none"
+                        className="w-full bg-[#F6F3F2] border border-[#EFEBE4] rounded-xl px-4 py-3 text-sm text-[#1C1B1B] placeholder:text-[#916F6B] focus:outline-none focus:border-[#9B000E] focus:ring-1 focus:ring-[#9B000E] transition-all resize-none"
                       />
                     </div>
 
@@ -269,18 +305,14 @@ const BlogDetail = ({ blog, onClose, onReviewSubmit }) => {
                     <button
                       type="submit"
                       disabled={submitting}
-                      className="w-full py-2.5 sm:py-3 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-black text-sm sm:text-base font-bold rounded-lg flex items-center justify-center gap-2 transition-all transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_4px_15px_rgba(234,179,8,0.3)]"
+                      className="w-full py-3 crimson-gradient text-white text-sm font-bold rounded-xl flex items-center justify-center gap-2 transition-all hover:opacity-95 active:scale-98 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm cursor-pointer"
                     >
                       {submitting ? (
-                        <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                       ) : (
                         <>
                           <span>{t.submitBtn}</span>
-                          <Send
-                            size={14}
-                            strokeWidth={2.5}
-                            className="sm:w-4 sm:h-4"
-                          />
+                          <Send className="w-4 h-4" />
                         </>
                       )}
                     </button>
@@ -289,20 +321,19 @@ const BlogDetail = ({ blog, onClose, onReviewSubmit }) => {
               </div>
 
               {/* Right Column: Reviews List */}
-              <div className="lg:col-span-3 order-1 lg:order-2">
-                <div className="flex items-center justify-between mb-4 sm:mb-6">
-                  <h3 className="text-xl sm:text-2xl font-serif text-white">
+              <div className="lg:col-span-7 order-1 lg:order-2">
+                <div className="flex items-center justify-between mb-6 border-b border-[#EFEBE4] pb-3">
+                  <h3 className="text-xl font-bold text-[#1C1B1B] font-kannada">
                     {t.communityThoughts}
                   </h3>
-                  <span className="text-[10px] sm:text-xs font-mono text-yellow-500 border border-yellow-500/30 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded">
+                  <span className="text-xs font-bold bg-[#F6F3F2] text-[#9B000E] px-2.5 py-1 rounded-full border border-[#EFEBE4]">
                     {blog.reviews?.length || 0} {t.reviewsCount}
                   </span>
                 </div>
 
-                <div className="space-y-3 sm:space-y-4 pr-1 sm:pr-2">
+                <div className="space-y-4">
                   {allReviews.length > 0 ? (
                     <>
-                      {/* Render Reviews */}
                       <AnimatePresence>
                         {visibleReviews.map((review, idx) => (
                           <motion.div
@@ -311,20 +342,20 @@ const BlogDetail = ({ blog, onClose, onReviewSubmit }) => {
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0 }}
                             transition={{ duration: 0.3, delay: idx * 0.05 }}
-                            className="bg-gradient-to-br from-white/[0.05] to-transparent p-4 sm:p-5 rounded-lg sm:rounded-xl border-l-2 border-l-yellow-500 border-t border-r border-b border-white/5 hover:border-white/10 transition-colors"
+                            className="bg-white p-5 rounded-xl border border-[#EFEBE4] hover:shadow-sm transition-shadow"
                           >
-                            <div className="flex justify-between items-start mb-2 sm:mb-3">
-                              <div className="flex items-center gap-2 sm:gap-3">
-                                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-yellow-500 to-amber-700 flex items-center justify-center text-black font-bold text-xs shadow-md flex-shrink-0">
+                            <div className="flex justify-between items-start mb-3">
+                              <div className="flex items-center gap-3">
+                                <div className="w-9 h-9 rounded-full bg-[#F6F3F2] border border-[#EFEBE4] flex items-center justify-center text-[#9B000E] font-bold text-sm shrink-0">
                                   {review.name
                                     ? review.name.charAt(0).toUpperCase()
                                     : "A"}
                                 </div>
-                                <div>
-                                  <span className="font-bold text-stone-200 block text-xs sm:text-sm">
+                                <div className="font-kannada">
+                                  <span className="font-bold text-[#1C1B1B] block text-sm">
                                     {review.name || t.anonymous}
                                   </span>
-                                  <span className="text-[9px] sm:text-[10px] text-stone-500 uppercase tracking-wider block">
+                                  <span className="text-[10px] text-[#5C403D] uppercase tracking-wider block mt-0.5">
                                     {formatDate(review.date)}
                                   </span>
                                 </div>
@@ -333,17 +364,16 @@ const BlogDetail = ({ blog, onClose, onReviewSubmit }) => {
                                 {[...Array(5)].map((_, i) => (
                                   <Star
                                     key={i}
-                                    size={11}
-                                    className={`sm:w-3 sm:h-3 ${
+                                    className={`w-3.5 h-3.5 ${
                                       i < review.rating
-                                        ? "fill-yellow-500 text-yellow-500"
-                                        : "text-stone-800 fill-stone-800"
+                                        ? "fill-[#F5B000] text-[#F5B000]"
+                                        : "text-[#EFEBE4] fill-[#EFEBE4]"
                                     }`}
                                   />
                                 ))}
                               </div>
                             </div>
-                            <p className="text-stone-300 text-xs sm:text-sm leading-relaxed pl-9 sm:pl-11">
+                            <p className="text-[#5C403D] text-sm leading-relaxed pl-12 font-kannada">
                               "{review.comment}"
                             </p>
                           </motion.div>
@@ -355,39 +385,29 @@ const BlogDetail = ({ blog, onClose, onReviewSubmit }) => {
                         <motion.button
                           layout
                           onClick={() => setShowAllReviews(!showAllReviews)}
-                          className="w-full py-2 flex items-center justify-center gap-2 text-[10px] sm:text-xs font-bold uppercase tracking-widest text-yellow-500/70 hover:text-yellow-400 border border-dashed border-yellow-500/30 rounded-lg hover:border-yellow-500/60 hover:bg-yellow-500/5 transition-all mt-2"
+                          className="w-full py-3 flex items-center justify-center gap-2 text-xs font-bold text-[#9B000E] bg-[#F6F3F2] hover:bg-[#EFEBE4] rounded-xl transition-colors mt-2 cursor-pointer font-kannada"
                         >
                           {showAllReviews ? (
                             <>
-                              {t.viewLess}{" "}
-                              <ChevronUp
-                                size={12}
-                                className="sm:w-[14px] sm:h-[14px]"
-                              />
+                              {t.viewLess} <ChevronUp className="w-4 h-4" />
                             </>
                           ) : (
                             <>
-                              {t.viewAll}{" "}
-                              <ChevronDown
-                                size={12}
-                                className="sm:w-[14px] sm:h-[14px]"
-                              />
+                              {t.viewAll} <ChevronDown className="w-4 h-4" />
                             </>
                           )}
                         </motion.button>
                       )}
                     </>
                   ) : (
-                    <div className="text-center py-10 sm:py-12 border border-dashed border-white/10 rounded-lg sm:rounded-xl">
-                      <div className="w-12 h-12 sm:w-16 sm:h-16 bg-yellow-500/10 rounded-full flex items-center justify-center mx-auto mb-2 sm:mb-3 text-yellow-500">
-                        <MessageSquare size={20} className="sm:w-6 sm:h-6" />
+                    <div className="text-center py-12 bg-white border border-[#EFEBE4] rounded-2xl font-kannada">
+                      <div className="w-12 h-12 bg-[#F6F3F2] rounded-full flex items-center justify-center mx-auto mb-3 text-[#916F6B]">
+                        <MessageSquare className="w-6 h-6" />
                       </div>
-                      <p className="text-stone-400 italic font-serif text-base sm:text-lg px-4">
-                        "{t.noReviewsTitle}"
+                      <p className="text-[#1C1B1B] font-bold text-base px-4 mb-1">
+                        {t.noReviewsTitle}
                       </p>
-                      <p className="text-[10px] sm:text-xs text-stone-600 mt-1">
-                        {t.noReviewsSub}
-                      </p>
+                      <p className="text-xs text-[#5C403D]">{t.noReviewsSub}</p>
                     </div>
                   )}
                 </div>
@@ -397,20 +417,22 @@ const BlogDetail = ({ blog, onClose, onReviewSubmit }) => {
         </div>
       </motion.div>
 
-      {/* Styles for the custom golden scrollbar */}
+      {/* Global Styles for the Light Custom Scrollbar */}
       <style jsx global>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
+        .custom-light-scrollbar::-webkit-scrollbar {
+          width: 8px;
         }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: rgba(255, 255, 255, 0.02);
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(234, 179, 8, 0.3);
+        .custom-light-scrollbar::-webkit-scrollbar-track {
+          background: #fcf9f8;
           border-radius: 10px;
         }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(234, 179, 8, 0.6);
+        .custom-light-scrollbar::-webkit-scrollbar-thumb {
+          background: #efebe4;
+          border-radius: 10px;
+          border: 2px solid #fcf9f8;
+        }
+        .custom-light-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #d1c8c6;
         }
       `}</style>
     </div>

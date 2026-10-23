@@ -1,4 +1,18 @@
 import React, { useState, useEffect } from "react";
+import { 
+  Camera, 
+  Video, 
+  UploadCloud, 
+  Trash2, 
+  Edit2, 
+  ArrowUpDown, 
+  ExternalLink, 
+  CheckCircle2, 
+  AlertCircle, 
+  X,
+  Play
+} from "lucide-react";
+import { getMediaUrl, handleImageError, DEFAULT_GALLERY_IMAGE } from "../../utils/mediaUtils";
 
 export default function AdminGallery() {
   const [mediaList, setMediaList] = useState([]);
@@ -15,15 +29,17 @@ export default function AdminGallery() {
   const [orderValue, setOrderValue] = useState(0);
 
   const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL;
+  const getToken = () =>
+    typeof window !== "undefined" ? localStorage.getItem("adminToken") : null;
 
   const fetchMedia = async () => {
     try {
       const res = await fetch(`${API_BASE}/api/gallery`);
       const data = await res.json();
-      setMediaList(data);
+      setMediaList(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error(err);
-      setStatus("❌ Server error while fetching media.");
+      setStatus("Server error while fetching media.");
     }
   };
 
@@ -34,7 +50,7 @@ export default function AdminGallery() {
   const handleUpload = async (e) => {
     e.preventDefault();
     if (!file || !desc) {
-      setStatus("⚠️ Please provide both description and media file.");
+      setStatus("Please provide both description and media file.");
       return;
     }
 
@@ -47,22 +63,26 @@ export default function AdminGallery() {
       setLoading(true);
       const res = await fetch(`${API_BASE}/api/gallery`, {
         method: "POST",
+        headers: {
+          ...(getToken() ? { Authorization: `Bearer ${getToken()}` } : {}),
+        },
         body: formData,
       });
 
       const data = await res.json();
       if (data.success) {
-        setStatus("✅ Media uploaded successfully!");
+        setStatus("Media uploaded successfully!");
         setDesc("");
         setLink("");
         setFile(null);
         fetchMedia();
+        setTimeout(() => setStatus(""), 4000);
       } else {
-        setStatus("❌ Upload failed.");
+        setStatus("Upload failed.");
       }
     } catch (err) {
       console.error(err);
-      setStatus("❌ Server error during upload.");
+      setStatus("Server error during upload.");
     } finally {
       setLoading(false);
     }
@@ -74,26 +94,23 @@ export default function AdminGallery() {
     try {
       const res = await fetch(`${API_BASE}/api/gallery/${id}`, {
         method: "DELETE",
+        headers: {
+          ...(getToken() ? { Authorization: `Bearer ${getToken()}` } : {}),
+        },
       });
 
       const data = await res.json();
       if (data.success) {
-        setStatus("🗑️ Media deleted.");
+        setStatus("Media deleted.");
         fetchMedia();
+        setTimeout(() => setStatus(""), 4000);
       } else {
-        setStatus("❌ Failed to delete.");
+        setStatus("Failed to delete.");
       }
     } catch (err) {
       console.error(err);
-      setStatus("❌ Server error during delete.");
+      setStatus("Server error during delete.");
     }
-  };
-
-  const handleCancelForm = () => {
-    setDesc("");
-    setLink("");
-    setFile(null);
-    setStatus("⚪ Form cleared.");
   };
 
   const handleEdit = (item) => {
@@ -105,7 +122,7 @@ export default function AdminGallery() {
   const handleUpdate = async (e) => {
     e.preventDefault();
     if (!editDesc.trim()) {
-      setStatus("⚠️ Description cannot be empty.");
+      setStatus("Description cannot be empty.");
       return;
     }
 
@@ -114,38 +131,26 @@ export default function AdminGallery() {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          ...(getToken() ? { Authorization: `Bearer ${getToken()}` } : {}),
         },
-        body: JSON.stringify({
-          desc: editDesc,
-          link: editLink,
-        }),
+        body: JSON.stringify({ desc: editDesc, link: editLink }),
       });
 
       const data = await res.json();
       if (data.success) {
-        setStatus("✅ Media updated successfully!");
+        setStatus("Media updated successfully!");
         setEditingItem(null);
         setEditDesc("");
         setEditLink("");
         fetchMedia();
+        setTimeout(() => setStatus(""), 4000);
       } else {
-        setStatus("❌ Update failed.");
+        setStatus("Update failed.");
       }
     } catch (err) {
       console.error(err);
-      setStatus("❌ Server error during update.");
+      setStatus("Server error during update.");
     }
-  };
-
-  const handleCancelEdit = () => {
-    setEditingItem(null);
-    setEditDesc("");
-    setEditLink("");
-  };
-
-  const handleEditOrder = (itemId, currentOrder) => {
-    setEditingOrder(itemId);
-    setOrderValue(currentOrder);
   };
 
   const handleSaveOrder = async (itemId) => {
@@ -155,424 +160,275 @@ export default function AdminGallery() {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          ...(getToken() ? { Authorization: `Bearer ${getToken()}` } : {}),
         },
         body: JSON.stringify({ order: orderValue }),
       });
       const data = await res.json();
       if (data.success) {
-        setStatus("✅ Gallery order updated successfully!");
+        setStatus("Gallery display order updated!");
         setEditingOrder(null);
         fetchMedia();
         setTimeout(() => setStatus(""), 3000);
       } else {
-        setStatus("❌ Failed to update order.");
-        setTimeout(() => setStatus(""), 3000);
+        setStatus("Failed to update order.");
       }
     } catch (err) {
       console.error(err);
-      setStatus("❌ Server error during order update.");
-      setTimeout(() => setStatus(""), 3000);
+      setStatus("Server error during order update.");
     } finally {
       setLoading(false);
     }
   };
 
-  const getStatusColor = () => {
-    if (status.includes("✅")) return "text-emerald-400 bg-emerald-900/30 border-emerald-500/50";
-    if (status.includes("❌")) return "text-red-400 bg-red-900/30 border-red-500/50";
-    if (status.includes("⚠️")) return "text-amber-400 bg-amber-900/30 border-amber-500/50";
-    if (status.includes("🗑️")) return "text-orange-400 bg-orange-900/30 border-orange-500/50";
-    return "text-blue-400 bg-blue-900/30 border-blue-500/50";
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-slate-800">
-      {/* Header with backdrop blur effect */}
-      <div className="sticky top-0 z-40 backdrop-blur-md bg-slate-900/80 border-b border-slate-700/50">
-        <div className="max-w-7xl mx-auto px-6 py-8">
-          <div className="flex items-center justify-center space-x-3">
-            <div className="p-3 bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl shadow-lg">
-              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-            </div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 via-blue-400 to-emerald-400 bg-clip-text text-transparent">
-              Gallery Management
-            </h1>
-          </div>
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#EFEBE4]">
+        <div>
+          <span className="text-xs font-bold uppercase tracking-wider text-[#9B000E]">
+            ಗ್ಯಾಲರಿ ನಿರ್ವಹಣೆ
+          </span>
+          <h1 className="text-2xl sm:text-3xl font-bold text-[#1C1B1B] font-kannada">
+            Gallery Archives Console
+          </h1>
+          <p className="text-xs sm:text-sm text-[#5C403D]">
+            Upload photographs, event recordings, and set display precedence order.
+          </p>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        {/* Status Alert */}
-        {status && (
-          <div className={`mb-8 p-4 rounded-xl border backdrop-blur-sm transition-all duration-300 ${getStatusColor()}`}>
-            <p className="text-center font-medium">{status}</p>
-          </div>
-        )}
+      {/* Status Notice */}
+      {status && (
+        <div className="p-4 rounded-xl text-sm font-medium flex items-center gap-2 border bg-white border-[#EFEBE4] text-[#1C1B1B] elevation-1">
+          <CheckCircle2 className="w-5 h-5 text-[#9B000E]" />
+          <span>{status}</span>
+        </div>
+      )}
 
-        {/* Upload Form */}
-        <div className="mb-12">
-          <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl shadow-2xl p-8">
-            <div className="flex items-center space-x-3 mb-6">
-              <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-              <h2 className="text-xl font-semibold text-slate-200">Upload New Media</h2>
+      {/* Upload Form */}
+      <form
+        onSubmit={handleUpload}
+        className="bg-white rounded-3xl border border-[#EFEBE4] p-6 sm:p-8 elevation-1 space-y-6"
+      >
+        <div className="flex items-center justify-between pb-4 border-b border-[#EFEBE4]">
+          <h2 className="text-lg sm:text-xl font-bold text-[#1C1B1B] font-kannada flex items-center gap-2">
+            <Camera className="w-5 h-5 text-[#9B000E]" />
+            <span>ಹೊಸ ಚಿತ್ರ ಅಥವಾ ವೀಡಿಯೊ ಸೇರಿಸಿ (Upload Media)</span>
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-xs font-bold text-[#1C1B1B] uppercase tracking-wider mb-1.5">
+              Caption / Description *
+            </label>
+            <input
+              type="text"
+              placeholder="e.g. Drama Team Performance at Rajyotsava 2025"
+              value={desc}
+              onChange={(e) => setDesc(e.target.value)}
+              required
+              className="w-full px-4 py-2.5 rounded-xl border border-[#EFEBE4] bg-[#FCF9F8] focus:bg-white text-sm text-[#1C1B1B] focus:outline-none focus:ring-2 focus:ring-[#9B000E]"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-[#1C1B1B] uppercase tracking-wider mb-1.5">
+              Reference / Drive Link (Optional)
+            </label>
+            <input
+              type="url"
+              placeholder="https://youtu.be/... or Google Drive link"
+              value={link}
+              onChange={(e) => setLink(e.target.value)}
+              className="w-full px-4 py-2.5 rounded-xl border border-[#EFEBE4] bg-[#FCF9F8] focus:bg-white text-sm text-[#1C1B1B] focus:outline-none focus:ring-2 focus:ring-[#9B000E]"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-xs font-bold text-[#1C1B1B] uppercase tracking-wider mb-1.5">
+            Select Photo or Video File *
+          </label>
+          <input
+            type="file"
+            accept="image/*,video/*"
+            onChange={(e) => setFile(e.target.files[0])}
+            required
+            className="text-xs text-[#5C403D] file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border file:border-[#EFEBE4] file:bg-[#FCF9F8] file:text-xs file:font-semibold file:text-[#1C1B1B] hover:file:bg-[#F6F3F2]"
+          />
+        </div>
+
+        <div className="pt-4 border-t border-[#EFEBE4]">
+          <button
+            type="submit"
+            disabled={loading}
+            className="px-6 py-2.5 rounded-xl bg-[#9B000E] hover:bg-[#7D000B] text-white font-bold text-sm shadow-sm transition-all flex items-center gap-2 cursor-pointer disabled:opacity-60"
+          >
+            {loading ? "Uploading to Cloud..." : "Upload Media to Archives"}
+          </button>
+        </div>
+      </form>
+
+      {/* Edit Item Modal */}
+      {editingItem && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl border border-[#EFEBE4] p-6 max-w-md w-full shadow-2xl space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-[#EFEBE4]">
+              <h3 className="text-base font-bold text-[#1C1B1B]">Edit Caption & Link</h3>
+              <button
+                onClick={() => setEditingItem(null)}
+                className="p-1 rounded hover:bg-[#F6F3F2] text-[#5C403D]"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
-            
-            <form onSubmit={handleUpload} className="space-y-6">
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-slate-300">Description</label>
+            <form onSubmit={handleUpdate} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-[#1C1B1B] mb-1">Description</label>
                 <input
                   type="text"
-                  placeholder="Enter media description..."
-                  value={desc}
-                  onChange={(e) => setDesc(e.target.value)}
+                  value={editDesc}
+                  onChange={(e) => setEditDesc(e.target.value)}
+                  className="w-full px-3 py-2 text-sm rounded-xl border border-[#EFEBE4] focus:ring-2 focus:ring-[#9B000E] outline-none"
                   required
-                  className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                 />
               </div>
-
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-slate-300">Link (Optional)</label>
+              <div>
+                <label className="block text-xs font-bold text-[#1C1B1B] mb-1">Link</label>
                 <input
                   type="url"
-                  placeholder="Enter media link (e.g., YouTube, external URL)..."
-                  value={link}
-                  onChange={(e) => setLink(e.target.value)}
-                  className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  value={editLink}
+                  onChange={(e) => setEditLink(e.target.value)}
+                  className="w-full px-3 py-2 text-sm rounded-xl border border-[#EFEBE4] focus:ring-2 focus:ring-[#9B000E] outline-none"
                 />
               </div>
-
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-slate-300">Media File</label>
-                <div className="relative">
-                  <input
-                    type="file"
-                    accept="image/*,video/*"
-                    onChange={(e) => setFile(e.target.files[0])}
-                    required
-                    className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-xl text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-600 file:text-white hover:file:bg-blue-700 file:cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
-                  />
-                </div>
-              </div>
-
-              <div className="flex gap-4 pt-4">
+              <div className="flex justify-end gap-2 pt-2">
                 <button
                   type="button"
-                  onClick={handleCancelForm}
-                  className="flex-1 px-6 py-3 bg-slate-600 hover:bg-slate-700 text-white rounded-xl font-semibold transition-all duration-200 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-slate-500"
+                  onClick={() => setEditingItem(null)}
+                  className="px-4 py-2 text-xs font-semibold rounded-lg border border-[#EFEBE4] text-[#5C403D]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  disabled={loading}
-                  className={`flex-1 px-6 py-3 rounded-xl font-semibold transition-all duration-200 transform focus:outline-none focus:ring-2 ${
-                    loading
-                      ? "bg-gray-500 cursor-not-allowed text-gray-300"
-                      : "bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white hover:scale-[1.02] focus:ring-blue-500 shadow-lg hover:shadow-xl"
-                  }`}
+                  className="px-4 py-2 text-xs font-bold rounded-lg bg-[#9B000E] text-white"
                 >
-                  {loading ? (
-                    <div className="flex items-center justify-center space-x-2">
-                      <div className="w-4 h-4 border-2 border-gray-300 border-t-transparent rounded-full animate-spin"></div>
-                      <span>Uploading...</span>
-                    </div>
-                  ) : (
-                    "Upload Media"
-                  )}
+                  Save Changes
                 </button>
               </div>
             </form>
           </div>
         </div>
+      )}
 
-        {/* Media Grid */}
-        <div className="space-y-6">
-          <div className="flex items-center space-x-3">
-            <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-            <h2 className="text-xl font-semibold text-slate-200">Media Collection</h2>
-            <div className="flex-1 h-px bg-gradient-to-r from-slate-700 to-transparent"></div>
-            <span className="text-sm text-slate-400 bg-slate-800 px-3 py-1 rounded-full">
-              {mediaList.length} items
-            </span>
+      {/* Media Collection Grid */}
+      <div className="space-y-4">
+        <h2 className="text-xl font-bold text-[#1C1B1B] font-kannada">
+          ಸಂಗ್ರಹಿಸಿರುವ ಮಾಧ್ಯಮಗಳು ({mediaList.length})
+        </h2>
+
+        {mediaList.length === 0 ? (
+          <div className="p-8 text-center bg-white rounded-2xl border border-[#EFEBE4] text-sm text-[#5C403D]">
+            No media uploaded yet.
           </div>
-
-          {mediaList.length === 0 ? (
-            <div className="text-center py-20">
-              <div className="w-24 h-24 mx-auto mb-6 bg-slate-800 rounded-full flex items-center justify-center">
-                <svg className="w-12 h-12 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-slate-400 mb-2">No media uploaded yet</h3>
-              <p className="text-slate-500">Upload your first image or video to get started</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {mediaList.map((item) => (
-                <div
-                  key={item._id}
-                  className="group bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02] cursor-pointer"
-                  onClick={() => setPreview(item)}
-                >
-                  <div className="relative overflow-hidden">
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+            {mediaList.map((item) => (
+              <div
+                key={item._id}
+                className="bg-white rounded-2xl border border-[#EFEBE4] overflow-hidden elevation-1 flex flex-col justify-between"
+              >
+                <div>
+                  <div className="relative aspect-square overflow-hidden bg-[#F6F3F2]">
                     {item.mediaType === "video" ? (
-                      <div className="relative">
-                        <video
-                          src={`${item.mediaUrl}`}
-                          className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"
-                          muted
-                        />
-                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors duration-300">
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="bg-black/50 backdrop-blur-sm rounded-full p-4 group-hover:scale-110 transition-transform duration-300">
-                              <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M8 5v14l11-7z"/>
-                              </svg>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                      <video src={getMediaUrl(item.mediaUrl)} className="w-full h-full object-cover" />
                     ) : (
-                      <div className="relative">
-                        <img
-                          src={`${item.mediaUrl}`}
-                          alt={item.desc}
-                          className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                      </div>
+                      <img
+                        src={getMediaUrl(item.mediaUrl, DEFAULT_GALLERY_IMAGE)}
+                        alt={item.desc}
+                        onError={(e) => handleImageError(e, DEFAULT_GALLERY_IMAGE)}
+                        className="w-full h-full object-cover"
+                      />
                     )}
+                    <span className="absolute top-2 right-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-black/60 text-white uppercase">
+                      {item.mediaType}
+                    </span>
                   </div>
 
-                  <div className="p-5 space-y-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="bg-cyan-500/20 text-cyan-300 px-2 py-1 rounded-full text-xs font-medium">
-                        #{item.order || 0}
-                      </span>
+                  <div className="p-4 space-y-2">
+                    <p className="text-xs text-[#1C1B1B] font-kannada line-clamp-2">
+                      {item.desc}
+                    </p>
+
+                    {item.link && (
+                      <a
+                        href={item.link}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#9B000E]"
+                      >
+                        <span>Open Link</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
+                    )}
+
+                    {/* Order Precedence */}
+                    <div className="pt-2 border-t border-[#EFEBE4] flex items-center justify-between text-xs text-[#5C403D]">
                       {editingOrder === item._id ? (
-                        <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center gap-1">
                           <input
                             type="number"
                             value={orderValue}
-                            onChange={(e) => {
-                              e.stopPropagation();
-                              setOrderValue(parseInt(e.target.value) || 0);
-                            }}
-                            onClick={(e) => e.stopPropagation()}
-                            min="0"
-                            className="w-16 bg-white/20 border border-white/30 rounded-lg px-2 py-1 text-white text-sm focus:outline-none focus:ring-1 focus:ring-cyan-500"
-                            disabled={loading}
+                            onChange={(e) => setOrderValue(parseInt(e.target.value) || 0)}
+                            className="w-14 px-1.5 py-1 border rounded text-xs"
                           />
                           <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleSaveOrder(item._id);
-                            }}
-                            disabled={loading}
-                            className="bg-green-500/20 hover:bg-green-500/30 text-green-300 px-2 py-1 rounded-lg text-sm transition-colors duration-200"
+                            onClick={() => handleSaveOrder(item._id)}
+                            className="px-2 py-1 bg-[#9B000E] text-white rounded text-[10px] font-bold"
                           >
-                            ✓
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setEditingOrder(null);
-                            }}
-                            disabled={loading}
-                            className="bg-red-500/20 hover:bg-red-500/30 text-red-300 px-2 py-1 rounded-lg text-sm transition-colors duration-200"
-                          >
-                            ✕
+                            Save
                           </button>
                         </div>
                       ) : (
                         <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleEditOrder(item._id, item.order || 0);
+                          onClick={() => {
+                            setEditingOrder(item._id);
+                            setOrderValue(item.order || 0);
                           }}
-                          disabled={loading}
-                          className="bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 p-1 rounded-full transition-colors duration-200"
-                          title="Edit order"
+                          className="flex items-center gap-1 text-[#916F6B] hover:text-[#1C1B1B]"
                         >
-                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                          </svg>
+                          <ArrowUpDown className="w-3 h-3" />
+                          <span>Order: {item.order || 0}</span>
                         </button>
                       )}
                     </div>
-
-                    <h3 className="font-semibold text-slate-200 text-center line-clamp-2 group-hover:text-emerald-400 transition-colors duration-300">
-                      {item.desc}
-                    </h3>
-
-                    <div className="flex justify-center space-x-2">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEdit(item);
-                        }}
-                        className="px-3 py-2 bg-blue-600/80 hover:bg-blue-600 text-white rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      >
-                        <div className="flex items-center space-x-1">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                          </svg>
-                          <span>Edit</span>
-                        </div>
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDelete(item._id);
-                        }}
-                        className="px-3 py-2 bg-red-600/80 hover:bg-red-600 text-white rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500"
-                      >
-                        <div className="flex items-center space-x-1">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
-                          <span>Delete</span>
-                        </div>
-                      </button>
-                    </div>
                   </div>
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
 
-        {/* Edit Modal */}
-        {editingItem && (
-          <div
-            className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fadeIn"
-            onClick={() => handleCancelEdit()}
-          >
-            <div
-              className="relative bg-slate-900/50 backdrop-blur-md rounded-2xl border border-slate-700/50 shadow-2xl p-8 max-w-md w-full animate-scaleIn"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex items-center space-x-3 mb-6">
-                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                <h2 className="text-xl font-semibold text-slate-200">Edit Media</h2>
-              </div>
-
-              <form onSubmit={handleUpdate} className="space-y-6">
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-slate-300">Description</label>
-                  <input
-                    type="text"
-                    placeholder="Enter media description..."
-                    value={editDesc}
-                    onChange={(e) => setEditDesc(e.target.value)}
-                    required
-                    className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-slate-300">Link (Optional)</label>
-                  <input
-                    type="url"
-                    placeholder="Enter media link (e.g., YouTube, external URL)..."
-                    value={editLink}
-                    onChange={(e) => setEditLink(e.target.value)}
-                    className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  />
-                </div>
-
-                <div className="flex gap-4 pt-4">
+                <div className="p-4 pt-0 flex items-center gap-2">
                   <button
-                    type="button"
-                    onClick={handleCancelEdit}
-                    className="flex-1 px-6 py-3 bg-slate-600 hover:bg-slate-700 text-white rounded-xl font-semibold transition-all duration-200 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-slate-500"
+                    onClick={() => handleEdit(item)}
+                    className="flex-1 py-1.5 rounded-lg border border-[#EFEBE4] bg-[#FCF9F8] hover:bg-[#F6F3F2] text-xs font-semibold text-[#1C1B1B] flex items-center justify-center gap-1"
                   >
-                    Cancel
+                    <Edit2 className="w-3.5 h-3.5 text-[#9B000E]" />
+                    <span>Edit</span>
                   </button>
                   <button
-                    type="submit"
-                    className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl font-semibold transition-all duration-200 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-lg hover:shadow-xl"
+                    onClick={() => handleDelete(item._id)}
+                    className="py-1.5 px-3 rounded-lg border border-red-200 bg-red-50 hover:bg-red-100 text-xs font-semibold text-red-700 flex items-center justify-center gap-1"
                   >
-                    Update
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Delete</span>
                   </button>
                 </div>
-              </form>
-            </div>
-          </div>
-        )}
-
-        {/* Preview Modal */}
-        {preview && (
-          <div
-            className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fadeIn"
-            onClick={() => setPreview(null)}
-          >
-            <div
-              className="relative max-w-6xl w-full flex flex-col items-center animate-scaleIn"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="relative bg-slate-900/50 backdrop-blur-md rounded-2xl border border-slate-700/50 overflow-hidden shadow-2xl">
-                {preview.mediaType === "video" ? (
-                  <video
-                    controls
-                    autoPlay
-                    src={`${preview.mediaUrl}`}
-                    className="max-h-[80vh] w-auto rounded-xl"
-                  />
-                ) : (
-                  <img
-                    src={`${preview.mediaUrl}`}
-                    alt={preview.desc}
-                    className="max-h-[80vh] w-auto rounded-xl"
-                  />
-                )}
-
-                <button
-                  onClick={() => setPreview(null)}
-                  className="absolute top-4 right-4 bg-red-600/80 hover:bg-red-600 backdrop-blur-sm text-white p-2 rounded-xl transition-all duration-200 transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-red-500"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
               </div>
-
-              <div className="mt-4 text-center">
-                <p className="text-slate-300 font-medium">{preview.desc}</p>
-              </div>
-            </div>
+            ))}
           </div>
         )}
       </div>
-
-      <style jsx>{`
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        
-        @keyframes scaleIn {
-          from { opacity: 0; transform: scale(0.9); }
-          to { opacity: 1; transform: scale(1); }
-        }
-        
-        .animate-fadeIn {
-          animation: fadeIn 0.2s ease-out;
-        }
-        
-        .animate-scaleIn {
-          animation: scaleIn 0.3s ease-out;
-        }
-        
-        .line-clamp-2 {
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-      `}</style>
     </div>
   );
 }

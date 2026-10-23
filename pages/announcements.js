@@ -7,7 +7,7 @@ export default function AnnouncementsPage({ announcements }) {
 export async function getServerSideProps(context) {
   try {
     const { lang = 'en' } = context.query;
-    const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL;
+    const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
 
     const res = await fetch(`${API_BASE}/api/announcements?lang=${lang}`, {
       headers: {

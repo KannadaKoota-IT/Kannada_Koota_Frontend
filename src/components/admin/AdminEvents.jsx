@@ -1,5 +1,19 @@
 import React, { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
+import { 
+  Calendar, 
+  Clock, 
+  MapPin, 
+  ExternalLink, 
+  Plus, 
+  Edit2, 
+  Trash2, 
+  X, 
+  UploadCloud, 
+  CheckCircle2, 
+  AlertCircle 
+} from "lucide-react";
+import { getMediaUrl, handleImageError, DEFAULT_EVENT_IMAGE } from "../../utils/mediaUtils";
 
 function AdminEvents() {
   const [events, setEvents] = useState([]);
@@ -21,45 +35,43 @@ function AdminEvents() {
   const [loading, setLoading] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
 
-
   const [token, setToken] = useState(null);
   const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL;
   const API = `${API_BASE}/api/events`;
 
-useEffect(() => {
-  if (typeof window === "undefined") return;
+  useEffect(() => {
+    if (typeof window === "undefined") return;
 
-  const t = localStorage.getItem("adminToken");
-  if (!t) {
-    alert("Please log in first.");
-    window.location.href = "/admin-login";
-    return;
-  }
-
-  try {
-    const payload = JSON.parse(atob(t.split(".")[1]));
-    if (payload.exp * 1000 < Date.now()) {
-      localStorage.removeItem("adminToken");
-      alert("Session expired. Please log in again.");
+    const t = localStorage.getItem("adminToken");
+    if (!t) {
+      alert("Please log in first.");
       window.location.href = "/admin-login";
       return;
     }
-    setToken(t);
-    fetchEvents();
-  } catch (err) {
-    localStorage.removeItem("adminToken");
-    alert("Invalid token. Please log in again.");
-    window.location.href = "/admin-login";
-  }
-}, []);
 
+    try {
+      const payload = JSON.parse(atob(t.split(".")[1]));
+      if (payload.exp * 1000 < Date.now()) {
+        localStorage.removeItem("adminToken");
+        alert("Session expired. Please log in again.");
+        window.location.href = "/admin-login";
+        return;
+      }
+      setToken(t);
+      fetchEvents();
+    } catch (err) {
+      localStorage.removeItem("adminToken");
+      alert("Invalid token. Please log in again.");
+      window.location.href = "/admin-login";
+    }
+  }, []);
 
   const fetchEvents = async () => {
     setLoading(true);
     try {
       const res = await fetch(`${API}?admin=true`);
       const data = await res.json();
-      setEvents(data);
+      setEvents(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error("Failed to fetch events:", err);
     } finally {
@@ -118,11 +130,10 @@ useEffect(() => {
       } else {
         const err = await res.json();
         setStatus({ type: "error", message: err.error || "Failed to save event" });
-        setTimeout(() => setStatus(""), 4000);
       }
-    } catch (error) {
-      setStatus({ type: "error", message: "Network error occurred" });
-      setTimeout(() => setStatus(""), 4000);
+    } catch (err) {
+      console.error(err);
+      setStatus({ type: "error", message: "Server error occurred" });
     } finally {
       setLoading(false);
     }
@@ -134,35 +145,33 @@ useEffect(() => {
       title_k: event.title_k || "",
       description: event.description,
       description_k: event.description_k || "",
-      date: event.date.split("T")[0],
+      date: event.date ? event.date.split("T")[0] : "",
       eventTime: event.eventTime || "",
       location: event.location || "",
       link: event.link || "",
     });
-    setImageFile(null);
-    setPreview(null);
     setEditingId(event._id);
+    setPreview(event.imageUrl || null);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this event?")) return;
-
-    setLoading(true);
+    if (!confirm("Are you sure you want to delete this event?")) return;
     try {
-      await fetch(`${API}/${id}`, {
+      const res = await fetch(`${API}/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
-
-      fetchEvents();
-      setStatus({ type: "success", message: "Event deleted successfully" });
-      setTimeout(() => setStatus(""), 3000);
-    } catch (error) {
-      setStatus({ type: "error", message: "Failed to delete event" });
-      setTimeout(() => setStatus(""), 3000);
-    } finally {
-      setLoading(false);
+      if (res.ok) {
+        fetchEvents();
+        setStatus({ type: "success", message: "Event deleted successfully!" });
+        setTimeout(() => setStatus(""), 4000);
+      } else {
+        setStatus({ type: "error", message: "Failed to delete event" });
+      }
+    } catch (err) {
+      console.error(err);
+      setStatus({ type: "error", message: "Server error occurred" });
     }
   };
 
@@ -173,308 +182,332 @@ useEffect(() => {
     setEditingId(null);
   };
 
-  // 🔹 Format time into 12-hour AM/PM
   const formatTime = (time) => {
     if (!time) return "";
     const [hours, minutes] = time.split(":");
     let h = parseInt(hours, 10);
     const ampm = h >= 12 ? "PM" : "AM";
-    h = h % 12 || 12; // convert 0 -> 12
+    h = h % 12 || 12;
     return `${h}:${minutes} ${ampm}`;
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-purple-950 to-indigo-900 text-white">
-      <div className="container mx-auto px-4 py-10 max-w-7xl">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-orange-400 via-pink-500 to-purple-500 bg-clip-text text-transparent">
-            Event Management Dashboard
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#EFEBE4]">
+        <div>
+          <span className="text-xs font-bold uppercase tracking-wider text-[#9B000E]">
+            ಕಾರ್ಯಕ್ರಮ ನಿರ್ವಹಣೆ
+          </span>
+          <h1 className="text-2xl sm:text-3xl font-bold text-[#1C1B1B] font-kannada">
+            Event Management Console
           </h1>
-          <p className="text-slate-300 mt-3 text-lg">
-            Create, update, and manage your events with style ✨
+          <p className="text-xs sm:text-sm text-[#5C403D]">
+            Create and manage campus celebrations, theatre auditions, and festivals.
           </p>
         </div>
+      </div>
 
-        {/* Status */}
-        {status && (
-          <div
-            className={`mb-8 p-4 rounded-xl text-center font-semibold shadow-lg ${status.type === "success"
-              ? "bg-green-500/20 text-green-300 border border-green-400/40"
-              : "bg-red-500/20 text-red-300 border border-red-400/40"
-              }`}
-          >
-            {status.type === "success" ? "✅" : "❌"} {status.message}
-          </div>
-        )}
-
-        {/* Form */}
-        <form
-          onSubmit={handleSubmit}
-          encType="multipart/form-data"
-          className="bg-white/10 border border-white/20 rounded-2xl p-8 backdrop-blur-md shadow-xl mb-16"
+      {/* Status Alert */}
+      {status && (
+        <div
+          className={`p-4 rounded-xl text-sm font-medium flex items-center gap-2 border ${
+            status.type === "success"
+              ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+              : "bg-red-50 text-red-800 border-red-200"
+          }`}
         >
-          <h2 className="text-2xl font-bold mb-8 text-center">
-            {editingId ? "✏️ Edit Event" : "✨ Create New Event"}
+          {status.type === "success" ? (
+            <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+          ) : (
+            <AlertCircle className="w-5 h-5 text-red-600" />
+          )}
+          <span>{status.message}</span>
+        </div>
+      )}
+
+      {/* Form Card */}
+      <form
+        onSubmit={handleSubmit}
+        encType="multipart/form-data"
+        className="bg-white rounded-3xl border border-[#EFEBE4] p-6 sm:p-8 elevation-1 space-y-6"
+      >
+        <div className="flex items-center justify-between pb-4 border-b border-[#EFEBE4]">
+          <h2 className="text-lg sm:text-xl font-bold text-[#1C1B1B] font-kannada">
+            {editingId ? "ಕಾರ್ಯಕ್ರಮ ಸಂಪಾದಿಸಿ (Edit Event)" : "ಹೊಸ ಕಾರ್ಯಕ್ರಮ ಸೇರಿಸಿ (Create Event)"}
           </h2>
+          {editingId && (
+            <button
+              type="button"
+              onClick={clearForm}
+              className="text-xs text-[#9B000E] font-semibold hover:underline"
+            >
+              Cancel Edit
+            </button>
+          )}
+        </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Title & Title (Kannada) */}
-            <div>
-              <label className="block mb-2 text-slate-300 font-medium">Event Title</label>
-              <input
-                type="text"
-                name="title"
-                placeholder="Event Title"
-                value={form.title}
-                onChange={handleChange}
-                required
-                className="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 placeholder-slate-400 focus:ring-2 focus:ring-orange-500 outline-none"
-              />
-            </div>
-
-            <div>
-              <label className="block mb-2 text-slate-300 font-medium">Event Title (Kannada)</label>
-              <input
-                type="text"
-                name="title_k"
-                placeholder="Event Title in Kannada"
-                value={form.title_k}
-                onChange={handleChange}
-                required
-                className="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 placeholder-slate-400 focus:ring-2 focus:ring-orange-500 outline-none"
-              />
-            </div>
-
-            {/* Description & Description (Kannada) */}
-            <div>
-              <label className="block mb-2 text-slate-300 font-medium">Event Description</label>
-              <textarea
-                name="description"
-                placeholder="Event Description..."
-                value={form.description}
-                onChange={handleChange}
-                rows="4"
-                required
-                className="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 placeholder-slate-400 focus:ring-2 focus:ring-orange-500 outline-none resize-none"
-              />
-            </div>
-
-            <div>
-              <label className="block mb-2 text-slate-300 font-medium">Event Description (Kannada)</label>
-              <textarea
-                name="description_k"
-                placeholder="Event Description in Kannada..."
-                value={form.description_k}
-                onChange={handleChange}
-                rows="4"
-                required
-                className="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 placeholder-slate-400 focus:ring-2 focus:ring-orange-500 outline-none resize-none"
-              />
-            </div>
-
-            {/* Date & Time */}
-            <div>
-              <label className="block mb-2 text-slate-300 font-medium">Event Date</label>
-              <input
-                type="date"
-                name="date"
-                value={form.date}
-                onChange={handleChange}
-                required
-                className="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-500 outline-none"
-              />
-            </div>
-
-            <div>
-              <label className="block mb-2 text-slate-300 font-medium">Event Time</label>
-              <input
-                type="time"
-                name="eventTime"
-                value={form.eventTime}
-                onChange={handleChange}
-                className="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-500 outline-none"
-              />
-            </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-xs font-bold text-[#1C1B1B] uppercase tracking-wider mb-1.5">
+              Event Title (English) *
+            </label>
+            <input
+              type="text"
+              name="title"
+              placeholder="e.g. Kannada Rajyotsava 2026"
+              value={form.title}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2.5 rounded-xl border border-[#EFEBE4] bg-[#FCF9F8] focus:bg-white text-sm text-[#1C1B1B] focus:outline-none focus:ring-2 focus:ring-[#9B000E]"
+            />
           </div>
 
-          {/* Location (Full width) */}
-          <div className="mt-8">
-            <label className="block mb-2 text-slate-300 font-medium">Event Location (Optional)</label>
+          <div>
+            <label className="block text-xs font-bold text-[#1C1B1B] uppercase tracking-wider mb-1.5">
+              Event Title (ಕನ್ನಡ) *
+            </label>
+            <input
+              type="text"
+              name="title_k"
+              placeholder="ಉದಾ: ಕನ್ನಡ ರಾಜ್ಯೋತ್ಸವ ಸಂಭ್ರಮ"
+              value={form.title_k}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2.5 rounded-xl border border-[#EFEBE4] bg-[#FCF9F8] focus:bg-white text-sm text-[#1C1B1B] focus:outline-none focus:ring-2 focus:ring-[#9B000E] font-kannada"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-[#1C1B1B] uppercase tracking-wider mb-1.5">
+              Description (English) *
+            </label>
+            <textarea
+              name="description"
+              placeholder="Provide event details, schedule highlights, chief guests..."
+              value={form.description}
+              onChange={handleChange}
+              rows="3"
+              required
+              className="w-full px-4 py-2.5 rounded-xl border border-[#EFEBE4] bg-[#FCF9F8] focus:bg-white text-sm text-[#1C1B1B] focus:outline-none focus:ring-2 focus:ring-[#9B000E]"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-[#1C1B1B] uppercase tracking-wider mb-1.5">
+              ವಿವರಣೆ (ಕನ್ನಡದಲ್ಲಿ) *
+            </label>
+            <textarea
+              name="description_k"
+              placeholder="ಕಾರ್ಯಕ್ರಮದ ಸವಿವರ ಮಾಹಿತಿ..."
+              value={form.description_k}
+              onChange={handleChange}
+              rows="3"
+              required
+              className="w-full px-4 py-2.5 rounded-xl border border-[#EFEBE4] bg-[#FCF9F8] focus:bg-white text-sm text-[#1C1B1B] focus:outline-none focus:ring-2 focus:ring-[#9B000E] font-kannada"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-[#1C1B1B] uppercase tracking-wider mb-1.5">
+              Event Date *
+            </label>
+            <input
+              type="date"
+              name="date"
+              value={form.date}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2.5 rounded-xl border border-[#EFEBE4] bg-[#FCF9F8] focus:bg-white text-sm text-[#1C1B1B] focus:outline-none focus:ring-2 focus:ring-[#9B000E]"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-[#1C1B1B] uppercase tracking-wider mb-1.5">
+              Event Time
+            </label>
+            <input
+              type="time"
+              name="eventTime"
+              value={form.eventTime}
+              onChange={handleChange}
+              className="w-full px-4 py-2.5 rounded-xl border border-[#EFEBE4] bg-[#FCF9F8] focus:bg-white text-sm text-[#1C1B1B] focus:outline-none focus:ring-2 focus:ring-[#9B000E]"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-[#1C1B1B] uppercase tracking-wider mb-1.5">
+              Location / Venue
+            </label>
             <input
               type="text"
               name="location"
-              placeholder="Event Location"
+              placeholder="e.g. Kuvempu Rangamandira / Audi 1"
               value={form.location}
               onChange={handleChange}
-              className="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 placeholder-slate-400 focus:ring-2 focus:ring-orange-500 outline-none"
+              className="w-full px-4 py-2.5 rounded-xl border border-[#EFEBE4] bg-[#FCF9F8] focus:bg-white text-sm text-[#1C1B1B] focus:outline-none focus:ring-2 focus:ring-[#9B000E]"
             />
           </div>
 
-          {/* Link (Full width) */}
-          <div className="mt-8">
-            <label className="block mb-2 text-slate-300 font-medium">Event Link (Optional)</label>
+          <div>
+            <label className="block text-xs font-bold text-[#1C1B1B] uppercase tracking-wider mb-1.5">
+              Registration Link (Optional)
+            </label>
             <input
               type="url"
               name="link"
-              placeholder="https://example.com"
+              placeholder="https://forms.gle/..."
               value={form.link}
               onChange={handleChange}
-              className="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 placeholder-slate-400 focus:ring-2 focus:ring-orange-500 outline-none"
+              className="w-full px-4 py-2.5 rounded-xl border border-[#EFEBE4] bg-[#FCF9F8] focus:bg-white text-sm text-[#1C1B1B] focus:outline-none focus:ring-2 focus:ring-[#9B000E]"
             />
           </div>
+        </div>
 
-          {/* Image Upload (Full width) */}
-          <div className="mt-8">
-            <label className="block mb-2 text-slate-300 font-medium">Upload Event Image</label>
+        {/* Image Upload */}
+        <div>
+          <label className="block text-xs font-bold text-[#1C1B1B] uppercase tracking-wider mb-1.5">
+            Event Banner / Poster Image
+          </label>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
             <input
               type="file"
               name="image"
               onChange={handleImageChange}
               accept="image/*"
-              className="block w-full text-sm text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-orange-500/20 file:text-orange-300 hover:file:bg-orange-500/30"
+              className="text-xs text-[#5C403D] file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border file:border-[#EFEBE4] file:bg-[#FCF9F8] file:text-xs file:font-semibold file:text-[#1C1B1B] hover:file:bg-[#F6F3F2]"
             />
-
             {preview && (
-              <div className="border border-white/10 rounded-xl overflow-hidden mt-4">
-                <img src={preview} alt="preview" className="w-full h-48 object-cover" />
+              <div className="w-24 h-16 rounded-xl overflow-hidden border border-[#EFEBE4] bg-[#F6F3F2] shrink-0">
+                <img src={preview} alt="preview" className="w-full h-full object-cover" />
               </div>
             )}
           </div>
+        </div>
 
-          {/* Actions */}
-          <div className="flex flex-col sm:flex-row gap-4 mt-8">
-            <button
-              type="submit"
-              disabled={loading}
-              className="flex-1 bg-gradient-to-r from-orange-500 to-pink-600 hover:from-orange-600 hover:to-pink-700 text-white font-semibold px-6 py-3 rounded-xl shadow-lg transition-all"
-            >
-              {loading ? "Processing..." : editingId ? "✏️ Update Event" : "✨ Create Event"}
-            </button>
-            <button
-              type="button"
-              onClick={clearForm}
-              className="flex-1 sm:flex-none bg-slate-700 hover:bg-slate-600 px-6 py-3 rounded-xl font-medium transition-all"
-            >
-              🗑️ Clear Form
-            </button>
-          </div>
-        </form>
+        {/* Actions */}
+        <div className="flex items-center gap-3 pt-4 border-t border-[#EFEBE4]">
+          <button
+            type="submit"
+            disabled={loading}
+            className="px-6 py-2.5 rounded-xl bg-[#9B000E] hover:bg-[#7D000B] text-white font-bold text-sm shadow-sm transition-all flex items-center gap-2 cursor-pointer disabled:opacity-60"
+          >
+            {loading ? (
+              <span>Processing...</span>
+            ) : editingId ? (
+              <>
+                <Edit2 className="w-4 h-4" />
+                <span>Update Event</span>
+              </>
+            ) : (
+              <>
+                <Plus className="w-4 h-4" />
+                <span>Publish Event</span>
+              </>
+            )}
+          </button>
+          <button
+            type="button"
+            onClick={clearForm}
+            className="px-5 py-2.5 rounded-xl border border-[#EFEBE4] bg-white text-[#5C403D] hover:bg-[#F6F3F2] font-semibold text-sm transition-colors cursor-pointer"
+          >
+            Clear Form
+          </button>
+        </div>
+      </form>
 
-
-        {/* Events grid */}
-        <h2 className="text-3xl font-bold mb-8 text-center">
-          📅 All Events ({events.length})
-        </h2>
+      {/* Events List */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-bold text-[#1C1B1B] font-kannada">
+            ಎಲ್ಲಾ ಕಾರ್ಯಕ್ರಮಗಳು ({events.length})
+          </h2>
+        </div>
 
         {loading && events.length === 0 ? (
-          <p className="text-center text-slate-300">Loading events...</p>
+          <div className="text-center py-12 text-sm text-[#5C403D]">
+            Loading events list...
+          </div>
         ) : events.length === 0 ? (
-          <p className="text-center text-slate-400">No events yet. Create one above!</p>
+          <div className="p-8 text-center bg-white rounded-2xl border border-[#EFEBE4] text-sm text-[#5C403D]">
+            No events registered yet. Use the form above to add an event.
+          </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {events.map((event) => (
               <div
                 key={event._id}
-                onClick={() => setSelectedEvent(event)}
-                className="bg-white/10 border border-white/20 rounded-2xl overflow-hidden shadow-lg cursor-pointer hover:scale-[1.02] transition-transform"
+                className="bg-white rounded-2xl border border-[#EFEBE4] overflow-hidden elevation-1 flex flex-col justify-between"
               >
-                {event.imageUrl && (
-                  <img
-                    src={event.imageUrl}
-                    alt={event.title}
-                    className="w-full h-48 object-cover"
-                  />
-                )}
-                <div className="p-6">
-                  <h3 className="!text-xl !font-bold mb-2">{event.title_k}</h3>
-                  <h3 className="!text-sm !text-red-300 !font-bold mb-2">{`(${event.title})`}</h3>
-                  <p className="text-sm text-slate-300 mb-2">
-                    {new Date(event.date).toLocaleDateString()} •{" "}
-                    {formatTime(event.eventTime)}
-                  </p>
-                  {event.location && (
-                    <p className="text-sm text-slate-400 mb-4">📍 {event.location}</p>
+                <div>
+                  {event.imageUrl ? (
+                    <div className="aspect-video w-full overflow-hidden bg-[#F6F3F2]">
+                      <img
+                        src={getMediaUrl(event.imageUrl, DEFAULT_EVENT_IMAGE)}
+                        alt={event.title}
+                        onError={(e) => handleImageError(e, DEFAULT_EVENT_IMAGE)}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="aspect-video w-full crimson-gradient flex items-center justify-center text-white/30">
+                      <Calendar className="w-10 h-10" />
+                    </div>
                   )}
-                  {event.link && (
-                    <p className="text-sm text-blue-400 mb-4">
-                      🔗 <a href={event.link} target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-300">Event Link</a>
-                    </p>
-                  )}
-                  <div className="flex gap-3">
-                    <button
-                      onClick={(e) => { e.stopPropagation(); handleEdit(event); }}
-                      className="flex-1 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 px-4 py-2 rounded-lg"
-                    >
-                      ✏️ Edit
-                    </button>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); handleDelete(event._id); }}
-                      className="flex-1 bg-red-500/20 hover:bg-red-500/30 text-red-300 px-4 py-2 rounded-lg"
-                    >
-                      🗑️ Delete
-                    </button>
+
+                  <div className="p-4 space-y-2">
+                    <h3 className="text-base font-bold text-[#1C1B1B] font-kannada line-clamp-1">
+                      {event.title_k || event.title}
+                    </h3>
+                    {event.title_k && event.title && (
+                      <p className="text-xs text-[#5C403D] truncate">
+                        ({event.title})
+                      </p>
+                    )}
+
+                    <div className="flex items-center gap-3 text-xs text-[#916F6B] pt-1">
+                      <span className="flex items-center gap-1">
+                        <Calendar className="w-3.5 h-3.5 text-[#9B000E]" />
+                        {new Date(event.date).toLocaleDateString()}
+                      </span>
+                      {event.eventTime && (
+                        <span className="flex items-center gap-1">
+                          <Clock className="w-3.5 h-3.5 text-[#916F6B]" />
+                          {formatTime(event.eventTime)}
+                        </span>
+                      )}
+                    </div>
+
+                    {event.location && (
+                      <p className="text-xs text-[#5C403D] flex items-center gap-1 truncate">
+                        <MapPin className="w-3.5 h-3.5 text-[#9B000E] shrink-0" />
+                        <span className="truncate">{event.location}</span>
+                      </p>
+                    )}
                   </div>
+                </div>
+
+                <div className="p-4 pt-0 flex items-center gap-2">
+                  <button
+                    onClick={() => handleEdit(event)}
+                    className="flex-1 py-1.5 rounded-lg border border-[#EFEBE4] bg-[#FCF9F8] hover:bg-[#F6F3F2] text-xs font-semibold text-[#1C1B1B] flex items-center justify-center gap-1 transition-colors"
+                  >
+                    <Edit2 className="w-3.5 h-3.5 text-[#9B000E]" />
+                    <span>Edit</span>
+                  </button>
+                  <button
+                    onClick={() => handleDelete(event._id)}
+                    className="py-1.5 px-3 rounded-lg border border-red-200 bg-red-50 hover:bg-red-100 text-xs font-semibold text-red-700 flex items-center justify-center gap-1 transition-colors"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Delete</span>
+                  </button>
                 </div>
               </div>
             ))}
           </div>
         )}
       </div>
-
-      {/* 🔹 Event Detail Modal */}
-      {selectedEvent && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-          <button
-            onClick={() => setSelectedEvent(null)}
-            className="fixed top-6 right-6 bg-red-500 hover:bg-red-600 text-white rounded-full p-3 shadow-lg transition-all z-50"
-          >
-            ✖
-          </button>
-
-          <div className="bg-slate-900 border border-white/20 rounded-2xl shadow-2xl max-w-2xl w-full mx-4 overflow-hidden relative">
-            {/* Image */}
-            {selectedEvent.imageUrl && (
-              <div className="p-3 border-b border-white/10 flex justify-center">
-                <img
-                  src={selectedEvent.imageUrl}
-                  alt={selectedEvent.title}
-                  className="max-h-40 object-contain rounded-lg"
-                />
-              </div>
-            )}
-
-
-            {/* Content */}
-            <div className="p-6 space-y-4">
-              <h3>{selectedEvent.title_k}
-                <span className="text-xl ml-2 text-yellow-200 font-semibold">{`(${selectedEvent.title})`}</span>
-              </h3>
-
-              <p className="text-sm text-slate-300">
-                📅 {new Date(selectedEvent.date).toLocaleDateString()} • {formatTime(selectedEvent.eventTime)}
-              </p>
-
-              {selectedEvent.location && (
-                <p className="text-sm text-slate-400">📍 {selectedEvent.location}</p>
-              )}
-
-              {selectedEvent.link && (
-                <p className="text-sm text-blue-400">
-                  🔗 <a href={selectedEvent.link} target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-300">Event Link</a>
-                </p>
-              )}
-
-              <div className="border-t border-white/10 pt-4 space-y-3">
-                <p className="text-base text-slate-100 leading-relaxed">{selectedEvent.description_k}</p>
-                <p className="text-sm text-slate-400 leading-relaxed italic">{selectedEvent.description}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-
     </div>
   );
 }

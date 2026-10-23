@@ -1,5 +1,18 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useLanguage } from "../context/LanguageContext";
+import { 
+  Camera, 
+  Video, 
+  Layers, 
+  ChevronLeft, 
+  ChevronRight, 
+  X, 
+  RotateCcw, 
+  RotateCw, 
+  ExternalLink, 
+  Play 
+} from "lucide-react";
+import { getMediaUrl, handleImageError, DEFAULT_GALLERY_IMAGE } from "../utils/mediaUtils";
 
 export default function Gallery() {
   const { isKannada } = useLanguage();
@@ -7,9 +20,10 @@ export default function Gallery() {
   const [preview, setPreview] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [filter, setFilter] = useState("all");
-  const [showAll, setShowAll] = useState(false); // NEW STATE
-  const [sortBy, setSortBy] = useState("latest"); // NEW STATE: latest or oldest
+  const [showAll, setShowAll] = useState(false);
+  const [sortBy, setSortBy] = useState("latest");
   const [rotation, setRotation] = useState(0);
+  const [loading, setLoading] = useState(false);
   const videoRef = useRef(null);
 
   // Reset rotation when preview changes
@@ -27,12 +41,16 @@ export default function Gallery() {
   const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   const fetchMedia = async () => {
+    setLoading(true);
     try {
       const res = await fetch(`${API_BASE}/api/gallery`);
       const data = await res.json();
-      setMediaList(data);
+      setMediaList(Array.isArray(data) ? data : []);
     } catch (err) {
-      console.error(err);
+      console.error("Failed to fetch gallery media:", err);
+      setMediaList([]);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -46,19 +64,17 @@ export default function Gallery() {
       return item.mediaType === filter;
     })
     .sort((a, b) => {
-      // First, sort by order descending (higher order numbers first)
       if (a.order !== b.order) {
-        return b.order - a.order;
+        return (b.order || 0) - (a.order || 0);
       }
-      // Then, sort by uploadedAt based on sortBy
       if (sortBy === "latest") {
-        return new Date(b.uploadedAt) - new Date(a.uploadedAt);
+        return new Date(b.uploadedAt || 0) - new Date(a.uploadedAt || 0);
       } else {
-        return new Date(a.uploadedAt) - new Date(b.uploadedAt);
+        return new Date(a.uploadedAt || 0) - new Date(b.uploadedAt || 0);
       }
     });
 
-  const displayedMedia = showAll ? filteredMedia : filteredMedia.slice(0, 4); // LIMIT TO 4
+  const displayedMedia = showAll ? filteredMedia : filteredMedia.slice(0, 8);
 
   const handleKeyPress = (e) => {
     if (!preview) return;
@@ -79,740 +95,282 @@ export default function Gallery() {
   }, [preview, currentIndex]);
 
   return (
-    <div className="heritage-gallery min-h-screen mt-20 relative overflow-hidden pt-20">
-      {/* Animated Background Elements */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="mandala-1"></div>
-        <div className="mandala-2"></div>
-        <div className="mandala-3"></div>
-        <div className="glow-orb-1"></div>
-        <div className="glow-orb-2"></div>
-        <div className="glow-orb-3"></div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
+    <div className="min-h-screen bg-[#FCF9F8] text-[#1C1B1B]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
+        
         {/* Header Section */}
-        <div className="mb-12">
-          <div className="text-center mb-8">
-            <h1 className="text-5xl md:text-6xl font-bold mb-3 tracking-tight heritage-title">
-              {isKannada ? "ನಮ್ಮ ಸಂಸ್ಕೃತಿಯ ಬಿಂಬ" : "Gallery"}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-[#EFEBE4] mb-8">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FFF8E1] border border-[#F5B000]/30 text-[#7C5800] text-xs font-bold uppercase tracking-wider mb-2">
+              <Camera className="w-3.5 h-3.5 text-[#9B000E]" />
+              <span>{isKannada ? 'ನಮ್ಮ ನೆನಪುಗಳ ಸಂಗ್ರಹ' : 'Visual Archives'}</span>
+            </div>
+            <h1 className="text-3xl sm:text-4xl font-bold text-[#1C1B1B] font-kannada">
+              {isKannada ? "ನಮ್ಮ ಸಂಸ್ಕೃತಿಯ ಬಿಂಬ" : "Photo & Video Gallery"}
             </h1>
-            <div className="h-1 w-32 mx-auto mb-6 heritage-divider"></div>
-            <p className="text-lg text-amber-200/80 max-w-2xl mx-auto">
-              {/* Celebrating Karnataka's Rich Cultural Legacy */}
+            <p className="text-xs sm:text-sm text-[#5C403D] mt-1">
+              {isKannada
+                ? "ಕನ್ನಡ ಕೂಟದ ರಂಗಭೂಮಿ, ಸಾಹಿತ್ಯ ಮತ್ತು ಸಾಂಸ್ಕೃತಿಕ ಕ್ಷಣಗಳು."
+                : "Moments from Rajyotsava, theatre productions, literature fests and club gatherings."}
             </p>
           </div>
 
           {/* Filter Tabs */}
-          <div className="flex justify-center items-center gap-2 heritage-filter p-2 max-w-md mx-auto">
+          <div className="flex items-center gap-1.5 p-1.5 bg-[#F6F3F2] rounded-xl border border-[#EFEBE4]">
             <button
               onClick={() => {
                 setFilter("all");
-                setShowAll(false); // RESET VIEW MORE/LESS ON FILTER CHANGE
+                setShowAll(false);
               }}
-              className={`flex-1 px-6 py-2.5 rounded-lg font-medium transition-all duration-300 ${filter === "all"
-                  ? "bg-gradient-to-r from-yellow-500 to-amber-600 text-black shadow-lg shadow-yellow-500/50"
-                  : "text-yellow-400 hover:bg-yellow-500/10"
-                }`}
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+                filter === "all"
+                  ? "bg-white text-[#9B000E] shadow-sm"
+                  : "text-[#5C403D] hover:text-[#1C1B1B]"
+              }`}
             >
-              {isKannada ? "ಎಲ್ಲಾ" : "All"}
+              <Layers className="w-3.5 h-3.5" />
+              <span>{isKannada ? "ಎಲ್ಲಾ" : "All"}</span>
             </button>
             <button
               onClick={() => {
                 setFilter("image");
                 setShowAll(false);
               }}
-              className={`flex-1 px-6 py-2.5 rounded-lg font-medium transition-all duration-300 ${filter === "image"
-                  ? "bg-gradient-to-r from-yellow-500 to-amber-600 text-black shadow-lg shadow-yellow-500/50"
-                  : "text-yellow-400 hover:bg-yellow-500/10"
-                }`}
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+                filter === "image"
+                  ? "bg-white text-[#9B000E] shadow-sm"
+                  : "text-[#5C403D] hover:text-[#1C1B1B]"
+              }`}
             >
-              {isKannada ? "ಫೋಟೋ" : "Photos"}
+              <Camera className="w-3.5 h-3.5" />
+              <span>{isKannada ? "ಚಿತ್ರಗಳು" : "Photos"}</span>
             </button>
             <button
               onClick={() => {
                 setFilter("video");
                 setShowAll(false);
               }}
-              className={`flex-1 px-6 py-2.5 rounded-lg font-medium transition-all duration-300 ${filter === "video"
-                  ? "bg-gradient-to-r from-yellow-500 to-amber-600 text-black shadow-lg shadow-yellow-500/50"
-                  : "text-yellow-400 hover:bg-yellow-500/10"
-                }`}
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+                filter === "video"
+                  ? "bg-white text-[#9B000E] shadow-sm"
+                  : "text-[#5C403D] hover:text-[#1C1B1B]"
+              }`}
             >
-              {isKannada ? "ವೀಡಿಯೊ" : "Videos"}
+              <Video className="w-3.5 h-3.5" />
+              <span>{isKannada ? "ವೀಡಿಯೊ" : "Videos"}</span>
             </button>
           </div>
-
-          {/* Sort Options */}
-          {/* <div className="flex justify-center items-center gap-2 mt-4">
-            <span className="text-yellow-400 text-sm font-medium">
-              {isKannada ? "ವಿಂಗಡಿಸಿ:" : "Sort by:"}
-            </span>
-            <button
-              onClick={() => setSortBy("latest")}
-              className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${sortBy === "latest"
-                  ? "bg-gradient-to-r from-yellow-500 to-amber-600 text-black shadow-lg shadow-yellow-500/50"
-                  : "bg-slate-700/50 text-yellow-400 hover:bg-yellow-500/10 border border-yellow-500/30"
-                }`}
-            >
-              {isKannada ? "ಇತ್ತೀಚಿನ" : "Latest"}
-            </button>
-            <button
-              onClick={() => setSortBy("oldest")}
-              className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${sortBy === "oldest"
-                  ? "bg-gradient-to-r from-yellow-500 to-amber-600 text-black shadow-lg shadow-yellow-500/50"
-                  : "bg-slate-700/50 text-yellow-400 hover:bg-yellow-500/10 border border-yellow-500/30"
-                }`}
-            >
-              {isKannada ? "ಹಳೆಯ" : "Oldest"}
-            </button>
-          </div>*/}
         </div>
 
-        {/* Media Grid */}
-        {displayedMedia.length === 0 ? (
+        {/* Gallery Grid */}
+        {loading ? (
           <div className="text-center py-20">
-            <div className="w-24 h-24 mx-auto mb-6 bg-yellow-500/10 rounded-full flex items-center justify-center border-2 border-yellow-500/30">
-              <svg
-                className="w-12 h-12 text-yellow-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                />
-              </svg>
+            <div className="w-12 h-12 mx-auto border-4 border-[#EFEBE4] border-t-[#9B000E] rounded-full animate-spin mb-4" />
+            <p className="text-[#5C403D] font-kannada">
+              {isKannada ? "ಚಿತ್ರಗಳು ಲೋಡ್ ಆಗುತ್ತಿವೆ..." : "Loading media..."}
+            </p>
+          </div>
+        ) : displayedMedia.length === 0 ? (
+          <div className="text-center py-16 bg-white rounded-2xl border border-[#EFEBE4] p-8 space-y-3">
+            <div className="w-12 h-12 rounded-full bg-[#F6F3F2] flex items-center justify-center mx-auto text-[#5C403D]">
+              <Camera className="w-6 h-6" />
             </div>
-            <h2 className="text-2xl font-semibold text-yellow-400 mb-2">
-              {isKannada ? "ಮಾಧ್ಯಮ ಕಂಡುಬಂದಿಲ್ಲ" : "No media found"}
-            </h2>
-            <p className="text-amber-200/60">
+            <h4 className="text-lg font-bold text-[#1C1B1B] font-kannada">
+              {isKannada ? "ಯಾವುದೇ ಮಾಧ್ಯಮ ಕಂಡುಬಂದಿಲ್ಲ" : "No media found"}
+            </h4>
+            <p className="text-xs text-[#5C403D]">
               {filter === "all"
-                ? (isKannada ? "ಇನ್ನೂ ಯಾವುದೇ ಮಾಧ್ಯಮವನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಲಾಗಿಲ್ಲ" : "No media has been uploaded yet")
-                : (isKannada ? `ಯಾವುದೇ ${filter === "image" ? "ಫೋಟೋಗಳು" : "ವೀಡಿಯೋಗಳು"} ಲಭ್ಯವಿಲ್ಲ` : `No ${filter}s available`)}
+                ? (isKannada ? "ಇನ್ನೂ ಯಾವುದೇ ಮಾಧ್ಯಮವನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಲಾಗಿಲ್ಲ." : "No media has been uploaded yet.")
+                : (isKannada ? `ಯಾವುದೇ ${filter === "image" ? "ಚಿತ್ರಗಳು" : "ವೀಡಿಯೊಗಳು"} ಲಭ್ಯವಿಲ್ಲ.` : `No ${filter}s available.`)}
             </p>
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
               {displayedMedia.map((item, index) => (
                 <div
                   key={item._id}
-                  className="heritage-card group relative rounded-2xl overflow-hidden cursor-pointer"
                   onClick={() => {
                     setPreview(item);
-                    setCurrentIndex(
-                      mediaList.findIndex((m) => m._id === item._id)
-                    );
+                    setCurrentIndex(mediaList.findIndex((m) => m._id === item._id));
                   }}
+                  className="group relative bg-white rounded-2xl border border-[#EFEBE4] overflow-hidden elevation-1 hover:elevation-2 hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col"
                 >
-                  <div className="relative aspect-square overflow-hidden">
+                  <div className="relative aspect-square overflow-hidden bg-[#F6F3F2]">
                     {item.mediaType === "video" ? (
                       <>
                         <video
-                          src={item.mediaUrl}
-                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                          src={getMediaUrl(item.mediaUrl)}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                           muted
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent group-hover:from-black/80 transition-all duration-300">
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="play-button bg-gradient-to-br from-yellow-400 to-amber-600 rounded-full p-4 group-hover:scale-110 transition-transform duration-300 shadow-2xl shadow-yellow-500/50">
-                              <svg
-                                className="w-8 h-8 text-black"
-                                fill="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path d="M8 5v14l11-7z" />
-                              </svg>
-                            </div>
+                        <div className="absolute inset-0 bg-black/25 flex items-center justify-center">
+                          <div className="w-12 h-12 rounded-full bg-white/90 text-[#9B000E] flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                            <Play className="w-5 h-5 fill-current translate-x-0.5" />
                           </div>
                         </div>
-                        <div className="absolute top-3 right-3 bg-gradient-to-r from-red-600 to-red-700 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg border border-red-400/30">
+                        <div className="absolute top-3 right-3 bg-[#9B000E] text-white text-[10px] font-bold px-2 py-0.5 rounded-md shadow-sm">
                           VIDEO
                         </div>
                       </>
                     ) : (
                       <img
-                        src={item.mediaUrl}
-                        alt={item.desc}
-                        className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105"
+                        src={getMediaUrl(item.mediaUrl, DEFAULT_GALLERY_IMAGE)}
+                        alt={item.desc || item.title || "Gallery item"}
+                        onError={(e) => handleImageError(e, DEFAULT_GALLERY_IMAGE)}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                     )}
-
-                    {/* Corner Decorations */}
-                    <div className="corner-decoration top-left"></div>
-                    <div className="corner-decoration top-right"></div>
-                    <div className="corner-decoration bottom-left"></div>
-                    <div className="corner-decoration bottom-right"></div>
                   </div>
 
-                  <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black via-black/95 to-transparent">
-                    <p className="text-sm text-amber-100 line-clamp-2 group-hover:text-yellow-300 transition-colors">
-                      {item.desc}
-                    </p>
-                    {item.link && (
-                      <a
-                        href={item.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-xs text-yellow-400 hover:text-yellow-300 underline mt-1 block"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        View Link
-                      </a>
-                    )}
-                  </div>
-
-                  {/* Hover Glow Effect */}
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none heritage-glow"></div>
+                  {(item.desc || item.title) && (
+                    <div className="p-3.5 bg-white border-t border-[#EFEBE4] flex-1">
+                      <p className="text-xs text-[#5C403D] line-clamp-2 leading-relaxed font-kannada">
+                        {item.desc || item.title}
+                      </p>
+                      {item.link && (
+                        <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#9B000E] mt-1.5">
+                          <span>Open link</span>
+                          <ExternalLink className="w-3 h-3" />
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
 
-            {/* View More / View Less Buttons */}
-            {filteredMedia.length > 4 && (
-              <div className="text-center mt-8">
-                {showAll ? (
-                  <button
-                    onClick={() => setShowAll(false)}
-                    className="px-6 py-3 rounded-lg bg-gradient-to-r from-gray-700 to-gray-900 text-yellow-300 font-semibold shadow-lg shadow-yellow-500/20 hover:shadow-yellow-500/40 transition-all"
-                  >
-                    View Less
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => setShowAll(true)}
-                    className="px-6 py-3 rounded-lg bg-gradient-to-r from-yellow-500 to-amber-600 text-black font-semibold shadow-lg shadow-yellow-500/30 hover:shadow-yellow-500/50 transition-all"
-                  >
-                    View More
-                  </button>
-                )}
+            {/* View More / View Less */}
+            {filteredMedia.length > 8 && (
+              <div className="text-center mt-10">
+                <button
+                  onClick={() => setShowAll(!showAll)}
+                  className="px-6 py-2.5 rounded-xl border border-[#9B000E] text-[#9B000E] hover:bg-[#9B000E] hover:text-white font-semibold text-sm transition-all shadow-sm"
+                >
+                  {showAll
+                    ? (isKannada ? "ಕಡಿಮೆ ತೋರಿಸಿ (Show Less)" : "Show Less")
+                    : (isKannada ? `ಇನ್ನಷ್ಟು ತೋರಿಸಿ (+${filteredMedia.length - 8} More)` : `View More (+${filteredMedia.length - 8})`)}
+                </button>
               </div>
             )}
           </>
         )}
-
-        {/* Lightbox Modal */}
-        {preview && (
-          <div
-            className="fixed inset-0 bg-black/98 backdrop-blur-lg flex items-center justify-center z-50 p-4"
-            onClick={() => setPreview(null)}
-          >
-            {/* Navigation Arrows */}
-            {currentIndex > 0 && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setCurrentIndex(currentIndex - 1);
-                  setPreview(mediaList[currentIndex - 1]);
-                }}
-                className="modal-nav-btn absolute left-6 top-1/2 transform -translate-y-1/2 z-50"
-                aria-label="Previous"
-              >
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2.5}
-                    d="M15 19l-7-7 7-7"
-                  />
-                </svg>
-              </button>
-            )}
-
-            {currentIndex < mediaList.length - 1 && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setCurrentIndex(currentIndex + 1);
-                  setPreview(mediaList[currentIndex + 1]);
-                }}
-                className="modal-nav-btn absolute right-6 top-1/2 transform -translate-y-1/2 z-50"
-                aria-label="Next"
-              >
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2.5}
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              </button>
-            )}
-
-            {/* Close Button */}
-            <button
-              onClick={() => setPreview(null)}
-              className="absolute top-6 right-6 bg-red-600/80 hover:bg-red-600 backdrop-blur-md text-white p-3 rounded-full transition-all duration-200 z-50 border border-red-400/30 shadow-lg"
-              aria-label="Close"
-            >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2.5}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-
-            {/* Media Container */}
-            <div
-              className="relative max-w-7xl w-full flex flex-col items-center pt-20"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="w-full max-h-[calc(100dvh-6rem)] overflow-y-auto">
-              <div className="modal-media-container relative rounded-xl overflow-hidden shadow-2xl max-h-[80vh] flex items-center justify-center group">
-                {/* Close button over media */}
-                <button
-                  onClick={() => setPreview(null)}
-                  className="absolute top-3 right-3 bg-red-600/80 hover:bg-red-600 text-white p-2 rounded-full transition-all duration-200 shadow-lg z-50"
-                  aria-label="Close"
-                >
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2.5}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
-
-                {preview.mediaType === "video" ? (
-                  <div className="relative">
-                    <video
-                      ref={videoRef}
-                      autoPlay
-                      // controls
-                      src={preview.mediaUrl}
-                      className="max-h-[80vh] max-w-full w-auto h-auto cursor-pointer"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (videoRef.current.paused) {
-                          videoRef.current.play();
-                        } else {
-                          videoRef.current.pause();
-                        }
-                      }}
-                    />
-                  </div>
-                ) : (
-                  <img
-                    src={preview.mediaUrl}
-                    alt={preview.desc}
-                    className="max-h-[80vh] max-w-full w-auto h-auto"
-                    style={{ transform: `rotate(${rotation}deg)` }}
-                  />
-                )}
-
-                {/* Rotation Controls - always visible on mobile/tablet, shown on hover at bottom for desktop */}
-                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 flex gap-2 z-10">
-                  {preview.link && (
-                    <button
-                      onClick={() => window.open(preview.link, '_blank', 'noopener,noreferrer')}
-                      className="px-3 py-2 bg-blue-600/80 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm font-medium border border-blue-500/30"
-                    >
-                      🔗 View Link
-                    </button>
-                  )}
-                  <button
-                    onClick={() => setRotation((prev) => prev - 90)}
-                    className="px-3 py-2 bg-gray-800/80 text-yellow-300 rounded-lg hover:bg-gray-700/90 transition-colors text-sm font-medium border border-yellow-500/30"
-                  >
-                    ↺ Left
-                  </button>
-                  <button
-                    onClick={() => setRotation((prev) => prev + 90)}
-                    className="px-3 py-2 bg-gray-800/80 text-yellow-300 rounded-lg hover:bg-gray-700/90 transition-colors text-sm font-medium border border-yellow-500/30"
-                  >
-                    ↻ Right
-                  </button>
-                  <button
-                    onClick={() => setRotation(0)}
-                    className="px-3 py-2 bg-gray-800/80 text-gray-300 rounded-lg hover:bg-gray-700/90 transition-colors text-sm font-medium border border-gray-500/30"
-                  >
-                    Reset
-                  </button>
-                </div>
-              </div>
-
-              {/* Info Bar */}
-              <div className="modal-info-bar mt-6 px-6 py-4 max-w-2xl mx-auto text-center">
-                <div className="flex items-center justify-between gap-4 mb-2">
-                  <p className="text-yellow-400/80 text-sm font-medium">
-                    {currentIndex + 1} / {mediaList.length}
-                  </p>
-                  <div className="flex gap-2">
-                    <span
-                      className={`text-xs font-bold px-3 py-1 rounded-full ${preview.mediaType === "video"
-                          ? "bg-red-500/20 text-red-300 border border-red-400/30"
-                          : "bg-yellow-500/20 text-yellow-300 border border-yellow-400/30"
-                        }`}
-                    >
-                      {preview.mediaType.toUpperCase()}
-                    </span>
-                  </div>
-                </div>
-                <p className="text-amber-100 text-center">{preview.desc}</p>
-              </div>
-
-              {/* Keyboard Hint */}
-              <div className="mt-4 text-yellow-500/50 text-sm text-center">
-                Use arrow keys to navigate • ESC to close
-              </div>
-            </div>
-          </div>
-          </div>
-        )}
       </div>
 
-      {/* --- Styles remain unchanged --- */}
-      <style>{`
-        .heritage-gallery {
-        margin:0;
-          background: #000000;
-          position: relative;
-        }
+      {/* Lightbox Modal */}
+      {preview && (
+        <div
+          className="fixed inset-0 bg-black/75 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          onClick={() => setPreview(null)}
+        >
+          {/* Navigation Arrows */}
+          {currentIndex > 0 && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setCurrentIndex(currentIndex - 1);
+                setPreview(mediaList[currentIndex - 1]);
+              }}
+              className="absolute left-4 top-1/2 -translate-y-1/2 z-50 p-3 rounded-full bg-white/90 text-[#1C1B1B] hover:bg-white shadow-xl transition-all"
+              aria-label="Previous"
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+          )}
 
-        /* Animated Mandala Patterns */
-        .mandala-1,
-        .mandala-2,
-        .mandala-3 {
-          position: absolute;
-          border-radius: 50%;
-          border: 2px solid rgba(234, 179, 8, 0.1);
-          animation: rotate 60s linear infinite;
-        }
+          {currentIndex < mediaList.length - 1 && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setCurrentIndex(currentIndex + 1);
+                setPreview(mediaList[currentIndex + 1]);
+              }}
+              className="absolute right-4 top-1/2 -translate-y-1/2 z-50 p-3 rounded-full bg-white/90 text-[#1C1B1B] hover:bg-white shadow-xl transition-all"
+              aria-label="Next"
+            >
+              <ChevronRight className="w-6 h-6" />
+            </button>
+          )}
 
-        .mandala-1 {
-          width: 600px;
-          height: 600px;
-          top: -200px;
-          right: -200px;
-          border-width: 3px;
-          box-shadow: 0 0 100px rgba(234, 179, 8, 0.1),
-            inset 0 0 100px rgba(234, 179, 8, 0.05);
-        }
+          {/* Modal Content Frame */}
+          <div
+            className="relative max-w-5xl w-full bg-white rounded-2xl shadow-2xl overflow-hidden border border-[#EFEBE4] max-h-[92vh] flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header / Actions Bar */}
+            <div className="flex items-center justify-between px-6 py-3.5 border-b border-[#EFEBE4] bg-[#FCF9F8]">
+              <span className="text-xs font-bold text-[#9B000E] uppercase tracking-wider">
+                {currentIndex + 1} of {mediaList.length}
+              </span>
 
-        .mandala-2 {
-          width: 500px;
-          height: 500px;
-          bottom: -150px;
-          left: -150px;
-          animation-direction: reverse;
-          animation-duration: 80s;
-          border-width: 2px;
-          box-shadow: 0 0 80px rgba(234, 179, 8, 0.08),
-            inset 0 0 80px rgba(234, 179, 8, 0.04);
-        }
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setRotation((prev) => prev - 90)}
+                  className="p-1.5 rounded-lg hover:bg-[#EFEBE4] text-[#5C403D] transition-colors"
+                  title="Rotate Left"
+                >
+                  <RotateCcw className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setRotation((prev) => prev + 90)}
+                  className="p-1.5 rounded-lg hover:bg-[#EFEBE4] text-[#5C403D] transition-colors"
+                  title="Rotate Right"
+                >
+                  <RotateCw className="w-4 h-4" />
+                </button>
+                {preview.link && (
+                  <a
+                    href={preview.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-1.5 rounded-lg hover:bg-[#EFEBE4] text-[#9B000E] transition-colors"
+                    title="Open Link"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                  </a>
+                )}
+                <button
+                  onClick={() => setPreview(null)}
+                  className="p-1.5 rounded-lg hover:bg-[#EFEBE4] text-[#1C1B1B] transition-colors ml-2"
+                  aria-label="Close"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
 
-        .mandala-3 {
-          width: 400px;
-          height: 400px;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          animation-duration: 100s;
-          border-width: 1px;
-          opacity: 0.5;
-        }
+            {/* Media Body */}
+            <div className="flex-1 bg-black flex items-center justify-center overflow-hidden min-h-[50vh] max-h-[70vh]">
+              {preview.mediaType === "video" ? (
+                <video
+                  ref={videoRef}
+                  src={getMediaUrl(preview.mediaUrl)}
+                  controls
+                  autoPlay
+                  className="max-h-[70vh] max-w-full w-auto h-auto transition-transform duration-300"
+                />
+              ) : (
+                <img
+                  src={getMediaUrl(preview.mediaUrl, DEFAULT_GALLERY_IMAGE)}
+                  alt={preview.desc || preview.title || "Preview"}
+                  onError={(e) => handleImageError(e, DEFAULT_GALLERY_IMAGE)}
+                  className="max-h-[70vh] max-w-full w-auto h-auto object-contain transition-transform duration-300"
+                  style={{ transform: `rotate(${rotation}deg)` }}
+                />
+              )}
+            </div>
 
-        /* Glowing Orbs */
-        .glow-orb-1,
-        .glow-orb-2,
-        .glow-orb-3 {
-          position: absolute;
-          border-radius: 50%;
-          filter: blur(80px);
-          animation: float 20s ease-in-out infinite;
-        }
-
-        .glow-orb-1 {
-          width: 300px;
-          height: 300px;
-          top: 10%;
-          right: 10%;
-          background: radial-gradient(
-            circle,
-            rgba(234, 179, 8, 0.15) 0%,
-            transparent 70%
-          );
-          animation-delay: 0s;
-        }
-
-        .glow-orb-2 {
-          width: 400px;
-          height: 400px;
-          bottom: 20%;
-          left: 5%;
-          background: radial-gradient(
-            circle,
-            rgba(251, 191, 36, 0.12) 0%,
-            transparent 70%
-          );
-          animation-delay: 7s;
-          animation-duration: 25s;
-        }
-
-        .glow-orb-3 {
-          width: 350px;
-          height: 350px;
-          top: 60%;
-          right: 20%;
-          background: radial-gradient(
-            circle,
-            rgba(245, 158, 11, 0.1) 0%,
-            transparent 70%
-          );
-          animation-delay: 14s;
-          animation-duration: 30s;
-        }
-
-        @keyframes rotate {
-          from {
-            transform: rotate(0deg);
-          }
-          to {
-            transform: rotate(360deg);
-          }
-        }
-
-        @keyframes float {
-          0%,
-          100% {
-            transform: translate(0, 0);
-          }
-          25% {
-            transform: translate(30px, -30px);
-          }
-          50% {
-            transform: translate(-20px, 20px);
-          }
-          75% {
-            transform: translate(20px, 30px);
-          }
-        }
-
-        /* Heritage Title */
-        .heritage-title {
-          background: linear-gradient(
-            135deg,
-            #fbbf24 0%,
-            #f59e0b 50%,
-            #eab308 100%
-          );
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-          animation: shimmer 3s ease-in-out infinite;
-        }
-
-        @keyframes shimmer {
-          0%,
-          100% {
-            filter: brightness(1);
-          }
-          50% {
-            filter: brightness(1.3);
-          }
-        }
-
-        .heritage-divider {
-          background: linear-gradient(
-            90deg,
-            transparent,
-            #fbbf24,
-            #f59e0b,
-            #fbbf24,
-            transparent
-          );
-          animation: divider-glow 2s ease-in-out infinite;
-        }
-
-        @keyframes divider-glow {
-          0%,
-          100% {
-            opacity: 0.6;
-            box-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
-          }
-          50% {
-            opacity: 1;
-            box-shadow: 0 0 20px rgba(251, 191, 36, 0.8);
-          }
-        }
-
-        /* Filter Tabs */
-        .heritage-filter {
-          background: rgba(20, 20, 20, 0.8);
-          backdrop-filter: blur(10px);
-          border: 1px solid rgba(234, 179, 8, 0.3);
-          box-shadow: 0 8px 32px rgba(234, 179, 8, 0.1);
-        }
-
-        /* Heritage Cards */
-        .heritage-card {
-          background: linear-gradient(
-            135deg,
-            rgba(20, 20, 20, 0.95) 0%,
-            rgba(30, 20, 0, 0.95) 100%
-          );
-          border: 2px solid rgba(234, 179, 8, 0.3);
-          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8),
-            0 4px 16px rgba(234, 179, 8, 0.2);
-          transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .heritage-card:hover {
-          border-color: rgba(234, 179, 8, 0.6);
-          box-shadow: 0 16px 48px rgba(0, 0, 0, 0.9),
-            0 8px 24px rgba(234, 179, 8, 0.4);
-          transform: translateY(-8px);
-        }
-
-        .heritage-glow {
-          background: radial-gradient(
-            circle at center,
-            rgba(234, 179, 8, 0.1) 0%,
-            transparent 70%
-          );
-        }
-
-        /* Corner Decorations */
-        .corner-decoration {
-          position: absolute;
-          width: 20px;
-          height: 20px;
-          border: 2px solid rgba(234, 179, 8, 0.5);
-          opacity: 0;
-          transition: opacity 0.4s ease;
-        }
-
-        .heritage-card:hover .corner-decoration {
-          opacity: 1;
-        }
-
-        .corner-decoration.top-left {
-          top: 8px;
-          left: 8px;
-          border-right: none;
-          border-bottom: none;
-        }
-
-        .corner-decoration.top-right {
-          top: 8px;
-          right: 8px;
-          border-left: none;
-          border-bottom: none;
-        }
-
-        .corner-decoration.bottom-left {
-          bottom: 8px;
-          left: 8px;
-          border-right: none;
-          border-top: none;
-        }
-
-        .corner-decoration.bottom-right {
-          bottom: 8px;
-          right: 8px;
-          border-left: none;
-          border-top: none;
-        }
-
-        /* Play Button Pulse */
-        .play-button {
-          animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-
-        @keyframes pulse {
-          0%,
-          100% {
-            transform: scale(1);
-          }
-          50% {
-            transform: scale(1.05);
-          }
-        }
-
-        /* Modal Styles */
-        .modal-nav-btn {
-          background: linear-gradient(
-            135deg,
-            rgba(234, 179, 8, 0.2) 0%,
-            rgba(251, 191, 36, 0.2) 100%
-          );
-          backdrop-filter: blur(10px);
-          border: 2px solid rgba(234, 179, 8, 0.4);
-          color: #fbbf24;
-          padding: 1rem;
-          border-radius: 50%;
-          transition: all 0.3s ease;
-        }
-
-        .modal-nav-btn:hover {
-          background: linear-gradient(
-            135deg,
-            rgba(234, 179, 8, 0.4) 0%,
-            rgba(251, 191, 36, 0.4) 100%
-          );
-          border-color: rgba(234, 179, 8, 0.8);
-          transform: scale(1.1);
-          box-shadow: 0 8px 24px rgba(234, 179, 8, 0.3);
-        }
-
-        .modal-media-container {
-          border: 2px solid rgba(234, 179, 8, 0.4);
-          box-shadow: 0 0 60px rgba(234, 179, 8, 0.2);
-        }
-
-        .modal-info-bar {
-          background: linear-gradient(
-            135deg,
-            rgba(20, 20, 20, 0.9) 0%,
-            rgba(30, 20, 0, 0.9) 100%
-          );
-          backdrop-filter: blur(10px);
-          border: 1px solid rgba(234, 179, 8, 0.3);
-          border-radius: 0.75rem;
-          box-shadow: 0 8px 32px rgba(234, 179, 8, 0.2);
-        }
-
-        .line-clamp-2 {
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-      `}</style>
+            {/* Caption Bar */}
+            {(preview.desc || preview.title) && (
+              <div className="px-6 py-4 bg-white border-t border-[#EFEBE4]">
+                <p className="text-sm text-[#1C1B1B] font-kannada leading-relaxed">
+                  {preview.desc || preview.title}
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-
-
-

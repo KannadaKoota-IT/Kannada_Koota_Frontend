@@ -1,630 +1,488 @@
-import React, { useEffect, useRef, useState } from "react";
-import Carousel from "../../../Reactbits/Carousel/Carousel";
-import InfiniteScroll from "../../../Reactbits/InfiniteScroll/InfiniteScroll";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/router";
-import { useLanguage } from "../../context/LanguageContext";
 import {
-  ChevronLeft,
-  ChevronRight,
   Calendar,
-  Clock,
+  Sparkles,
+  ArrowRight,
   MapPin,
+  Clock,
+  Award,
+  Maximize2,
+  X,
 } from "lucide-react";
+import DailyVachanaWidget from "../widgets/DailyVachanaWidget";
+import WordOfTheDayWidget from "../widgets/WordOfTheDayWidget";
+import EventDetailModal from "../modals/EventDetailModal";
+import { useLanguage } from "../../context/LanguageContext";
+import { useMembership } from "../../context/MembershipContext";
+import {
+  getMediaUrl,
+  handleImageError,
+  DEFAULT_EVENT_IMAGE,
+} from "../../utils/mediaUtils";
 
-gsap.registerPlugin(ScrollTrigger);
-
-export default function DashboardEvents({
-  announcements: initialAnnouncements,
-}) {
-  const sectionRef = useRef(null);
+export default function DashboardEvents() {
   const router = useRouter();
-  const { language } = useLanguage();
+  const { language, isKannada } = useLanguage();
+  const { openMembership } = useMembership();
   const [events, setEvents] = useState([]);
-  const [announcements, setAnnouncements] = useState(
-    initialAnnouncements || [],
-  );
   const [loading, setLoading] = useState(true);
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
-  const [loadingAnnouncements, setLoadingAnnouncements] = useState(true);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [maximizedImageSrc, setMaximizedImageSrc] = useState(null);
 
-  const autoPlayRef = useRef(null);
+  const isHomePage = router.pathname === "/";
+  const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-  // Fetch events based on language
-  const fetchEvents = async () => {
-    setLoading(true);
-    try {
-      const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL;
-      const res = await fetch(
-        `${API_BASE}/api/events?lang=${language}&_v=${encodeURIComponent(language)}`,
-        {
-          cache: "no-store",
-          headers: { "Cache-Control": "no-cache" },
-        },
-      );
-      const data = await res.json();
-      const formattedEvents = data.slice(0, 4).map((event) => ({
-        title: event.title,
-        description: event.description,
-        date: new Date(event.date).toLocaleDateString(),
-        time: formatTime(event.eventTime),
-        location: event.location || "TBA",
-        image: event.imageUrl ? `${API_BASE}${event.imageUrl}` : null,
-        language: language,
-      }));
-      setEvents(formattedEvents);
-    } catch (err) {
-      console.error("Failed to fetch events:", err);
-      setEvents([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Fetch announcements based on language
-  const fetchAnnouncements = async () => {
-    setLoadingAnnouncements(true);
-    try {
-      const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL;
-      const res = await fetch(
-        `${API_BASE}/api/announcements?lang=${language}&_v=${encodeURIComponent(language)}`,
-        {
-          cache: "no-store",
-          headers: { "Cache-Control": "no-cache" },
-        },
-      );
-      const data = await res.json();
-      if (data && data.success) {
-        setAnnouncements(
-          data.announcements.slice(0, 5).map((item) => ({
-            title: item.title,
-            message: item.message,
-          })),
-        );
-      } else {
-        setAnnouncements([]);
+  useEffect(() => {
+    let isMounted = true;
+    const fetchEvents = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(`${API_BASE}/api/events?lang=${language}`);
+        const data = await res.json();
+        if (isMounted) {
+          setEvents(Array.isArray(data) ? data : []);
+        }
+      } catch (err) {
+        console.error("Failed to fetch events:", err);
+        if (isMounted) setEvents([]);
+      } finally {
+        if (isMounted) setLoading(false);
       }
-    } catch (err) {
-      console.error("Failed to fetch announcements:", err);
-      setAnnouncements([]);
-    } finally {
-      setLoadingAnnouncements(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchEvents();
-    fetchAnnouncements();
-  }, [language]);
-
-  // Auto-play for carousel
-  useEffect(() => {
-    if (isAutoPlaying && events.length > 1) {
-      autoPlayRef.current = setInterval(() => {
-        setCurrentSlide((prev) => (prev + 1) % events.length);
-      }, 4000);
-    }
-    return () => {
-      if (autoPlayRef.current) clearInterval(autoPlayRef.current);
     };
-  }, [isAutoPlaying, events.length]);
+    fetchEvents();
+    return () => {
+      isMounted = false;
+    };
+  }, [language, API_BASE]);
 
-  const goToSlide = (index) => {
-    setCurrentSlide(index);
-    setIsAutoPlaying(false);
-    setTimeout(() => setIsAutoPlaying(true), 8000);
+  // Format date helpers
+  const formatMonth = (d) => {
+    const dt = new Date(d);
+    return !isNaN(dt)
+      ? dt.toLocaleDateString(isKannada ? "kn-IN" : "en-US", { month: "short" })
+      : "NOV";
+  };
+  const formatDay = (d) => {
+    const dt = new Date(d);
+    return !isNaN(dt)
+      ? dt.toLocaleDateString("en-US", { day: "numeric" })
+      : "01";
+  };
+  const formatFullDate = (d) => {
+    const dt = new Date(d);
+    return !isNaN(dt)
+      ? dt.toLocaleDateString(isKannada ? "kn-IN" : "en-US", {
+          dateStyle: "medium",
+        })
+      : d;
   };
 
-  const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % events.length);
-    setIsAutoPlaying(false);
-    setTimeout(() => setIsAutoPlaying(true), 8000);
+  // Translation Helpers
+  const getTitle = (e) =>
+    isKannada ? e.title_k || e.title : e.title || e.title_k;
+  const getDesc = (e) =>
+    isKannada
+      ? e.description_k || e.description
+      : e.description || e.description_k;
+  const getLocation = (e) => {
+    if (e.location && e.location_k)
+      return isKannada ? e.location_k : e.location;
+    return (
+      e.location ||
+      (isKannada ? "ಪಿ.ಇ.ಎಸ್ ವಿಶ್ವವಿದ್ಯಾಲಯ" : "PES University Campus")
+    );
   };
 
-  const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + events.length) % events.length);
-    setIsAutoPlaying(false);
-    setTimeout(() => setIsAutoPlaying(true), 8000);
+  // Event Sorting & Filtering Logic
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const sortedEvents = [...events].sort(
+    (a, b) => new Date(a.date) - new Date(b.date),
+  );
+  const upcomingEventsList = sortedEvents.filter(
+    (e) => new Date(e.date) >= today,
+  );
+  const pastEventsList = sortedEvents
+    .filter((e) => new Date(e.date) < today)
+    .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  // Determine Spotlight Event (Upcoming gets priority; fallback to Past if none exist)
+  const spotlightEvent =
+    upcomingEventsList.length > 0
+      ? upcomingEventsList[0]
+      : pastEventsList.length > 0
+        ? pastEventsList[0]
+        : null;
+
+  const isSpotlightPast =
+    spotlightEvent && new Date(spotlightEvent.date) < today;
+
+  // Determine Event Grids (We now keep the spotlighted event in the list below too)
+  let displayUpcoming = [...upcomingEventsList];
+  let displayPast = [...pastEventsList];
+
+  // Slice arrays to max 3 items if on Homepage
+  if (isHomePage) {
+    displayUpcoming = displayUpcoming.slice(0, 3);
+    displayPast = displayPast.slice(0, 3);
+  }
+
+  // Reusable Event Card Component (Structured with Flexbox for equal heights)
+  const renderEventCard = (event) => {
+    const isPast = new Date(event.date) < today;
+
+    return (
+      <div
+        key={event._id}
+        className="group relative bg-white rounded-2xl border border-[#EFEBE4] overflow-hidden elevation-1 hover:elevation-2 hover:-translate-y-1 transition-all duration-300 flex flex-col h-full"
+      >
+        <div className="h-0.5 w-full bg-transparent group-hover:gold-crimson-bar transition-all duration-300 shrink-0" />
+
+        {/* Image Section - shrink-0 prevents it from being squished */}
+        <div className="relative aspect-4/3 sm:aspect-16/10 w-full overflow-hidden bg-[#1A1A1A] flex items-center justify-center shrink-0">
+          {event.imageUrl ? (
+            <>
+              <img
+                src={getMediaUrl(event.imageUrl, DEFAULT_EVENT_IMAGE)}
+                alt=""
+                aria-hidden="true"
+                className="absolute inset-0 w-full h-full object-cover blur-md opacity-35 scale-110"
+              />
+              <img
+                src={getMediaUrl(event.imageUrl, DEFAULT_EVENT_IMAGE)}
+                alt={getTitle(event)}
+                onError={(e) => handleImageError(e, DEFAULT_EVENT_IMAGE)}
+                className="relative z-10 max-h-full max-w-full w-auto h-auto object-contain transition-transform duration-500 group-hover:scale-102"
+              />
+
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setMaximizedImageSrc(
+                    getMediaUrl(event.imageUrl, DEFAULT_EVENT_IMAGE),
+                  );
+                }}
+                className="absolute bottom-3 right-3 z-30 p-2 bg-black/40 hover:bg-black/80 text-white rounded-full backdrop-blur-sm shadow-md transition-all duration-200"
+                title={isKannada ? "ಚಿತ್ರವನ್ನು ದೊಡ್ಡದಾಗಿಸಿ" : "Maximize Image"}
+              >
+                <Maximize2 className="w-4 h-4" />
+              </button>
+            </>
+          ) : (
+            <div className="w-full h-full crimson-gradient flex items-center justify-center text-white/50">
+              <Calendar className="w-12 h-12" />
+            </div>
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-black/10 pointer-events-none z-10" />
+
+          <div className="absolute top-3 left-3 z-20 bg-[#F5B000] text-[#1A1A1A] px-3 py-1.5 rounded-xl shadow-md flex flex-col items-center justify-center font-bold tracking-tight border border-[#E0A200]">
+            <span className="text-[10px] uppercase font-semibold leading-tight">
+              {formatMonth(event.date)}
+            </span>
+            <span className="text-xl font-extrabold leading-none">
+              {formatDay(event.date)}
+            </span>
+          </div>
+
+          <div className="absolute top-3 right-3 z-20">
+            <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-white/95 text-[#1C1B1B] shadow-sm backdrop-blur-xs border border-white/60 font-kannada">
+              {isKannada ? "ಕಾರ್ಯಕ್ರಮ" : "Event"}
+            </span>
+          </div>
+        </div>
+
+        {/* Content Section - flex-1 grows to fill empty space, pushing footer down */}
+        <div className="p-5 sm:p-6 flex flex-col flex-1">
+          <div className="flex items-center justify-between text-xs text-[#5C403D] mb-3">
+            <span className="flex items-center gap-1">
+              <Clock className="w-3.5 h-3.5 text-[#916F6B]" />
+              {event.eventTime || (isKannada ? "ಸಮಯ ನಿಗದಿಯಾಗಿಲ್ಲ" : "TBA")}
+            </span>
+            {isPast ? (
+              <span className="flex items-center gap-1 text-[11px] font-medium text-gray-700 bg-gray-100 px-2 py-0.5 rounded-full shrink-0">
+                {isKannada ? "ಮುಕ್ತಾಯ" : "Completed"}
+              </span>
+            ) : (
+              <span className="flex items-center gap-1 text-[11px] font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full shrink-0">
+                {isKannada ? "ಎಲ್ಲರಿಗೂ ಮುಕ್ತ" : "Open for All"}
+              </span>
+            )}
+          </div>
+
+          <h3
+            onClick={() => setSelectedEvent(event)}
+            className="text-lg sm:text-xl font-bold text-[#1C1B1B] font-kannada leading-snug group-hover:text-[#9B000E] cursor-pointer transition-colors mb-2"
+          >
+            {getTitle(event)}
+          </h3>
+
+          <p className="text-sm text-[#5C403D] line-clamp-2 leading-relaxed">
+            {getDesc(event)}
+          </p>
+        </div>
+
+        {/* Footer Section - mt-auto keeps it locked to the bottom */}
+        <div className="px-5 sm:px-6 py-4 bg-[#FCF9F8] border-t border-[#EFEBE4] flex items-center justify-between gap-3 shrink-0 mt-auto">
+          <div className="flex items-center gap-1.5 text-xs text-[#5C403D] truncate max-w-[60%]">
+            <MapPin className="w-3.5 h-3.5 text-[#9B000E] shrink-0" />
+            <span className="truncate font-kannada">{getLocation(event)}</span>
+          </div>
+
+          <button
+            onClick={() => setSelectedEvent(event)}
+            className="text-[#9B000E] hover:text-[#7C5800] font-semibold text-xs sm:text-sm flex items-center gap-1 cursor-pointer shrink-0 transition-colors"
+          >
+            <span className="font-kannada">
+              {isKannada ? "ವಿವರಗಳು" : "Details"}
+            </span>
+            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+          </button>
+        </div>
+      </div>
+    );
   };
 
-  // GSAP animations
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.from(".carousel-wrapper", {
-        y: 50,
-        opacity: 0,
-        duration: 1,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: ".carousel-wrapper",
-          start: "top 80%",
-        },
-      });
+  // Grid Section Rendering Helper
+  const renderGridSection = (gridEvents, titleK, titleE, showViewAll) => (
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 pb-2 border-b border-[#EFEBE4]">
+        <div>
+          <div className="text-xs uppercase font-bold tracking-wider text-[#9B000E]">
+            {isKannada ? "ಹಬ್ಬಗಳು & ವೇದಿಕೆ" : "Festivals & Forums"}
+          </div>
+          <h3 className="text-2xl font-bold text-[#1C1B1B] font-kannada">
+            {isKannada ? titleK : titleE}
+          </h3>
+        </div>
 
-      gsap.from(".announcement-panel", {
-        y: 50,
-        opacity: 0,
-        duration: 1,
-        delay: 0.3,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: ".announcement-panel",
-          start: "top 85%",
-        },
-      });
+        {showViewAll && isHomePage && (
+          <Link
+            href="/events"
+            className="text-xs sm:text-sm font-semibold text-[#9B000E] hover:text-[#7C5800] flex items-center gap-1 cursor-pointer"
+          >
+            <span>
+              {isKannada ? "ಎಲ್ಲಾ ಕಾರ್ಯಕ್ರಮಗಳನ್ನು ವೀಕ್ಷಿಸಿ" : "View All Events"}
+            </span>
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+        )}
+      </div>
 
-      gsap.fromTo(
-        ".announcement-panel",
-        {
-          boxShadow: "0 0 0px rgba(255, 215, 0, 0)",
-          borderColor: "rgba(255, 215, 0, 0.05)",
-        },
-        {
-          boxShadow:
-            "0 0 24px rgba(29, 18, 183, 0.4), 0 0 12px rgba(255, 215, 0, 0.2)",
-          borderColor: "rgba(0, 149, 255, 0.4)",
-          duration: 1.2,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: ".announcement-panel",
-            start: "top 90%",
-            toggleActions: "play none none reverse",
-          },
-        },
-      );
-
-      gsap.to(".blue-glow", {
-        x: "20%",
-        y: "10%",
-        backgroundColor: "rgba(56, 189, 248, 0.25)",
-        repeat: -1,
-        yoyo: true,
-        duration: 8,
-        ease: "sine.inOut",
-      });
-
-      gsap.to(".blue-glow-2", {
-        x: "-15%",
-        y: "-5%",
-        backgroundColor: "rgba(96, 165, 250, 0.25)",
-        repeat: -1,
-        yoyo: true,
-        duration: 10,
-        ease: "sine.inOut",
-      });
-
-      gsap.to(".blue-glow, .blue-glow-2", {
-        scale: 1.2,
-        repeat: -1,
-        yoyo: true,
-        duration: 6,
-        ease: "sine.inOut",
-      });
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, []);
-
-  // Format time helper
-  const formatTime = (time) => {
-    if (!time) return "";
-    const [hours, minutes] = time.split(":");
-    let h = parseInt(hours, 10);
-    const ampm = h >= 12 ? "PM" : "AM";
-    h = h % 12 || 12;
-    return `${h}:${minutes} ${ampm}`;
-  };
-
-  // Data for Quotes
-  const quotes = [
-    {
-      icon: "📜",
-      kannada: "ಎಲ್ಲಾದರು ಇರು ಎಂತಾದರು ಇರು, ಎಂದೆಂದಿಗೂ ನೀ ಕನ್ನಡವಾಗಿರು",
-      author: "– ಕುವೆಂಪು (Kuvempu)",
-      gradient: "from-blue-400 to-cyan-300",
-      border: "blue",
-      bgData: "from-blue-500/10 to-cyan-500/5",
-    },
-    {
-      icon: "✨",
-      kannada: "ಸಿರಿಗನ್ನಡಂ ಗೆಲ್ಗೆ, ಸಿರಿಗನ್ನಡಂ ಬಾಳ್ಗೆ",
-      author: "– ಬಿ.ಎಂ.ಶ್ರೀ (B.M. Sri)",
-      gradient: "from-purple-400 to-pink-300",
-      border: "purple",
-      bgData: "from-purple-500/10 to-pink-500/5",
-    },
-    {
-      icon: "🦁",
-      kannada: "ಕನ್ನಡವೇ ಸತ್ಯ, ಕನ್ನಡವೇ ನಿತ್ಯ",
-      author: "– ಜಿ.ಎಸ್.ಶಿವರುದ್ರಪ್ಪ (GSS)",
-      gradient: "from-cyan-400 to-blue-300",
-      border: "cyan",
-      bgData: "from-cyan-500/10 to-blue-500/5",
-    },
-    {
-      icon: "🌍",
-      kannada: "ಮನುಷ್ಯಜಾತಿ ತಾನೊಂದೇ ವಲಂ",
-      author: "– ಪಂಪ (Pampa)",
-      gradient: "from-pink-400 to-purple-300",
-      border: "pink",
-      bgData: "from-pink-500/10 to-purple-500/5",
-    },
-  ];
+      {gridEvents.length === 0 ? (
+        <div className="p-8 text-center bg-white rounded-2xl border border-[#EFEBE4] text-[#5C403D]">
+          <Calendar className="w-8 h-8 mx-auto text-[#916F6B] mb-2" />
+          <p className="font-kannada">
+            {isKannada
+              ? "ಯಾವುದೇ ಕಾರ್ಯಕ್ರಮಗಳು ಲಭ್ಯವಿಲ್ಲ"
+              : "No events listed yet"}
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
+          {gridEvents.map(renderEventCard)}
+        </div>
+      )}
+    </div>
+  );
 
   return (
-    <div
-      id="dashboard-events"
-      className="relative flex flex-col justify-start p-16 sm:p-10 bg-black min-h-screen box-border overflow-hidden"
-      ref={sectionRef}
-    >
-      {/* Enhanced Background Layers */}
-      <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
-        {/* Primary Glows */}
-        <div className="blue-glow absolute w-[600px] h-[600px] bg-blue-500/20 rounded-full blur-3xl top-[-150px] left-[-200px]"></div>
-        <div className="blue-glow-2 absolute w-[400px] h-[400px] bg-cyan-400/20 rounded-full blur-2xl bottom-[-100px] right-[-150px]"></div>
-
-        {/* Additional Ambient Glows */}
-        <div className="absolute w-[500px] h-[500px] bg-purple-500/15 rounded-full blur-3xl bottom-[20%] left-[10%] animate-pulse"></div>
-        <div
-          className="absolute w-[300px] h-[300px] bg-pink-500/10 rounded-full blur-2xl top-[40%] right-[15%] animate-pulse"
-          style={{ animationDelay: "2s" }}
-        ></div>
-
-        {/* Floating Particles */}
-        <div className="absolute top-[15%] left-[5%] w-2 h-2 bg-cyan-400/40 rounded-full animate-float"></div>
-        <div
-          className="absolute top-[25%] right-[10%] w-3 h-3 bg-purple-400/30 rounded-full animate-float"
-          style={{ animationDelay: "1s" }}
-        ></div>
-        <div
-          className="absolute top-[60%] left-[20%] w-2 h-2 bg-blue-400/40 rounded-full animate-float"
-          style={{ animationDelay: "3s" }}
-        ></div>
-        <div
-          className="absolute top-[70%] right-[25%] w-2 h-2 bg-pink-400/30 rounded-full animate-float"
-          style={{ animationDelay: "1.5s" }}
-        ></div>
-        <div
-          className="absolute bottom-[15%] left-[15%] w-3 h-3 bg-cyan-400/35 rounded-full animate-float"
-          style={{ animationDelay: "2.5s" }}
-        ></div>
-        <div
-          className="absolute bottom-[25%] right-[30%] w-2 h-2 bg-purple-400/40 rounded-full animate-float"
-          style={{ animationDelay: "0.5s" }}
-        ></div>
-
-        {/* Geometric Patterns */}
-        <div className="absolute top-[10%] right-[5%] w-20 h-20 border border-cyan-500/10 rotate-45 animate-spin-slow"></div>
-        <div
-          className="absolute bottom-[30%] left-[8%] w-16 h-16 border border-purple-500/10 rotate-12 animate-spin-slow"
-          style={{ animationDirection: "reverse" }}
-        ></div>
+    <div className="space-y-12 mt-12">
+      {/* 1. Cultural Widgets Grid: Always visible */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
+        <div className="lg:col-span-7">
+          <DailyVachanaWidget />
+        </div>
+        <div className="lg:col-span-5">
+          <WordOfTheDayWidget />
+        </div>
       </div>
 
-      {/* Main Content Container */}
-      <div className="w-full max-w-[1400px] mx-auto relative z-10">
-        {/* Events and Announcements Section */}
-        <div className="flex flex-col md:flex-col lg:flex-row gap-10 w-full justify-center items-start px-5 mb-16">
-          {/* EVENTS CAROUSEL */}
-          <div className="carousel-wrapper flex-1 min-w-auto max-w-[680px] w-full flex flex-col">
-            <h2 className="flex flex-col items-start mb-6 bg-gradient-to-r from-purple-700 to-cyan-400 bg-clip-text text-transparent">
-              <span className="flex items-center gap-2 text-2xl sm:text-xl">
-                <span className="text-xl sm:text-xl">🗓️</span>
-                <span className="text-xl md:text-2xl font-semibold">
-                  {language === "kn" ? "ಮುಂ. ಕಾರ್ಯಕ್ರಮಗಳು" : "Upcoming Events"}
+      {/* 2. Spotlight Event Block */}
+      {spotlightEvent && (
+        <div className="bg-white rounded-2xl border border-[#EFEBE4] p-6 sm:p-8 elevation-1 relative overflow-hidden transition-all">
+          <div className="h-1.5 w-full gold-crimson-bar absolute top-0 left-0" />
+
+          <div className="flex flex-col lg:flex-row gap-8 items-center justify-between">
+            <div className="space-y-3 lg:max-w-2xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FFF8E1] text-[#7C5800] border border-[#F5B000]/40 text-xs font-semibold">
+                <Sparkles className="w-3.5 h-3.5 text-[#C4151C]" />
+                <span className="font-kannada">
+                  {isSpotlightPast
+                    ? isKannada
+                      ? "ಹಿಂದಿನ ಆಕರ್ಷಣೆ • PAST HIGHLIGHT"
+                      : "PAST HIGHLIGHT"
+                    : isKannada
+                      ? "ವಿಶೇಷ ಆಕರ್ಷಣೆ • SPOTLIGHT EVENT"
+                      : "SPOTLIGHT EVENT"}
                 </span>
-              </span>
-            </h2>
-            {/* Loading / Display events logic */}
-            {loading ? (
-              <div className="text-center py-20">
-                <div className="w-24 h-24 mx-auto mb-6 bg-yellow-500/10 rounded-full flex items-center justify-center border-2 border-yellow-500/30">
-                  <div className="spinner"></div>
-                </div>
-                <h2 className="text-2xl font-semibold text-yellow-400 mb-2">
-                  Loading events...
-                </h2>
               </div>
-            ) : events.length === 0 ? (
-              <div className="text-center py-20">
-                <div className="w-24 h-24 mx-auto mb-6 bg-yellow-500/10 rounded-full flex items-center justify-center border-2 border-yellow-500/30">
-                  <svg
-                    className="w-12 h-12 text-yellow-500"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                    />
-                  </svg>
-                </div>
-                <h2 className="text-2xl font-semibold text-yellow-400 mb-2">
-                  No events yet
-                </h2>
-                <p className="text-amber-200/60">
-                  Check back later for upcoming events!
-                </p>
-              </div>
-            ) : (
-              <div className="relative w-full bg-gradient-to-br from-gray-900/50 to-gray-800/30 backdrop-blur-md rounded-2xl overflow-hidden border border-blue-500/20 shadow-2xl">
-                {/* Event slides */}
-                <div className="relative h-[255px] sm:h-[265px]">
-                  {events.map((event, index) => (
-                    <div
-                      key={index}
-                      className={`absolute inset-0 transition-all duration-700 ease-in-out ${
-                        index === currentSlide
-                          ? "opacity-100 translate-x-0 z-10"
-                          : index < currentSlide
-                            ? "opacity-0 -translate-x-full z-0"
-                            : "opacity-0 translate-x-full z-0"
-                      }`}
-                    >
-                      <div className="h-full flex flex-col p-6 sm:p-5">
-                        <h3 className="text-2xl sm:text-xl font-bold text-white mb-2 line-clamp-2">
-                          {event.title_k || event.title}
-                        </h3>
-                        <div className="space-y-3 mb-3">
-                          <div className="flex items-center gap-3 text-cyan-400">
-                            <Calendar size={18} />
-                            <span className="text-sm font-medium">
-                              {event.date}
-                            </span>
-                          </div>
-                          {event.eventTime && (
-                            <div className="flex items-center gap-3 text-purple-400">
-                              <Clock size={18} />
-                              <span className="text-sm font-medium">
-                                {event.eventTime}
-                              </span>
-                            </div>
-                          )}
-                          {event.location && (
-                            <div className="flex items-center gap-3 text-pink-400">
-                              <MapPin size={18} />
-                              <span className="text-sm font-medium line-clamp-1">
-                                {event.location}
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                        <p
-                          className="text-gray-300 text-sm leading-relaxed line-clamp-3"
-                          style={
-                            language === "kn"
-                              ? {
-                                  fontFamily:
-                                    "'Noto Sans Kannada', sans-serif",
-                                }
-                              : {}
-                          }
-                        >
-                          {event.description_k || event.description}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
 
-                {/* Slide indicators */}
-                {events.length > 1 && (
-                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex gap-2">
-                    {events.map((_, index) => (
-                      <button
-                        key={index}
-                        onClick={() => goToSlide(index)}
-                        className={`transition-all duration-300 rounded-full ${
-                          index === currentSlide
-                            ? "w-8 h-2 bg-blue-500"
-                            : "w-2 h-2 bg-gray-500 hover:bg-gray-400"
-                        }`}
-                        aria-label={`Go to slide ${index + 1}`}
-                      />
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
+              <h3 className="text-2xl sm:text-3xl font-extrabold text-[#1C1B1B] font-kannada leading-snug">
+                {getTitle(spotlightEvent)}
+              </h3>
 
-            {/* More Info Link */}
-            <div className="mt-4 text-center">
-              <span
-                onClick={() => router.push("/events")}
-                className="text-blue-400 hover:text-blue-300 cursor-pointer font-semibold"
-              >
-                More Info →
-              </span>
+              <p className="text-sm text-[#5C403D] leading-relaxed line-clamp-2">
+                {getDesc(spotlightEvent)}
+              </p>
+
+              <div className="flex flex-wrap items-center gap-4 text-xs sm:text-sm text-[#1C1B1B] pt-2">
+                <span className="flex items-center gap-1.5 font-medium">
+                  <Calendar className="w-4 h-4 text-[#9B000E]" />
+                  <span>
+                    {formatFullDate(spotlightEvent.date)}{" "}
+                    {spotlightEvent.eventTime
+                      ? `(${spotlightEvent.eventTime})`
+                      : ""}
+                  </span>
+                </span>
+                <span className="flex items-center gap-1.5 font-medium">
+                  <MapPin className="w-4 h-4 text-[#9B000E]" />
+                  <span className="font-kannada">
+                    {getLocation(spotlightEvent)}
+                  </span>
+                </span>
+              </div>
             </div>
-          </div>
 
-          {/* ANNOUNCEMENTS SCROLL */}
-          <div className="announcement-panel flex-1 min-w-[300px] max-w-[420px] bg-black/4 border border-yellow-400/10 backdrop-blur-md p-6 sm:p-4 rounded-xl shadow-lg max-h-[500px] flex flex-col transition-all duration-300">
-            <h2 className="flex flex-col items-start mb-6 bg-gradient-to-r from-purple-700 to-cyan-400 bg-clip-text text-transparent">
-              <span className="flex items-center gap-2 text-2xl sm:text-xl">
-                <span className="text-2xl sm:text-xl">📢</span>
-                <span className="text-xl md:text-2xl font-semibold">
-                  {language === "kn" ? "ಪ್ರಕಟಣೆಗಳು" : "Announcements"}
+            {/* Right Actions - added relative z-10 for clickability */}
+            <div className="flex flex-col sm:flex-row lg:flex-col gap-3 shrink-0 w-full sm:w-auto relative z-10">
+              <button
+                onClick={() => setSelectedEvent(spotlightEvent)}
+                className="crimson-gradient hover:opacity-95 text-white font-semibold text-sm px-6 py-3 rounded-lg shadow-sm flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+              >
+                <span className="font-kannada">
+                  {isKannada ? "ವಿವರಗಳು / RSVP" : "RSVP / Details"}
                 </span>
-              </span>
-            </h2>
+                <ArrowRight className="w-4 h-4" />
+              </button>
 
-            <div className="relative flex-1 overflow-y-auto max-h-[500px] pr-2 scrollbar-thin scrollbar-thumb-blue-500/30 scrollbar-track-transparent">
-              {loadingAnnouncements ? (
-                <div className="text-center py-20">
-                  <div className="w-16 h-16 mx-auto mb-6 bg-yellow-500/10 rounded-full flex items-center justify-center border-2 border-yellow-500/30">
-                    <div className="spinner"></div>
-                  </div>
-                  <h2 className="text-lg font-semibold text-yellow-400 mb-2">
-                    Loading announcements...
-                  </h2>
-                </div>
-              ) : announcements.length > 0 ? (
-                announcements.map((item, index) => (
-                  <div
-                    key={index}
-                    className="bg-white/5 p-4 rounded-lg mb-3 shadow-md hover:-translate-y-0.5 hover:shadow-lg transition-transform duration-300 border border-white/5"
-                  >
-                    <h4 className="text-yellow-400 text-lg mb-1 font-semibold">
-                      {item.title}
-                    </h4>
-                    <p
-                      className="text-gray-300 text-sm leading-relaxed"
-                      style={
-                        language === "kn"
-                          ? { fontFamily: "'Noto Sans Kannada', sans-serif" }
-                          : {}
-                      }
-                    >
-                      {item.message}
-                    </p>
-                  </div>
-                ))
-              ) : (
-                <p className="text-gray-400 text-sm text-center">
-                  No announcements yet.
-                </p>
+              {isHomePage && (
+                <Link
+                  href="/events"
+                  className="bg-[#F6F3F2] hover:bg-[#EAE7E7] text-[#1C1B1B] font-semibold text-xs sm:text-sm px-5 py-3 rounded-lg flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  <span>
+                    {isKannada ? "ಎಲ್ಲ ಕಾರ್ಯಕ್ರಮಗಳು" : "View All Events"}
+                  </span>
+                </Link>
               )}
             </div>
-
-            {/* More Info Link */}
-            <div className="mt-4 text-center">
-              <span
-                onClick={() => router.push("/announcements")}
-                className="text-blue-400 hover:text-blue-300 cursor-pointer font-semibold"
-              >
-                More Info →
-              </span>
-            </div>
           </div>
         </div>
+      )}
 
-        {/* Bottom Section: Greatest Kannada Quotes/Lines - HIDDEN ON MOBILE */}
-        <div className="hidden md:block w-full px-5 mt-12 relative">
-          {/* Decorative Line Above */}
-          <div className="flex items-center justify-center gap-4 mb-10">
-            <div className="h-[1px] w-full max-w-[200px] bg-gradient-to-r from-transparent via-cyan-500/30 to-transparent"></div>
-            <div className="text-cyan-400/60 text-2xl">✦</div>
-            <div className="h-[1px] w-full max-w-[200px] bg-gradient-to-l from-transparent via-cyan-500/30 to-transparent"></div>
-          </div>
-
-          {/* Quotes Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-[1200px] mx-auto">
-            {quotes.map((quote, idx) => (
-              <div
-                key={idx}
-                className={`group relative bg-gradient-to-br ${quote.bgData} backdrop-blur-sm p-6 rounded-xl border border-${quote.border}-500/20 hover:border-${quote.border}-400/40 transition-all duration-300 hover:scale-105 h-full flex flex-col justify-center`}
-              >
-                <div
-                  className={`absolute inset-0 bg-gradient-to-br from-${quote.border}-500/5 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
-                ></div>
-                <div className="relative z-10 text-center flex flex-col items-center h-full justify-between">
-                  <div className="text-4xl mb-3">{quote.icon}</div>
-                  <div
-                    className={`text-lg font-bold bg-gradient-to-r ${quote.gradient} bg-clip-text text-transparent mb-3 leading-snug`}
-                    style={{ fontFamily: "'Noto Sans Kannada', sans-serif" }}
-                  >
-                    "{quote.kannada}"
-                  </div>
-                  <div className="text-sm text-gray-400 font-medium mt-auto border-t border-white/10 pt-2 w-full">
-                    {quote.author}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Decorative Pattern at Bottom */}
-          <div className="mt-12 mb-8 flex items-center justify-center gap-6 opacity-40">
-            <svg
-              className="w-8 h-8 text-cyan-400/60 animate-spin-slow"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1}
-                d="M12 2L15 9L22 12L15 15L12 22L9 15L2 12L9 9L12 2Z"
-              />
-            </svg>
-            <div className="h-[1px] w-24 bg-gradient-to-r from-transparent via-purple-500/30 to-transparent"></div>
-            <div className="text-purple-400/60 text-sm tracking-widest">
-              {language === "kn"
-                ? "ಸಾಹಿತ್ಯ • ಸಂಸ್ಕೃತಿ • ಹೆಮ್ಮೆ"
-                : "Literature • Culture • Pride"}
-            </div>
-            <div className="h-[1px] w-24 bg-gradient-to-l from-transparent via-purple-500/30 to-transparent"></div>
-            <svg
-              className="w-8 h-8 text-purple-400/60 animate-spin-slow"
-              style={{ animationDirection: "reverse" }}
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1}
-                d="M12 2L15 9L22 12L15 15L12 22L9 15L2 12L9 9L12 2Z"
-              />
-            </svg>
-          </div>
+      {/* 3. Event Grids (Dynamic rendering based on route and availability) */}
+      {loading ? (
+        <div className="text-center py-12 text-[#5C403D] font-kannada">
+          {isKannada ? "ಲೋಡ್ ಆಗುತ್ತಿದೆ..." : "Loading events..."}
         </div>
+      ) : (
+        <>
+          {isHomePage ? (
+            /* Homepage: Show Upcoming Grid if events exist. Fallback to Past Grid. Never show both. */
+            displayUpcoming.length > 0 ? (
+              renderGridSection(
+                displayUpcoming,
+                "ಮುಂಬರುವ ಸಾಂಸ್ಕೃತಿಕ ಕಾರ್ಯಕ್ರಮಗಳು",
+                "Upcoming Cultural Events",
+                true,
+              )
+            ) : displayPast.length > 0 ? (
+              renderGridSection(
+                displayPast,
+                "ಹಿಂದಿನ ಕಾರ್ಯಕ್ರಮಗಳು",
+                "Recent Past Events",
+                true,
+              )
+            ) : (
+              renderGridSection(
+                [],
+                "ಮುಂಬರುವ ಸಾಂಸ್ಕೃತಿಕ ಕಾರ್ಯಕ್ರಮಗಳು",
+                "Upcoming Cultural Events",
+                true,
+              )
+            )
+          ) : (
+            /* Events Page: Show Upcoming Grid strictly. Followed by Past Grid dynamically. */
+            <div className="space-y-12">
+              {renderGridSection(
+                displayUpcoming,
+                "ಮುಂಬರುವ ಸಾಂಸ್ಕೃತಿಕ ಕಾರ್ಯಕ್ರಮಗಳು",
+                "Upcoming Cultural Events",
+                false,
+              )}
+              {displayPast.length > 0 &&
+                renderGridSection(
+                  displayPast,
+                  "ಹಿಂದಿನ ಕಾರ್ಯಕ್ರಮಗಳು",
+                  "Past Cultural Events",
+                  false,
+                )}
+            </div>
+          )}
+        </>
+      )}
+
+      {/* 4. Join Banner */}
+      <div className="p-8 sm:p-10 rounded-2xl bg-gradient-to-r from-[#9B000E] via-[#8A0E14] to-[#7C5800] text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-md relative overflow-hidden">
+        <div className="space-y-2 text-center sm:text-left z-10">
+          <div className="inline-block px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#F5B000] text-[#1C1B1B] uppercase tracking-wider">
+            {isKannada
+              ? "ಪಿ.ಇ.ಎಸ್ ವಿದ್ಯಾರ್ಥಿ ಒಕ್ಕೂಟ 2026"
+              : "PES STUDENT UNION 2026"}
+          </div>
+          <h3 className="text-2xl sm:text-3xl font-bold font-kannada leading-tight">
+            {isKannada
+              ? "ನೀವು ನಮ್ಮ ಕನ್ನಡ ಕೂಟದ ಸದಸ್ಯರಾಗಲು ಇಚ್ಛಿಸುವಿರಾ?"
+              : "Would you like to join Kannada Koota?"}
+          </h3>
+          <p className="text-xs sm:text-sm text-amber-100 max-w-xl leading-relaxed">
+            {isKannada
+              ? "ನಾಟಕ, ಚರ್ಚಾಸ್ಪರ್ಧೆ, ಕವನ ವಾಚನ ಮತ್ತು ವಾರ್ಷಿಕ ರಾಜ್ಯೋತ್ಸವ ಆಚರಣೆಗಳಲ್ಲಿ ನೂರಾರು ವಿದ್ಯಾರ್ಥಿಗಳೊಂದಿಗೆ ಪಾಲ್ಗೊಳ್ಳಿ."
+              : "Join hundreds of collegiate peers in theatre auditions, debates, poetry workshops, and annual Rajyotsava celebrations."}
+          </p>
+        </div>
+
+        <button
+          onClick={openMembership}
+          className="bg-white text-[#9B000E] hover:bg-[#FFF8E1] font-bold text-sm sm:text-base px-6 py-3 rounded-lg shadow-sm shrink-0 flex items-center gap-2 cursor-pointer active:scale-98 transition-all z-10"
+        >
+          <Award className="w-4 h-4 text-[#F5B000]" />
+          <span className="font-kannada">
+            {isKannada ? "ಸದಸ್ಯರಾಗಿ" : "Register Now"}
+          </span>
+        </button>
       </div>
 
-      {/* Custom Animations */}
-      <style jsx>{`
-        @keyframes float {
-          0%,
-          100% {
-            transform: translateY(0px);
-            opacity: 0.3;
-          }
-          50% {
-            transform: translateY(-20px);
-            opacity: 0.6;
-          }
-        }
+      {/* Modal instances */}
+      <EventDetailModal
+        event={selectedEvent}
+        onClose={() => setSelectedEvent(null)}
+      />
 
-        @keyframes spin-slow {
-          from {
-            transform: rotate(0deg);
-          }
-          to {
-            transform: rotate(360deg);
-          }
-        }
-
-        .animate-float {
-          animation: float 4s ease-in-out infinite;
-        }
-
-        .animate-spin-slow {
-          animation: spin-slow 20s linear infinite;
-        }
-
-        .spinner {
-          width: 40px;
-          height: 40px;
-          border: 3px solid rgba(234, 179, 8, 0.1);
-          border-top-color: rgba(234, 179, 8, 0.8);
-          border-radius: 50%;
-          animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-          to {
-            transform: rotate(360deg);
-          }
-        }
-      `}</style>
+      {/* Image Maximize Lightbox */}
+      {maximizedImageSrc && (
+        <div
+          className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 sm:p-8 animate-in fade-in duration-200"
+          onClick={() => setMaximizedImageSrc(null)}
+        >
+          <button
+            className="absolute top-4 right-4 sm:top-6 sm:right-6 p-2 text-white/70 hover:text-white bg-black/50 hover:bg-black/80 rounded-full transition-colors cursor-pointer"
+            onClick={() => setMaximizedImageSrc(null)}
+          >
+            <X className="w-6 h-6" />
+          </button>
+          <img
+            src={maximizedImageSrc}
+            alt="Maximized Event View"
+            className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
     </div>
   );
 }

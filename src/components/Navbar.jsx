@@ -1,261 +1,351 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { gsap } from "gsap";
-import { Outlet } from "react-router-dom";
+import {
+  Sparkles,
+  Calendar,
+  Bell,
+  Users,
+  Image,
+  Menu,
+  X,
+  Award,
+  Globe,
+} from "lucide-react";
 import { useLanguage } from "../context/LanguageContext";
+import { useMembership } from "../context/MembershipContext";
 
 export default function Navbar() {
-  const { language, toggleLanguage } = useLanguage();
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState("home");
   const router = useRouter();
-  const location = { pathname: router.pathname };
-  const navigate = router.push;
+  const { language, toggleLanguage, isKannada } = useLanguage();
+  const { openMembership } = useMembership();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [announcementDismissed, setAnnouncementDismissed] = useState(false);
 
+  // States for dynamic rotating ribbon
+  const [updatesQueue, setUpdatesQueue] = useState([]);
+  const [currentUpdateIndex, setCurrentUpdateIndex] = useState(0);
+
+  const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+  // 1. Fetch Data for the Ribbon
   useEffect(() => {
-    gsap.set(".navbar-container", { y: -80, opacity: 0 });
-    gsap.to(".navbar-container", {
-      y: 0,
-      opacity: 1,
-      duration: 1,
-      ease: "power3.out",
-    });
-  }, []);
+    let isMounted = true;
 
-  useEffect(() => {
-    if (location.pathname !== "/") return;
-    const sections = ["home", "about", "footer"];
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) setActiveSection(entry.target.id);
-        });
-      },
-      { rootMargin: "-50% 0px -50% 0px" }
-    );
-    sections.forEach((id) => {
-      const el = document.getElementById(id);
-      if (el) observer.observe(el);
-    });
-    return () => observer.disconnect();
-  }, [location.pathname]);
+    const fetchLatestInfo = async () => {
+      try {
+        // Fetch both announcements and events concurrently
+        const [annRes, evtRes] = await Promise.all([
+          fetch(`${API_BASE}/api/announcements?lang=${language}`),
+          fetch(`${API_BASE}/api/events?lang=${language}`),
+        ]);
 
-  const scrollToSection = (id) => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    const navbarHeight =
-      document.querySelector(".navbar-container")?.offsetHeight || 0;
-    const top = el.offsetTop - navbarHeight;
-    window.scrollTo({ top, behavior: "smooth" });
-    setMenuOpen(false);
-    setActiveSection(id);
-  };
+        const annData = await annRes.json();
+        const evtData = await evtRes.json();
 
-  const mainMenuItems = [
-    { label: "Home", type: "scroll", id: "home" },
-    { label: "About", type: "scroll", id: "about" },
-    { label: "Announcements", type: "route", to: "/announcements" },
-    { label: "Gallery", type: "route", to: "/gallery" },
-    { label: "Contact", type: "scroll", id: "footer" },
-  ];
+        let combinedUpdates = [];
 
-  const dropdownItems = [
-    { label: "Events", to: "/events" },
-    { label: "Teams", to: "/teams" },
-  ];
+        // Add top 3 latest announcements to queue
+        if (annData?.success && Array.isArray(annData.announcements)) {
+          const recentAnns = annData.announcements.slice(0, 3).map((a) => ({
+            id: `ann-${a._id}`,
+            title: a.title,
+            title_k: a.title_k,
+            tag: "New Update",
+            tag_k: "ಹೊಸ ಪ್ರಕಟಣೆ",
+            link: "/announcements",
+          }));
+          combinedUpdates = [...combinedUpdates, ...recentAnns];
+        }
 
-  const isActive = (item) => {
-    if (item.type === "scroll") {
-      return location.pathname === "/" && activeSection === item.id;
-    }
-    return location.pathname === item.to;
-  };
+        // Add next 3 upcoming events to queue
+        if (Array.isArray(evtData)) {
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          const upcomingEvts = evtData
+            .filter((e) => new Date(e.date) >= today)
+            .sort((a, b) => new Date(a.date) - new Date(b.date))
+            .slice(0, 3)
+            .map((e) => ({
+              id: `evt-${e._id}`,
+              title: e.title,
+              title_k: e.title_k,
+              tag: "Upcoming Event",
+              tag_k: "ಮುಂಬರುವ ಕಾರ್ಯಕ್ರಮ",
+              link: "/events",
+            }));
+          combinedUpdates = [...combinedUpdates, ...upcomingEvts];
+        }
 
-  const handleNavClick = (item) => {
-    if (item.type === "scroll") {
-      if (location.pathname === "/") {
-        scrollToSection(item.id);
-      } else {
-        navigate("/");
-        setTimeout(() => scrollToSection(item.id), 300);
+        if (isMounted) {
+          setUpdatesQueue(combinedUpdates);
+        }
+      } catch (err) {
+        console.error("Failed to fetch latest updates for ribbon:", err);
       }
-    } else if (item.type === "route") {
-      navigate(item.to);
-      setMenuOpen(false);
-    }
+    };
+
+    fetchLatestInfo();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [language, API_BASE]);
+
+  // 2. Rotate the Queue every 4.5 seconds
+  useEffect(() => {
+    if (updatesQueue.length <= 1 || announcementDismissed) return;
+
+    const timer = setInterval(() => {
+      setCurrentUpdateIndex(
+        (prevIndex) => (prevIndex + 1) % updatesQueue.length,
+      );
+    }, 4500);
+
+    return () => clearInterval(timer);
+  }, [updatesQueue.length, announcementDismissed]);
+
+  const navItems = [
+    {
+      to: "/",
+      labelKannada: "ಮುಖಪುಟ",
+      labelEnglish: "Home",
+      icon: <Sparkles className="w-4 h-4" />,
+    },
+    {
+      to: "/events",
+      labelKannada: "ಕಾರ್ಯಕ್ರಮಗಳು",
+      labelEnglish: "Events",
+      icon: <Calendar className="w-4 h-4" />,
+    },
+    {
+      to: "/announcements",
+      labelKannada: "ಪ್ರಕಟಣೆಗಳು",
+      labelEnglish: "Announcements",
+      icon: <Bell className="w-4 h-4" />,
+    },
+    {
+      to: "/teams",
+      labelKannada: "ಮುಂದಾಳುಗಳು",
+      labelEnglish: "Teams",
+      icon: <Users className="w-4 h-4" />,
+    },
+    {
+      to: "/gallery",
+      labelKannada: "ಚಿತ್ರಸಂಗ್ರಹ",
+      labelEnglish: "Gallery",
+      icon: <Image className="w-4 h-4" />,
+    },
+  ];
+
+  const isActive = (path) => {
+    if (path === "/") return router.pathname === "/";
+    return router.pathname.startsWith(path);
   };
 
-  const NavItem = ({ item, onClick }) => (
-    <button
-      onClick={() => onClick(item)}
-      className={`w-full text-left px-4 py-3 rounded-lg text-base font-medium transition-all duration-300 ${isActive(item)
-          ? "bg-blue-500/20 text-blue-400"
-          : "text-cyan-300 hover:bg-cyan-500/10 hover:text-cyan-300"
-        }`}
-    >
-      {item.label}
-    </button>
-  );
+  const currentUpdate = updatesQueue[currentUpdateIndex];
 
   return (
-    <>
-      <nav className="navbar-container fixed top-0 left-0 w-full z-[1000] bg-black/90 backdrop-blur-xl border-b border-blue-500/20 shadow-2xl">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-20">
-          {/* Logo */}
+    <header className="sticky top-0 z-40 bg-[#FCF9F8]/95 backdrop-blur-md border-b border-[#EFEBE4] transition-all">
+      {/* Top dynamic micro-ribbon */}
+      {!announcementDismissed && currentUpdate && (
+        <div className="gold-crimson-bar text-white px-4 py-1.5 text-xs sm:text-sm font-medium flex items-center justify-between shadow-xs overflow-hidden">
+          {/* Key on the div forces a re-render for the animation to trigger smoothly on rotation */}
           <div
-            className="flex-shrink-0 cursor-pointer group flex items-center gap-2"
-            onClick={() =>
-              location.pathname === "/"
-                ? scrollToSection("home")
-                : navigate("/")
-            }
+            key={currentUpdate.id}
+            className="flex items-center gap-2 mx-auto truncate text-center font-semibold animate-in fade-in slide-in-from-bottom-2 duration-500"
           >
-            <img
-              src="/pes_navbar.webp"
-              alt="PES University"
-              className="w-10 h-10 object-cover rounded-full transition-all duration-300 shadow-lg shadow-cyan-500/25 group-hover:shadow-cyan-400/45 group-hover:scale-105"
-            />
-            <img
-              src="/flag.png"
-              alt="Flag"
-              className="w-13 h-10 object-cover rounded-md transition-all duration-300 shadow-lg shadow-cyan-500/25 group-hover:shadow-cyan-400/45 group-hover:scale-105"
-            />
+            <span className="bg-white/20 px-1.5 py-0.5 rounded text-[11px] uppercase tracking-wider font-bold shrink-0">
+              {isKannada ? currentUpdate.tag_k : currentUpdate.tag}
+            </span>
+            <span className="truncate font-kannada">
+              {isKannada
+                ? currentUpdate.title_k || currentUpdate.title
+                : currentUpdate.title || currentUpdate.title_k}
+            </span>
+            <Link
+              href={currentUpdate.link}
+              className="underline hover:text-amber-100 ml-1 cursor-pointer font-bold shrink-0"
+            >
+              {isKannada ? "ವೀಕ್ಷಿಸಿ" : "View"} &rarr;
+            </Link>
+          </div>
+          <button
+            onClick={() => setAnnouncementDismissed(true)}
+            className="text-white/80 hover:text-white p-0.5 cursor-pointer shrink-0 ml-2"
+            aria-label="Dismiss announcement"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
+
+      {/* Main Header Container */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-20">
+          {/* Brand Logo & Wordmark */}
+          <Link
+            href="/"
+            className="flex items-center gap-3.5 cursor-pointer group select-none py-1"
+          >
+            {/* Brand Logo */}
             <img
               src="/logo.png"
               alt="Kannada Koota Logo"
-              className="w-10 h-10 object-cover rounded-full transition-all duration-300 shadow-lg shadow-cyan-500/25 group-hover:shadow-cyan-400/45 group-hover:scale-105"
+              className="w-12 h-12 shadow-sm border border-[#E5BDB9] group-hover:scale-105 transition-transform duration-200 shrink-0 object-cover"
+              style={{ borderRadius: "50%" }}
             />
+
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#1C1B1B] font-kannada leading-tight group-hover:text-[#9B000E] transition-colors">
+                  ಕನ್ನಡ ಕೂಟ
+                </h1>
+              </div>
+            </div>
+          </Link>
+
+          {/* Desktop Navigation Links */}
+          <nav className="hidden lg:flex items-center gap-1 bg-[#F6F3F2] p-1.5 rounded-xl border border-[#EFEBE4]">
+            {navItems.map((item) => {
+              const active = isActive(item.to);
+              return (
+                <Link
+                  key={item.to}
+                  href={item.to}
+                  className={`relative flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-200 cursor-pointer ${
+                    active
+                      ? "bg-[#9B000E] text-white shadow-xs"
+                      : "text-[#1C1B1B] hover:text-[#9B000E] hover:bg-white/70"
+                  }`}
+                >
+                  {item.icon}
+                  <span className="font-kannada">
+                    {isKannada ? item.labelKannada : item.labelEnglish}
+                  </span>
+                  <span
+                    className={`text-[11px] opacity-75 font-normal ${
+                      active ? "text-white/90" : "text-[#5C403D]"
+                    }`}
+                  >
+                    ({isKannada ? item.labelEnglish : item.labelKannada})
+                  </span>
+                </Link>
+              );
+            })}
+          </nav>
+
+          {/* Right Actions: Language Switcher + Join CTA */}
+          <div className="hidden sm:flex items-center gap-3">
+            {/* Language Toggle Button */}
+            <button
+              onClick={toggleLanguage}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-[#EFEBE4] bg-white hover:bg-[#F6F3F2] text-xs font-semibold text-[#1C1B1B] transition-colors cursor-pointer"
+              title="Switch Language / ಭಾಷೆ ಬದಲಿಸಿ"
+            >
+              <Globe className="w-3.5 h-3.5 text-[#9B000E]" />
+              <span>{language === "kn" ? "English" : "ಕನ್ನಡ"}</span>
+            </button>
+
+            {/* Membership CTA */}
+            <button
+              onClick={openMembership}
+              className="crimson-gradient hover:opacity-95 text-white text-sm font-semibold px-4 py-2.5 rounded-lg shadow-sm hover:shadow transition-all flex items-center gap-2 cursor-pointer active:scale-98"
+            >
+              <Award className="w-4 h-4 text-[#FFD6D2]" />
+              <span className="font-kannada">ಸದಸ್ಯರಾಗಿ</span>
+              <span className="text-xs text-white/80 font-normal">
+                / Join Club
+              </span>
+            </button>
           </div>
 
-          {/* Right Section */}
-          <div className="flex items-center gap-4 md:gap-6">
-            {/* Desktop Menu */}
-            <div className="hidden md:flex items-center space-x-2">
-              {mainMenuItems.map((item, i) => (
-                <NavItem key={i} item={item} onClick={handleNavClick} />
-              ))}
-
-              {/* Desktop Dropdown */}
-              <div className="relative">
-                <button
-                  onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="w-10 h-10 text-cyan-300 hover:text-cyan-200 focus:outline-none flex flex-col justify-center items-center gap-1"
-                >
-                  <span
-                    className={`block w-6 h-0.5 bg-current transition-all duration-300 ${dropdownOpen ? "rotate-45 translate-y-1.5" : ""
-                      }`}
-                  ></span>
-                  <span
-                    className={`block w-6 h-0.5 bg-current transition-all duration-300 ${dropdownOpen ? "opacity-0" : ""
-                      }`}
-                  ></span>
-                  <span
-                    className={`block w-6 h-0.5 bg-current transition-all duration-300 ${dropdownOpen ? "-rotate-45 -translate-y-1.5" : ""
-                      }`}
-                  ></span>
-                </button>
-
-                <div
-                  className={`absolute top-full right-0 mt-3 w-48 bg-black/95 backdrop-blur-xl border border-blue-500/20 rounded-lg shadow-2xl overflow-hidden transition-all duration-300 ${dropdownOpen
-                      ? "opacity-100 visible translate-y-0"
-                      : "opacity-0 invisible -translate-y-2"
-                    }`}
-                >
-                  {dropdownItems.map((item, i) => (
-                    <Link
-                      key={i}
-                      href={item.to}
-                      onClick={() => setDropdownOpen(false)}
-                      className={`block px-4 py-3 text-sm font-medium transition-all duration-200 ${location.pathname === item.to
-                          ? "text-blue-400 bg-blue-500/10"
-                          : "text-cyan-300 hover:text-cyan-200 hover:bg-cyan-500/10"
-                        }`}
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Language Toggle (Always Visible) */}
-            <div className="flex items-center space-x-2">
-              <span className="text-m font-bold text-cyan-300">ಕ</span>
-              <button
-                onClick={toggleLanguage}
-                className="relative w-8 h-4 rounded-full bg-gradient-to-r from-cyan-400 via-sky-500 to-blue-600 shadow-inner ring-1 ring-cyan-300 transition-all duration-300 hover:shadow-[0_0_10px_rgba(34,211,238,0.55)] focus:outline-none"
-                aria-label="Toggle language"
-              >
-                <div
-                  className={`absolute top-1/2 -translate-y-1/2 w-5 h-5 rounded-full shadow-md transition-all duration-300 ${language === "en"
-                      ? "translate-x-[1.0rem] bg-gradient-to-br from-cyan-200 to-blue-300"
-                      : "translate-x-[-0.2rem] bg-gradient-to-br from-emerald-200 to-cyan-200"
-                    }`}
-                ></div>
-              </button>
-              <span className="text-sm font-bold text-cyan-300">EN</span>
-            </div>
-
-
-            {/* Mobile Hamburger */}
+          {/* Mobile Actions (Language + Drawer Toggle) */}
+          <div className="flex items-center gap-2 lg:hidden">
             <button
-              onClick={() => {
-                setMenuOpen(!menuOpen);
-                setDropdownOpen(false);
-              }}
-              className="md:hidden w-10 h-10 text-blue-400 focus:outline-none"
+              onClick={toggleLanguage}
+              className="px-2 py-1.5 rounded-lg border border-[#EFEBE4] bg-white text-xs font-semibold text-[#1C1B1B]"
+            >
+              {language === "kn" ? "EN" : "ಕನ್ನ"}
+            </button>
+
+            <button
+              onClick={openMembership}
+              className="bg-[#9B000E] text-white text-xs font-semibold px-2.5 py-1.5 rounded-lg flex items-center gap-1 sm:hidden"
+            >
+              <Award className="w-3.5 h-3.5" />
+              <span>ಸದಸ್ಯರಾಗಿ</span>
+            </button>
+
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-2 rounded-lg text-[#1C1B1B] hover:bg-[#F0EDED] border border-[#EFEBE4]"
               aria-label="Toggle menu"
             >
-              <div className="flex flex-col justify-center items-center">
-                <span
-                  className={`block w-6 h-0.5 bg-current mb-1.5 transition-all duration-300 ${menuOpen ? "rotate-45 translate-y-2" : ""
-                    }`}
-                ></span>
-                <span
-                  className={`block w-6 h-0.5 bg-current mb-1.5 transition-all duration-300 ${menuOpen ? "opacity-0" : ""
-                    }`}
-                ></span>
-                <span
-                  className={`block w-6 h-0.5 bg-current transition-all duration-300 ${menuOpen ? "-rotate-45 -translate-y-2" : ""
-                    }`}
-                ></span>
-              </div>
+              {mobileMenuOpen ? (
+                <X className="w-5 h-5" />
+              ) : (
+                <Menu className="w-5 h-5" />
+              )}
             </button>
           </div>
         </div>
+      </div>
 
-        {/* Mobile Menu */}
-        <div
-          className={`md:hidden overflow-hidden transition-all duration-500 ease-in-out ${menuOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
-            }`}
-        >
-          <div className="px-4 pt-2 pb-4 space-y-2 bg-black/95 backdrop-blur-xl border-t border-blue-500/10 flex flex-col">
-            {[...mainMenuItems, ...dropdownItems].map((item, i) =>
-              item.type ? (
-                <NavItem key={i} item={item} onClick={handleNavClick} />
-              ) : (
-                <button
-                  key={i}
-                  onClick={() => {
-                    navigate(item.to);
-                    setMenuOpen(false);
-                  }}
-                  className={`w-full text-left px-4 py-3 rounded-lg text-base font-medium transition-all duration-200 ${location.pathname === item.to
-                      ? "bg-blue-500/20 text-blue-400"
-                      : "text-cyan-300 hover:bg-cyan-500/10 hover:text-cyan-200"
+      {/* Mobile Off-Canvas Dropdown Menu */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden border-t border-[#EFEBE4] bg-[#FCF9F8] px-4 pt-3 pb-6 space-y-2 shadow-lg animate-in fade-in slide-in-from-top-2">
+          {navItems.map((item) => {
+            const active = isActive(item.to);
+            return (
+              <Link
+                key={item.to}
+                href={item.to}
+                onClick={() => setMobileMenuOpen(false)}
+                className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-base font-semibold transition-colors ${
+                  active
+                    ? "bg-[#9B000E] text-white shadow-xs"
+                    : "text-[#1C1B1B] hover:bg-[#F6F3F2]"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  {item.icon}
+                  <span className="font-kannada text-lg">
+                    {item.labelKannada}
+                  </span>
+                  <span
+                    className={`text-xs ${
+                      active ? "text-white/80" : "text-[#5C403D]"
                     }`}
-                >
-                  {item.label}
-                </button>
-              )
-            )}
+                  >
+                    • {item.labelEnglish}
+                  </span>
+                </div>
+                {active && (
+                  <span className="text-xs bg-white/20 px-2 py-0.5 rounded">
+                    Active
+                  </span>
+                )}
+              </Link>
+            );
+          })}
+
+          <div className="pt-3 mt-3 border-t border-[#EFEBE4] space-y-2">
+            <button
+              onClick={() => {
+                openMembership();
+                setMobileMenuOpen(false);
+              }}
+              className="w-full crimson-gradient text-white py-3 rounded-lg font-semibold flex items-center justify-center gap-2 shadow-sm"
+            >
+              <Award className="w-5 h-5 text-[#FFD6D2]" />
+              <span className="font-kannada text-base">
+                ಸದಸ್ಯತ್ವ ನೋಂದಣಿ / Join Kannada Koota
+              </span>
+            </button>
           </div>
         </div>
-      </nav>
-
-      <Outlet />
-    </>
+      )}
+    </header>
   );
 }

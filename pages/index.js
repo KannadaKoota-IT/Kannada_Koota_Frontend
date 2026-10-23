@@ -4,9 +4,9 @@ export default function Home({ announcements }) {
   return <HomePage announcements={announcements} />;
 }
 
-export async function getStaticProps() {
+export async function getServerSideProps() {
   try {
-    const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL;
+    const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
 
     const announcementsRes = await fetch(`${API_BASE}/api/announcements`, {
       cache: "no-store",
@@ -24,13 +24,11 @@ export async function getStaticProps() {
 
     return {
       props: { announcements },
-      revalidate: 60,
     };
   } catch (error) {
     console.error("Error fetching data:", error);
     return {
       props: { announcements: [] },
-      revalidate: 60,
     };
   }
 }
