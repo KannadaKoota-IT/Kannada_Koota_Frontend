@@ -7,7 +7,7 @@ import { useMembership } from "../../context/MembershipContext";
 
 export default function Footer() {
   const { isKannada } = useLanguage();
-  const { openMembership } = useMembership();
+  const { whatsappUrl } = useMembership();
 
   return (
     <footer
@@ -84,7 +84,7 @@ export default function Footer() {
                 <FaYoutube className="w-4 h-4" />
               </a>
               <a
-                href="https://chat.whatsapp.com"
+                href={whatsappUrl}
                 target="_blank"
                 rel="noreferrer"
                 className="w-9 h-9 rounded-lg bg-stone-800 hover:bg-emerald-600 text-stone-300 hover:text-white flex items-center justify-center transition-colors"
@@ -141,14 +141,6 @@ export default function Footer() {
                   <span>ಚಿತ್ರಸಂಗ್ರಹ (Gallery)</span>
                 </Link>
               </li>
-              <li className="pt-1">
-                <button
-                  onClick={openMembership}
-                  className="text-[#F5B000] font-semibold hover:underline transition-colors cursor-pointer text-left"
-                >
-                  ಸದಸ್ಯತ್ವ ಪಡೆಯಿರಿ (Join Community) &rarr;
-                </button>
-              </li>
             </ul>
           </div>
 
@@ -183,12 +175,14 @@ export default function Footer() {
             </div>
 
             <div className="pt-3">
-              <button
-                onClick={openMembership}
-                className="w-full gold-gradient text-[#1A1A1A] font-bold text-xs py-2.5 px-4 rounded-lg shadow-sm hover:opacity-95 transition-opacity cursor-pointer"
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full gold-gradient text-[#1A1A1A] font-bold text-xs py-2.5 px-4 rounded-lg shadow-sm hover:opacity-95 transition-opacity cursor-pointer block text-center"
               >
-                ಸದಸ್ಯತ್ವ ನೋಂದಣಿ / Join Kannada Koota
-              </button>
+                ಸಮುದಾಯಕ್ಕೆ ಸೇರಿ / Join Community
+              </a>
             </div>
           </div>
         </div>

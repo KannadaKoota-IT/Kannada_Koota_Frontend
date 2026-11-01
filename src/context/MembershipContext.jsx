@@ -11,11 +11,19 @@ export const useMembership = () => {
 };
 
 export const MembershipProvider = ({ children }) => {
-  const [isMembershipOpen, setIsMembershipOpen] = useState(false);
+  const whatsappUrl =
+    process.env.NEXT_PUBLIC_WHATSAPP ||
+    process.env.WHATSAPP ||
+    'https://chat.whatsapp.com/G8aX4QWEiYFEWvz7dGK0XJ';
+
   const [memberCount, setMemberCount] = useState(852);
 
-  const openMembership = () => setIsMembershipOpen(true);
-  const closeMembership = () => setIsMembershipOpen(false);
+  const openMembership = () => {
+    if (typeof window !== 'undefined') {
+      window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+    }
+  };
+  const closeMembership = () => {};
 
   const handleMemberRegistered = () => {
     setMemberCount((prev) => prev + 1);
@@ -24,11 +32,12 @@ export const MembershipProvider = ({ children }) => {
   return (
     <MembershipContext.Provider
       value={{
-        isMembershipOpen,
+        isMembershipOpen: false,
         openMembership,
         closeMembership,
         memberCount,
         handleMemberRegistered,
+        whatsappUrl,
       }}
     >
       {children}

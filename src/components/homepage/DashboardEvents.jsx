@@ -7,9 +7,9 @@ import {
   ArrowRight,
   MapPin,
   Clock,
-  Award,
   Maximize2,
   X,
+  MessageCircle,
 } from "lucide-react";
 import DailyVachanaWidget from "../widgets/DailyVachanaWidget";
 import WordOfTheDayWidget from "../widgets/WordOfTheDayWidget";
@@ -25,7 +25,7 @@ import {
 export default function DashboardEvents() {
   const router = useRouter();
   const { language, isKannada } = useLanguage();
-  const { openMembership } = useMembership();
+  const { whatsappUrl } = useMembership();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -446,15 +446,17 @@ export default function DashboardEvents() {
           </p>
         </div>
 
-        <button
-          onClick={openMembership}
+        <a
+          href={whatsappUrl}
+          target="_blank"
+          rel="noopener noreferrer"
           className="bg-white text-[#9B000E] hover:bg-[#FFF8E1] font-bold text-sm sm:text-base px-6 py-3 rounded-lg shadow-sm shrink-0 flex items-center gap-2 cursor-pointer active:scale-98 transition-all z-10"
         >
-          <Award className="w-4 h-4 text-[#F5B000]" />
+          <MessageCircle className="w-4 h-4 text-[#25D366]" />
           <span className="font-kannada">
-            {isKannada ? "ಸದಸ್ಯರಾಗಿ" : "Register Now"}
+            {isKannada ? "ಸಮುದಾಯಕ್ಕೆ ಸೇರಿ" : "Join Community"}
           </span>
-        </button>
+        </a>
       </div>
 
       {/* Modal instances */}

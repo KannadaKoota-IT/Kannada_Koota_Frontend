@@ -3,17 +3,15 @@ import Link from "next/link";
 import {
   Calendar,
   ArrowRight,
-  Award,
   Compass,
   Sparkles,
   Bell,
+  BookOpen,
 } from "lucide-react";
 import { useLanguage } from "../../context/LanguageContext";
-import { useMembership } from "../../context/MembershipContext";
 
 export default function HeroSection({ announcements = [] }) {
   const { isKannada } = useLanguage();
-  const { openMembership } = useMembership();
   const latestNotice =
     announcements && announcements.length > 0 ? announcements[0] : null;
 
@@ -95,16 +93,25 @@ export default function HeroSection({ announcements = [] }) {
                 <ArrowRight className="w-4 h-4 ml-0.5 group-hover:translate-x-1 transition-transform" />
               </Link>
 
-              <button
-                onClick={openMembership}
+              <a
+                href="#blogs"
+                onClick={(e) => {
+                  e.preventDefault();
+                  const el = document.getElementById("blogs");
+                  if (el) {
+                    el.scrollIntoView({ behavior: "smooth" });
+                  } else {
+                    window.location.href = "/#blogs";
+                  }
+                }}
                 className="gold-gradient hover:opacity-95 text-[#1C1B1B] font-semibold px-5 py-3 rounded-lg border border-[#F5B000]/60 shadow-xs hover:shadow transition-all flex items-center gap-2 cursor-pointer active:scale-98"
               >
-                <Award className="w-4 h-4 text-[#7C5800]" />
-                <span className="font-kannada text-base">ಸದಸ್ಯರಾಗಿ</span>
+                <BookOpen className="w-4 h-4 text-[#7C5800]" />
+                <span className="font-kannada text-base">ಲೇಖನಗಳು</span>
                 <span className="text-xs text-[#5C403D] font-normal">
-                  / Join Koota
+                  / Blogs
                 </span>
-              </button>
+              </a>
 
               <Link
                 href="/announcements"
@@ -161,37 +168,14 @@ export default function HeroSection({ announcements = [] }) {
             </div>
           </div>
 
-          {/* Right Unified Identity Feature (4 cols on lg) */}
+          {/* Right Unified Identity Feature */}
           <div className="lg:col-span-4 relative flex items-center justify-center py-6 lg:py-0">
-            <div className="relative w-full max-w-sm aspect-square bg-gradient-to-br from-[#FFF8E1]/30 to-[#FCF9F8] rounded-3xl border border-[#EFEBE4] shadow-lg flex items-center justify-center p-6 overflow-hidden group">
-              {/* Abstract Frosted Blur Effects */}
-              <div className="absolute top-0 right-0 w-32 h-32 bg-amber-200/30 rounded-full blur-3xl pointer-events-none" />
-              <div className="absolute bottom-0 left-0 w-32 h-32 bg-red-200/20 rounded-full blur-3xl pointer-events-none" />
-
-              {/* Sparkle Accents */}
-              <Sparkles className="absolute top-6 left-6 w-5 h-5 text-[#F5B000] opacity-60" />
-              <Sparkles className="absolute bottom-6 right-6 w-5 h-5 text-[#9B000E] opacity-40" />
-
-              {/* Centered Overlapping Logos Container */}
-              <div className="relative w-48 h-48 sm:w-56 sm:h-56 mt-4 ml-4">
-                {/* PES Compass Logo - Top Left */}
-                <div className="absolute -top-4 -left-4 sm:-top-6 sm:-left-6 w-28 h-28 sm:w-32 sm:h-32 bg-white rounded-full p-2.5 shadow-xl border border-gray-100 flex items-center justify-center z-10 group-hover:-translate-y-1 group-hover:-translate-x-1 transition-transform duration-500">
-                  <img
-                    src="/pes_navbar.webp"
-                    alt="PES University"
-                    className="w-full h-full object-contain rounded-full"
-                  />
-                </div>
-
-                {/* Kannada Koota Logo - Bottom Right (Overlapping) */}
-                <div className="absolute -bottom-2 -right-2 sm:-bottom-4 sm:-right-4 w-36 h-36 sm:w-44 sm:h-44 bg-white rounded-2xl p-2 shadow-2xl border border-amber-100 flex items-center justify-center z-20 group-hover:scale-105 transition-transform duration-500">
-                  <img
-                    src="/logo.png"
-                    alt="Kannada Koota"
-                    className="w-full h-full object-cover rounded-xl"
-                  />
-                </div>
-              </div>
+            <div className="relative w-full max-w-[26rem] aspect-square bg-gradient-to-br from-[#FFF8E1]/30 to-[#FCF9F8] rounded-3xl border border-[#EFEBE4] shadow-lg flex items-center justify-center p-4 overflow-hidden">
+              <img
+                src="/logo_combo.png"
+                alt="PES University and Kannada Koota"
+                className="w-full h-full object-contain"
+              />
             </div>
           </div>
         </div>

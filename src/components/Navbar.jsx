@@ -9,8 +9,8 @@ import {
   Image,
   Menu,
   X,
-  Award,
   Globe,
+  MessageCircle,
 } from "lucide-react";
 import { useLanguage } from "../context/LanguageContext";
 import { useMembership } from "../context/MembershipContext";
@@ -18,7 +18,7 @@ import { useMembership } from "../context/MembershipContext";
 export default function Navbar() {
   const router = useRouter();
   const { language, toggleLanguage, isKannada } = useLanguage();
-  const { openMembership } = useMembership();
+  const { whatsappUrl } = useMembership();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [announcementDismissed, setAnnouncementDismissed] = useState(false);
 
@@ -247,17 +247,19 @@ export default function Navbar() {
               <span>{language === "kn" ? "English" : "ಕನ್ನಡ"}</span>
             </button>
 
-            {/* Membership CTA */}
-            <button
-              onClick={openMembership}
+            {/* Community CTA */}
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
               className="crimson-gradient hover:opacity-95 text-white text-sm font-semibold px-4 py-2.5 rounded-lg shadow-sm hover:shadow transition-all flex items-center gap-2 cursor-pointer active:scale-98"
             >
-              <Award className="w-4 h-4 text-[#FFD6D2]" />
-              <span className="font-kannada">ಸದಸ್ಯರಾಗಿ</span>
+              <MessageCircle className="w-4 h-4 text-[#FFD6D2]" />
+              <span className="font-kannada">ಸಮುದಾಯಕ್ಕೆ ಸೇರಿ</span>
               <span className="text-xs text-white/80 font-normal">
-                / Join Club
+                / Join Community
               </span>
-            </button>
+            </a>
           </div>
 
           {/* Mobile Actions (Language + Drawer Toggle) */}
@@ -269,13 +271,15 @@ export default function Navbar() {
               {language === "kn" ? "EN" : "ಕನ್ನ"}
             </button>
 
-            <button
-              onClick={openMembership}
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
               className="bg-[#9B000E] text-white text-xs font-semibold px-2.5 py-1.5 rounded-lg flex items-center gap-1 sm:hidden"
             >
-              <Award className="w-3.5 h-3.5" />
-              <span>ಸದಸ್ಯರಾಗಿ</span>
-            </button>
+              <MessageCircle className="w-3.5 h-3.5" />
+              <span>Join Community</span>
+            </a>
 
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -331,18 +335,18 @@ export default function Navbar() {
           })}
 
           <div className="pt-3 mt-3 border-t border-[#EFEBE4] space-y-2">
-            <button
-              onClick={() => {
-                openMembership();
-                setMobileMenuOpen(false);
-              }}
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setMobileMenuOpen(false)}
               className="w-full crimson-gradient text-white py-3 rounded-lg font-semibold flex items-center justify-center gap-2 shadow-sm"
             >
-              <Award className="w-5 h-5 text-[#FFD6D2]" />
+              <MessageCircle className="w-5 h-5 text-[#FFD6D2]" />
               <span className="font-kannada text-base">
-                ಸದಸ್ಯತ್ವ ನೋಂದಣಿ / Join Kannada Koota
+                ಸಮುದಾಯಕ್ಕೆ ಸೇರಿ / Join Community
               </span>
-            </button>
+            </a>
           </div>
         </div>
       )}

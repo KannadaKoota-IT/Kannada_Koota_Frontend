@@ -67,7 +67,7 @@ export default function BlogSection() {
   };
 
   return (
-    <section className="py-16 sm:py-20 border-t border-[#EFEBE4]">
+    <section id="blogs" className="py-16 sm:py-20 border-t border-[#EFEBE4] scroll-mt-24">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10 pb-4 border-b border-[#EFEBE4]">
         <div>

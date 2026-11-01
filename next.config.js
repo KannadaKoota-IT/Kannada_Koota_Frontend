@@ -6,6 +6,8 @@ const nextConfig = {
   },
   env: {
     VITE_BACKEND_URL: process.env.VITE_BACKEND_URL,
+    WHATSAPP: process.env.WHATSAPP || process.env.NEXT_PUBLIC_WHATSAPP,
+    NEXT_PUBLIC_WHATSAPP: process.env.NEXT_PUBLIC_WHATSAPP || process.env.WHATSAPP,
   },
   async rewrites() {
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
