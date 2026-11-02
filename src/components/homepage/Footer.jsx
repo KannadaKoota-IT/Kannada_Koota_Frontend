@@ -28,7 +28,7 @@ export default function Footer() {
                   <div className="bg-[#C4151C]" />
                 </div>
                 <span className="relative z-10 font-bold text-[#8A0E14] text-base font-serif bg-white/90 w-7 h-7 rounded-lg flex items-center justify-center">
-                  ಕೃ
+                  ಕ
                 </span>
               </div>
 
